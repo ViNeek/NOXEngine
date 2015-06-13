@@ -102,6 +102,7 @@ bool MyApp::OnInit()
 	BOOST_LOG_TRIVIAL(info) << "ASSIMP " << aS.C_Str();
 	BOOST_LOG_TRIVIAL(info) << "ASSIMP " << vec2 * vec;
 	BOOST_LOG_TRIVIAL(info) << "ASSIMP " << vec2.dot(vec);
+	BOOST_LOG_TRIVIAL(info) << "Develop branch " << vec2.dot(vec);
 	int k;
 	q->pop(k);
 	BOOST_LOG_TRIVIAL(info) << "ASSIMP Supported Formats : " << k;
