@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{75665639-3271-49A0-938F-151C45BE78A6}</ProjectGuid>
+    <RootNamespace>GI</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(SolutionDir)include;$(SolutionDir)include\msvc;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\Debug;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(SolutionDir)include;$(SolutionDir)include\msvc;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\Release;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>BOOST_ALL_DYN_LINK;BOOST_ALL_NO_LIB;WIN32;_WINDOWS;_UNICODE;__WXMSW__;WXUSINGDLL;wxUSE_GUI=1;_DEBUG;__WXDEBUG__;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>boost_log_setup-vc120-mt-gd-1_57.lib;boost_log-vc120-mt-gd-1_57.lib;wxmsw30ud_core.lib;wxbase30ud.lib;wxmsw30ud_gl.lib;assimpd.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>BOOST_ALL_DYN_LINK;BOOST_ALL_NO_LIB;WIN32;NDEBUG;_WINDOWS;_UNICODE;WINVER=0x0400;__WXMSW__;WXUSINGDLL;wxUSE_GUI=1;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>boost_log_setup-vc120-mt-1_57.lib;boost_log-vc120-mt-1_57.lib;wxmsw30u_core.lib;wxbase30u.lib;wxmsw30u_gl.lib;assimp.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="bullet\btAlignedAllocator.cpp" />
+    <ClCompile Include="bullet\btConvexHull.cpp" />
+    <ClCompile Include="bullet\btConvexHullComputer.cpp" />
+    <ClCompile Include="bullet\btGeometryUtil.cpp" />
+    <ClCompile Include="bullet\btPolarDecomposition.cpp" />
+    <ClCompile Include="bullet\btQuickprof.cpp" />
+    <ClCompile Include="bullet\btSerializer.cpp" />
+    <ClCompile Include="bullet\btVector3.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="bullet\btAabbUtil2.h" />
+    <ClInclude Include="bullet\btAlignedAllocator.h" />
+    <ClInclude Include="bullet\btAlignedObjectArray.h" />
+    <ClInclude Include="bullet\btConvexHull.h" />
+    <ClInclude Include="bullet\btConvexHullComputer.h" />
+    <ClInclude Include="bullet\btCpuFeatureUtility.h" />
+    <ClInclude Include="bullet\btDefaultMotionState.h" />
+    <ClInclude Include="bullet\btGeometryUtil.h" />
+    <ClInclude Include="bullet\btGrahamScan2dConvexHull.h" />
+    <ClInclude Include="bullet\btHashMap.h" />
+    <ClInclude Include="bullet\btIDebugDraw.h" />
+    <ClInclude Include="bullet\btList.h" />
+    <ClInclude Include="bullet\btMatrix3x3.h" />
+    <ClInclude Include="bullet\btMatrixX.h" />
+    <ClInclude Include="bullet\btMinMax.h" />
+    <ClInclude Include="bullet\btMotionState.h" />
+    <ClInclude Include="bullet\btPolarDecomposition.h" />
+    <ClInclude Include="bullet\btPoolAllocator.h" />
+    <ClInclude Include="bullet\btQuadWord.h" />
+    <ClInclude Include="bullet\btQuaternion.h" />
+    <ClInclude Include="bullet\btQuickprof.h" />
+    <ClInclude Include="bullet\btRandom.h" />
+    <ClInclude Include="bullet\btScalar.h" />
+    <ClInclude Include="bullet\btSerializer.h" />
+    <ClInclude Include="bullet\btSpatialAlgebra.h" />
+    <ClInclude Include="bullet\btStackAlloc.h" />
+    <ClInclude Include="bullet\btTransform.h" />
+    <ClInclude Include="bullet\btTransformUtil.h" />
+    <ClInclude Include="bullet\btVector3.h" />
+    <ClInclude Include="Main.h" />
+    <ClInclude Include="Utils.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
