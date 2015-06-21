@@ -55,7 +55,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>boost_log_setup-vc120-mt-gd-1_57.lib;boost_log-vc120-mt-gd-1_57.lib;wxmsw30ud_core.lib;wxbase30ud.lib;wxmsw30ud_gl.lib;assimpd.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>boost_log_setup-vc120-mt-gd-1_57.lib;boost_log-vc120-mt-gd-1_57.lib;wxmsw30ud_core.lib;wxbase30ud.lib;wxmsw30ud_gl.lib;assimpd.lib;opengl32.lib;glew32d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -71,7 +71,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>boost_log_setup-vc120-mt-1_57.lib;boost_log-vc120-mt-1_57.lib;wxmsw30u_core.lib;wxbase30u.lib;wxmsw30u_gl.lib;assimp.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>boost_log_setup-vc120-mt-1_57.lib;boost_log-vc120-mt-1_57.lib;wxmsw30u_core.lib;wxbase30u.lib;wxmsw30u_gl.lib;assimp.lib;opengl32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -83,8 +83,12 @@
     <ClCompile Include="bullet\btQuickprof.cpp" />
     <ClCompile Include="bullet\btSerializer.cpp" />
     <ClCompile Include="bullet\btVector3.cpp" />
+    <ClCompile Include="JobFactory.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="Window.cpp" />
+    <ClCompile Include="Worker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bullet\btAabbUtil2.h" />
@@ -116,8 +120,13 @@
     <ClInclude Include="bullet\btTransform.h" />
     <ClInclude Include="bullet\btTransformUtil.h" />
     <ClInclude Include="bullet\btVector3.h" />
-    <ClInclude Include="Main.h" />
+    <ClInclude Include="Job.h" />
+    <ClInclude Include="JobFactory.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Scheduler.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="Window.h" />
+    <ClInclude Include="Worker.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

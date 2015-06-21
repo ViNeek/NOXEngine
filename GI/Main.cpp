@@ -1,8 +1,7 @@
 #ifndef _glpane_
 #define _glpane_
 
-#include <wx/wx.h>
-#include <wx/glcanvas.h>
+#include "Window.h"
 
 // Assimp
 #include <assimp/Importer.hpp>      // C++ importer interface
@@ -17,44 +16,18 @@
 #define BT_USE_SSE
 
 #include "bullet/btVector3.h"
+#include "bullet/btMatrix3x3.h"
+#include "bullet/btTransform.h"
+#include "bullet/btTransformUtil.h"
 
 // NOX Engine
 #include "Utils.h"
 
-class BasicGLPane : public wxGLCanvas
-{
-	wxGLContext*	m_context;
 
-public:
-	BasicGLPane(wxFrame* parent, int* args);
-	virtual ~BasicGLPane();
-
-	void resized(wxSizeEvent& evt);
-
-	int getWidth();
-	int getHeight();
-
-	void render(wxPaintEvent& evt);
-	void prepare3DViewport(int topleft_x, int topleft_y, int bottomrigth_x, int bottomrigth_y);
-	void prepare2DViewport(int topleft_x, int topleft_y, int bottomrigth_x, int bottomrigth_y);
-
-	// events
-	void mouseMoved(wxMouseEvent& event);
-	void mouseDown(wxMouseEvent& event);
-	void mouseWheelMoved(wxMouseEvent& event);
-	void mouseReleased(wxMouseEvent& event);
-	void rightClick(wxMouseEvent& event);
-	void mouseLeftWindow(wxMouseEvent& event);
-	void keyPressed(wxKeyEvent& event);
-	void keyReleased(wxKeyEvent& event);
-
-	DECLARE_EVENT_TABLE()
-};
 #endif
 #include "wx/wx.h"
 #include "wx/sizer.h"
 #include "wx/glcanvas.h"
-#include "main.h"
 
 // include OpenGL
 #ifdef __WXMAC__
@@ -66,28 +39,28 @@ public:
 #endif
 
 
-class MyApp : public wxApp
+class nxApp : public wxApp
 {
 	virtual bool OnInit();
 
-	wxFrame *frame;
-	BasicGLPane * glPane;
+	nxFrame*			m_pFrame;
 public:
 
 };
 
-IMPLEMENT_APP(MyApp)
+IMPLEMENT_APP(nxApp)
 
-bool MyApp::OnInit()
+bool nxApp::OnInit()
 {
-	Utils::init_debug_console();
+	Utils::Debug::init_debug_console();
 
 	btVector3 vec(1.0f, 2, 3);
 	btVector3 vec2(1.0f, 2, 3);
-
-	#include <boost/log/trivial.hpp>
-	wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
-	frame = new wxFrame((wxFrame *)NULL, -1, wxT("Hello GL World"), wxPoint(50, 50), wxSize(400, 200));
+	btMatrix3x3 mat;
+	btTransform tra;
+	
+	
+	m_pFrame = new nxFrame(wxT("NOXEngine Viewer"), 50, 50, 400, 200);
 
 	Assimp::Importer importer;
 	aiString aS;
@@ -99,6 +72,7 @@ bool MyApp::OnInit()
 	q->push(2);
 	q->push(3);
 	q->push(4);
+
 	BOOST_LOG_TRIVIAL(info) << "ASSIMP " << aS.C_Str();
 	BOOST_LOG_TRIVIAL(info) << "ASSIMP " << vec2 * vec;
 	BOOST_LOG_TRIVIAL(info) << "ASSIMP " << vec2.dot(vec);
@@ -124,51 +98,16 @@ bool MyApp::OnInit()
 	BOOST_LOG_TRIVIAL(error) << "An error severity message";
 	BOOST_LOG_TRIVIAL(fatal) << "A fatal severity message";
 
-	int args[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, 0 };
+	
 
-	glPane = new BasicGLPane((wxFrame*)frame, args);
-	sizer->Add(glPane, 1, wxEXPAND);
+	m_pFrame->Show();
 
-	frame->SetSizer(sizer);
-	frame->SetAutoLayout(true);
+	m_pFrame->InitRenderer();
 
-	frame->Show();
 	return true;
 }
 
-BEGIN_EVENT_TABLE(BasicGLPane, wxGLCanvas)
-EVT_MOTION(BasicGLPane::mouseMoved)
-EVT_LEFT_DOWN(BasicGLPane::mouseDown)
-EVT_LEFT_UP(BasicGLPane::mouseReleased)
-EVT_RIGHT_DOWN(BasicGLPane::rightClick)
-EVT_LEAVE_WINDOW(BasicGLPane::mouseLeftWindow)
-EVT_SIZE(BasicGLPane::resized)
-EVT_KEY_DOWN(BasicGLPane::keyPressed)
-EVT_KEY_UP(BasicGLPane::keyReleased)
-EVT_MOUSEWHEEL(BasicGLPane::mouseWheelMoved)
-EVT_PAINT(BasicGLPane::render)
-END_EVENT_TABLE()
-
-
-// some useful events to use
-void BasicGLPane::mouseMoved(wxMouseEvent& event) {}
-void BasicGLPane::mouseDown(wxMouseEvent& event) {}
-void BasicGLPane::mouseWheelMoved(wxMouseEvent& event) {}
-void BasicGLPane::mouseReleased(wxMouseEvent& event) {}
-void BasicGLPane::rightClick(wxMouseEvent& event) {}
-void BasicGLPane::mouseLeftWindow(wxMouseEvent& event) {}
-void BasicGLPane::keyPressed(wxKeyEvent& event) {}
-void BasicGLPane::keyReleased(wxKeyEvent& event) {}
-
-// Vertices and faces of a simple cube to demonstrate 3D render
-// source: http://www.opengl.org/resources/code/samples/glut_examples/examples/cube.c
-GLfloat v[8][3];
-GLint faces[6][4] = {  /* Vertex indices for the 6 faces of a cube. */
-		{ 0, 1, 2, 3 }, { 3, 2, 6, 7 }, { 7, 6, 5, 4 },
-		{ 4, 5, 1, 0 }, { 5, 6, 2, 1 }, { 7, 4, 0, 3 } };
-
-
-
+/*
 BasicGLPane::BasicGLPane(wxFrame* parent, int* args) :
 wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE)
 {
@@ -198,7 +137,6 @@ void BasicGLPane::resized(wxSizeEvent& evt)
 	Refresh();
 }
 
-/** Inits the OpenGL viewport for drawing in 3D. */
 void BasicGLPane::prepare3DViewport(int topleft_x, int topleft_y, int bottomrigth_x, int bottomrigth_y)
 {
 
@@ -215,13 +153,12 @@ void BasicGLPane::prepare3DViewport(int topleft_x, int topleft_y, int bottomrigt
 	glLoadIdentity();
 
 	float ratio_w_h = (float)(bottomrigth_x - topleft_x) / (float)(bottomrigth_y - topleft_y);
-	//gluPerspective(45 /*view angle*/, ratio_w_h, 0.1 /*clip close*/, 200 /*clip far*/);
+	//gluPerspective(45 , ratio_w_h, 0.1, 200 );
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
 }
 
-/** Inits the OpenGL viewport for drawing in 2D. */
 void BasicGLPane::prepare2DViewport(int topleft_x, int topleft_y, int bottomrigth_x, int bottomrigth_y)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Black Background
@@ -305,3 +242,4 @@ void BasicGLPane::render(wxPaintEvent& evt)
 	glFlush();
 	SwapBuffers();
 }
+*/
