@@ -4,9 +4,15 @@
 
 #include <wx/wupdlock.h>
 
+#include "JobFactory.h"
+#include "CustomEvents.h"
+
 nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 	: wxFrame((wxFrame *)NULL, -1, title, wxPoint(xpos, ypos), wxSize(width, height) )
 {
+	m_RendererFinished = false;
+	m_SchedulerFinished = false;
+
 	wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
 
 	int args[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, 0 };
@@ -49,7 +55,7 @@ nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 
 	m_pHelpMenu = new wxMenu();
 	m_pMenuBar->Append(m_pHelpMenu, wxT("Help"));
-
+	
 	//m_pRenderer
 	this->SetMenuBar(m_pMenuBar);
 
@@ -62,14 +68,42 @@ nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 	this->SetAutoLayout(true);
 
 	m_pRenderer = new nxRenderer(m_pGLPanel);
+	Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_EXTENSION_INIT));
 
 	// Setup callbacks
 	//Bind(wxEVT_SIZE, &nxFrame::onResize, this, wxID_ANY);
+	Bind(wxEVT_CLOSE_WINDOW, &nxFrame::OnClose, this, wxID_ANY);
+	Bind(nxRENDERER_EXIT_EVENT, &nxFrame::OnRendererExit, this, wxID_ANY);
+	Bind(nxSCHEDULER_EXIT_EVENT, &nxFrame::OnSchedulerExit, this, wxID_ANY);
 }
  
+void nxFrame::OnClose(wxCloseEvent& evt) {
+	wxMessageBox(wxT("closing"));
+
+	Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_JOB_EXIT, this));
+}
+
+void nxFrame::OnRendererExit(wxCommandEvent& evt) {
+	m_RendererFinished = true;
+	std::cout << "would exit" << std::endl;
+	if ( m_RendererFinished && m_SchedulerFinished )
+		Destroy();
+}
+
+void nxFrame::OnSchedulerExit(wxCommandEvent& evt) {
+	m_SchedulerFinished = true;
+	if ( m_RendererFinished && m_SchedulerFinished )
+		Destroy();
+}
+
 void nxFrame::InitRenderer()
 {
 	m_pRenderer->Run();
+}
+
+void nxFrame::InitScheduler()
+{
+	std::cout << wxThread::GetCPUCount() << std::endl;
 }
 
 void nxFrame::PositionStatusBar()

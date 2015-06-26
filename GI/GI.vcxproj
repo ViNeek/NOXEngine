@@ -83,9 +83,11 @@
     <ClCompile Include="bullet\btQuickprof.cpp" />
     <ClCompile Include="bullet\btSerializer.cpp" />
     <ClCompile Include="bullet\btVector3.cpp" />
+    <ClCompile Include="CustomEvents.cpp" />
     <ClCompile Include="JobFactory.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Scheduler.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="Worker.cpp" />
@@ -120,6 +122,7 @@
     <ClInclude Include="bullet\btTransform.h" />
     <ClInclude Include="bullet\btTransformUtil.h" />
     <ClInclude Include="bullet\btVector3.h" />
+    <ClInclude Include="CustomEvents.h" />
     <ClInclude Include="Job.h" />
     <ClInclude Include="JobFactory.h" />
     <ClInclude Include="Renderer.h" />

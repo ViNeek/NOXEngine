@@ -18,7 +18,7 @@ public:
 private:
 
 	bool				m_IsActive;
-	nxJobQueue*			m_pJobQueue;
+	nxJobQueue*			m_pCommandQueue;
 
 	void Init();
 };

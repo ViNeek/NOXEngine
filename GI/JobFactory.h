@@ -4,6 +4,7 @@ class nxJob;
 
 enum nxJobID {
 	NX_JOB_DUMMY,
+	NX_JOB_EXIT,
 	NX_JOB_LOAD_SCENE,
 	NX_JOB_LOAD_ASSET,
 	NX_GL_JOB_EXTENSION_INIT,
@@ -11,21 +12,35 @@ enum nxJobID {
 };
 
 class nxJobFactory {
-	static nxJob* CreateJob(nxJobID id, void* data);
+
+public:
+
+	static nxJob* CreateJob(nxJobID id, void* data = 0);
+
+private:
+
 };
 
 struct nxExtensionInitializer {
-	void operator()(void* data);
+	bool operator()(void* data);
 };
 
 struct nxShaderLoader {
-	void operator()(void* data);
+	bool operator()(void* data);
 };
 
 struct nxSceneLoader {
-	void operator()(void* data);
+	bool operator()(void* data);
 };
 
 struct nxAssetLoader {
-	void operator()(void* data);
+	bool operator()(void* data);
+};
+
+struct nxRendererTerminator {
+	bool operator()(void* data);
+};
+
+struct nxSchedulerTerminator {
+	bool operator()(void* data);
 };
