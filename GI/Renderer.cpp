@@ -1,6 +1,8 @@
 #include "Renderer.h"
 #include "Job.h"
 
+#include "CustomEvents.h"
+
 nxRenderer::nxRenderer(wxGLCanvas* frame)
 {
 	m_pParent = frame;
@@ -27,11 +29,15 @@ void *nxRenderer::Entry()
 		glViewport(0,0,this->m_pParent->GetSize().GetX(), this->m_pParent->GetSize().GetY());
 
 	    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		f += 0.01;
+		f += 0.01f;
 		if (f > 1)
 			f = 0;
 		m_pParent->SwapBuffers();
 	}
+
+	wxFrame* evtHandler = (wxFrame*)m_pParent->GetParent();
+	wxCommandEvent* evt = new wxCommandEvent(nxRENDERER_EXIT_EVENT); // Still keeping it simple, don't give a specific event ID
+	wxQueueEvent(evtHandler, evt); // This posts to ourselves: it'll be caught and sent to a different method
 
 	return NULL;
 }

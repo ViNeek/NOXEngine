@@ -1,6 +1,7 @@
 #include "Window.h"
 
 #include "Renderer.h"
+#include "Scheduler.h"
 
 #include <wx/wupdlock.h>
 
@@ -67,6 +68,7 @@ nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 	this->SetSizer(sizer);
 	this->SetAutoLayout(true);
 
+	m_pScheduler = new nxScheduler(this);
 	m_pRenderer = new nxRenderer(m_pGLPanel);
 	Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_EXTENSION_INIT));
 

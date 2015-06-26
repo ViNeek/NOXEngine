@@ -53,10 +53,6 @@ bool nxExtensionInitializer::operator()(void* data) {
 }
 
 bool nxRendererTerminator::operator()(void* data) {
-	wxFrame* evtHandler = (wxFrame*)data;
-	wxCommandEvent* evt = new wxCommandEvent(nxRENDERER_EXIT_EVENT); // Still keeping it simple, don't give a specific event ID
-	wxQueueEvent(evtHandler, evt); // This posts to ourselves: it'll be caught and sent to a different method
-
 	return false;
 }
 

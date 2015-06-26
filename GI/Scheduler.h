@@ -13,7 +13,7 @@ typedef boost::lockfree::queue< nxJob* > nxJobQueue;
 
 class nxScheduler : public wxThread {
 public:
-								nxScheduler();
+								nxScheduler(wxFrame* parent);
 	void*						Entry();
 
 	void						ScheduleJob(nxJob* j);
@@ -21,6 +21,7 @@ public:
 private:
 
 	std::vector<nxWorker*>		m_vWorkers;
+	nxJobQueue*					m_pWorkersCommandQueue;
 	nxJobQueue*					m_pCommandQueue;
 	bool						m_IsActive;
 	int							m_WorkerCount;

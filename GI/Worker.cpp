@@ -1,6 +1,8 @@
 #include "Worker.h"
 #include "Job.h"
 
+#include <boost/log/trivial.hpp>
+
 nxWorker::nxWorker(nxJobQueue* q) {
 	m_pCommandQueue = q;
 }
@@ -20,5 +22,5 @@ void* nxWorker::Entry() {
 }
 
 void nxWorker::Init() {
-
+	BOOST_LOG_TRIVIAL(info) << "Worker with ID " << GetId() << " running";
 }
