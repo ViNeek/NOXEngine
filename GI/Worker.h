@@ -12,13 +12,13 @@ class nxWorker : public wxThread
 {
 public:
 
-	nxWorker(nxJobQueue* q);
-	void *Entry();
+						nxWorker(nxJobQueue* q);
+	void*				Entry();
 
 private:
 
 	bool				m_IsActive;
-	nxJobQueue*			m_pJobQueue;
+	nxJobQueue*			m_pCommandQueue;
 
-	void Init();
+	void				Init();
 };

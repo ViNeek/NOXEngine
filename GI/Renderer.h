@@ -13,10 +13,10 @@ class nxRenderer : public wxThread
 {
 public:
 
-	nxRenderer(wxGLCanvas* frame);
-	void *Entry();
+						nxRenderer(wxGLCanvas* frame);
+	void*				Entry();
 
-	void AddGLJob(nxGLJob* job);
+	void				ScheduleGLJob(nxGLJob* job) { m_pGLCommandQueue->push(job); };
 
 private:
 
@@ -25,5 +25,5 @@ private:
 	wxGLContext*		m_pGLCtx;
 	nxGLJobQueue*		m_pGLCommandQueue;
 
-	void Init();
+	void				Init();
 };

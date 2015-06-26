@@ -103,6 +103,7 @@ bool nxApp::OnInit()
 	m_pFrame->Show();
 
 	m_pFrame->InitRenderer();
+	m_pFrame->InitScheduler();
 
 	return true;
 }

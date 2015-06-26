@@ -8,6 +8,7 @@
 
 // Forward declares
 class nxRenderer;
+class nxScheduler;
 class nxStatusBar;
 class nxGLPanel;
 
@@ -21,12 +22,17 @@ public:
 
 	void OnResize(wxSizeEvent evt);
 
-	void InitRenderer();
+	void				InitRenderer();
+	bool				IsRendererFinished() { return m_RendererFinished; };
+	void				InitScheduler();
+	bool				IsSchedulerFinished() { return m_SchedulerFinished; };
 
-	nxRenderer* Renderer() { return m_pRenderer; };
+	nxRenderer*			Renderer() { return m_pRenderer; };
+	nxScheduler*		Scheduler() { return m_pScheduler; };
 
 private:
 
+	// UI Widgets
 	wxMenuBar*			m_pMenuBar;
 	wxMenu*				m_pPrefMenu;
 	wxMenu*				m_pSceneMenu;
@@ -34,10 +40,22 @@ private:
 	wxMenu*				m_pVoxelMenu;
 	wxMenu*				m_pHelpMenu;
 
+	// Custom UI widgets
 	nxStatusBar*		m_pStatusBar;
 	nxGLPanel*			m_pGLPanel;
-	nxRenderer*			m_pRenderer;
 
+	// NOX Engine State
+	nxRenderer*			m_pRenderer;
+	bool				m_RendererFinished;
+	nxScheduler*		m_pScheduler;
+	bool				m_SchedulerFinished;
+
+	// Handlers
+	void OnClose(wxCloseEvent& evt);
+	void OnRendererExit(wxCommandEvent& evt);
+	void OnSchedulerExit(wxCommandEvent& evt);
+
+	// StatusBar
 	virtual void PositionStatusBar();
 };
 
