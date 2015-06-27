@@ -1,6 +1,10 @@
 #include "Scene.h"
 
+#include "Engine.h"
+#include "Renderer.h"
 #include "Entity.h"
+#include "Job.h"
+#include "JobFactory.h"
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
@@ -11,24 +15,26 @@
 #include <exception>
 #include <iostream>
 
+#include "Scheduler.h"
+
 namespace pt = boost::property_tree;
 
-nxScene::nxScene() {
-
+nxScene::nxScene(nxEngine* eng) {
+	m_pEngine = eng;
 }
 
 nxScene::nxScene(std::string& path) {
-
+	m_SceneFilename = path;
 }
 
-void nxScene::InitFromFile(std::string& path) {
+void nxScene::Init() {
 	try {
 		// Create empty property tree object
 		pt::ptree tree;
-		BOOST_LOG_TRIVIAL(info) << "SceneCount : " << path;
+		BOOST_LOG_TRIVIAL(info) << "SceneCount : " << m_SceneFilename;
 
 		// Parse the XML into the property tree.
-		pt::read_json(path, tree);
+		pt::read_json(m_SceneFilename, tree);
 
 		// Use the default-value version of get to find the debug level.
 		// Note that the default value is used to deduce the target type.
@@ -44,6 +50,8 @@ void nxScene::InitFromFile(std::string& path) {
 		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.shaders")) {
 			// The data function is used to access the data stored in a node.
 			BOOST_FOREACH(pt::ptree::value_type &v1, v.second) {
+				std::string* shaderPath = new std::string(v1.second.data());
+				m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_SHADER, shaderPath));
 				BOOST_LOG_TRIVIAL(info) << "Shader : " << v1.second.data();
 			}
 			//m_modules.insert(v.second.data());
@@ -65,4 +73,12 @@ void nxScene::InitFromFile(std::string& path) {
 
 void nxScene::PushEntity(nxEntity* ent) {
 
+}
+
+bool nxSceneLoader::operator()(void* data) {
+	nxScene* scene = NOX_ENGINE_GET(Scene);
+
+	scene->Init();
+
+	return true;
 }

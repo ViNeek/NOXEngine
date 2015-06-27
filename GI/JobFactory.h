@@ -1,6 +1,10 @@
 #pragma once
 
 class nxJob;
+class nxFrame;
+
+// Request from glbal NOX Engine State
+#define NOX_ENGINE_GET(Object) ((nxEngine*)data)->Object()
 
 enum nxJobID {
 	NX_JOB_DUMMY,
@@ -13,7 +17,8 @@ enum nxJobID {
 	NX_JOB_LOAD_SCENE,
 	NX_JOB_LOAD_ASSET,
 	NX_GL_JOB_EXTENSION_INIT,
-	NX_GL_JOB_SHADER_LOAD
+	NX_GL_JOB_LOAD_SHADER,
+	NX_GL_JOB_LOAD_PROGRAM
 };
 
 class nxJobFactory {

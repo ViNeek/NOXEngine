@@ -102,10 +102,6 @@ bool nxApp::OnInit()
 
 	m_pFrame->Show();
 
-	m_pFrame->InitRenderer();
-	m_pFrame->InitScheduler();
-	m_pFrame->InitScene("C:\\Users\\Nick\\Documents\\Projects\\Thesis\\NOXEngine\\Scenes\\MetalGearSolid.nxscene");
-
 	return true;
 }
 

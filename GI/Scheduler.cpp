@@ -9,6 +9,18 @@
 
 #include <boost/log/trivial.hpp>
 
+nxScheduler::nxScheduler(nxEngine* eng)
+{
+	m_pEngine = eng;
+	m_pParent = NULL;
+	m_IsActive = true;
+	m_pCommandQueue = new nxJobQueue(0);
+	m_pWorkersCommandQueue = new nxJobQueue(0);
+	m_WorkerCount = 0;
+	m_SchedulerSync = new nxSynchronizer();
+	m_WorkersSync = new nxSynchronizer();
+}
+
 nxScheduler::nxScheduler(wxFrame* parent)
 {
 	m_pParent = parent;

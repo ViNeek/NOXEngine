@@ -5,15 +5,14 @@
       "name": "Metal Gear Solid Tribute",
       "entities":
       [
-         {"name1": "New", "pos": "coords"},
-         {"name2": "New", "pos": "coords"}
+         {"ModelName": "MetalGear", "ModelType": ".obj", "Center":  "0.0f 0.0f 0.0f"}
       ],
 	  "shaders":
       [
-         {"compute": "compute1"},
-         {"fragment": "fragment"},
-		 {"vertex": "vertex"},
-		 {"geometry": "geometry"}
+         {"Compute": "Shaders/SimplePass.c.glsl"},
+         {"Fragment": "Shaders/SimplePass.f.glsl"},
+		 {"Vertex": "Shaders/SimplePass.v.glsl"},
+		 {"Geometry": "Shaders/SimplePass.g.glsl"}
       ]
    }
 }

@@ -3,6 +3,7 @@
 #include "Scheduler.h"
 #include "JobFactory.h"
 #include "CustomEvents.h"
+#include "Engine.h"
 
 nxRenderer::nxRenderer(wxGLCanvas* frame)
 {
@@ -11,6 +12,14 @@ nxRenderer::nxRenderer(wxGLCanvas* frame)
 	m_IsActive = true;
 	m_pGLCommandQueue = new nxGLJobQueue(0);
 } 
+
+nxRenderer::nxRenderer(nxEngine* eng) {
+	m_pEngine = eng;
+	m_pParent = NULL;
+	m_pGLCtx = NULL;
+	m_IsActive = true;
+	m_pGLCommandQueue = new nxGLJobQueue(0);
+}
 
 void *nxRenderer::Entry()
 {

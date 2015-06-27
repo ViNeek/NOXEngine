@@ -9,7 +9,7 @@
 
 void Utils::Debug::init_debug_console(){
 
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF );
 
 	CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
 	int consoleHandleR, consoleHandleW;

@@ -9,12 +9,9 @@
 #include <wx/glcanvas.h>
 
 // Forward declares
-class nxRenderer;
-class nxScheduler;
+class nxEngine;
 class nxStatusBar;
 class nxGLPanel;
-class nxSynchronizer;
-class nxScene;
 
 /* GL Rendering Window */
 class nxFrame : public wxFrame
@@ -24,47 +21,43 @@ public:
 	/* Constructor. Creates a new window for gl rendering */
 	nxFrame(const wxChar *title, int xpos, int ypos, int width, int height);
 
-	void				InitScene(std::string path);
-	void				InitRenderer();
-	bool				IsRendererFinished() { return m_RendererFinished; };
-	void				InitScheduler();
-	bool				IsSchedulerFinished() { return m_SchedulerFinished; };
+	bool					IsRendererFinished();
+	bool					IsSchedulerFinished();
 
-	nxRenderer*			Renderer() { return m_pRenderer; };
-	nxScheduler*		Scheduler() { return m_pScheduler; };
+	nxEngine*				Engine() { return m_EngineState; }
+
+	/*
+	const nxRenderer*		Renderer() { return m_pRenderer; };
+	const nxScheduler*		Scheduler() { return m_pScheduler; };
+	const nxScene*			Scene() { return m_Scene; }
+	*/
 
 private:
 
 	// UI Widgets
-	wxMenuBar*			m_pMenuBar;
-	wxMenu*				m_pPrefMenu;
-	wxMenu*				m_pSceneMenu;
-	wxMenu*				m_pShaderMenu;
-	wxMenu*				m_pVoxelMenu;
-	wxMenu*				m_pHelpMenu;
+	wxMenuBar*				m_pMenuBar;
+	wxMenu*					m_pPrefMenu;
+	wxMenu*					m_pSceneMenu;
+	wxMenu*					m_pShaderMenu;
+	wxMenu*					m_pVoxelMenu;
+	wxMenu*					m_pHelpMenu;
 
 	// Custom UI widgets
-	nxStatusBar*		m_pStatusBar;
-	nxGLPanel*			m_pGLPanel;
+	nxStatusBar*			m_pStatusBar;
+	nxGLPanel*				m_pGLPanel;
 
 	// NOX Engine State
-	nxRenderer*			m_pRenderer;
-	bool				m_RendererFinished;
-
-	nxSynchronizer*		m_SchedulerSync;
-	nxScheduler*		m_pScheduler;
-	bool				m_SchedulerFinished;
-
-	nxScene*			m_Scene;
+	nxEngine*				m_EngineState;
 
 	// Handlers
-	void				OnClose(wxCloseEvent& evt);
-	void				OnResize(wxSizeEvent& evt) { evt.Skip(); }
-	void				OnRendererExit(wxCommandEvent& evt);
-	void				OnSchedulerExit(wxCommandEvent& evt);
+	void					OnClose(wxCloseEvent& evt);
+	void					OnResize(wxSizeEvent& evt) { evt.Skip(); }
+	void					OnRendererExit(wxCommandEvent& evt);
+	void					OnSchedulerExit(wxCommandEvent& evt);
+	void					OnLoadScene(wxCommandEvent& evt);
 
 	// StatusBar
-	virtual void		PositionStatusBar();
+	virtual void			PositionStatusBar();
 };
 
 /* GL Panel */

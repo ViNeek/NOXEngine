@@ -43,14 +43,29 @@ nxJob* nxJobFactory::CreateJob(nxJobID id, void* data)
 		j = new nxJob(data, cb);
 	}
 		break;
+	case NX_JOB_LOAD_SCENE:
+	{
+		nxSceneLoader cb;
+		j = new nxJob(data, cb);
+	}
+		break;
+	case NX_JOB_LOAD_ASSET:
+	{
+		nxAssetLoader cb;
+		j = new nxJob(data, cb);
+	}
+		break;
 	case NX_GL_JOB_EXTENSION_INIT:
 	{
 		nxExtensionInitializer cb;
 		j = new nxGLJob(data, cb);
 	}
 		break;
-	case NX_GL_JOB_SHADER_LOAD:
-		//j = new nxJob();
+	case NX_GL_JOB_LOAD_SHADER:
+	{
+		nxShaderLoader cb;
+		j = new nxJob(data, cb);
+	}
 		break;
 	default:
 		break;

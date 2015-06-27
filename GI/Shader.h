@@ -9,9 +9,10 @@ class nxShader {
 public:
 
 						nxShader();
-						nxShader(std::string& path);
+						nxShader(std::string& path, GLenum shaderType);
 
-	void				LoadFromFile(std::string& path);
+	void				LoadFromFile(std::string& path, GLenum shaderType);
+	void				ShaderLog();
 
 private:
 

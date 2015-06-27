@@ -1,48 +1,99 @@
 #include "Shader.h"
 
+#include "JobFactory.h"
+
 #include <fstream>
 #include <string>
+
+#include <boost/log/trivial.hpp>
+#include <boost/assign/list_of.hpp> // for 'map_list_of()'
+
+#include <map>
 
 nxShader::nxShader() {
 	m_ShaderID = -1;
 }
 
-nxShader::nxShader(std::string& path) {
+nxShader::nxShader(std::string& path, GLenum shaderType) {
 	m_ShaderID = -1;
 
-	LoadFromFile(path);
+	LoadFromFile(path, shaderType);
 }
 
-void nxShader::LoadFromFile(std::string& path) {
-	/*std::ifstream	sourceFile(path.c_str());
+void nxShader::LoadFromFile(std::string& path, GLenum shaderType) {
+	std::ifstream	sourceFile(path.c_str());
 
 	if (sourceFile)
 	{
 		//Get shader source
 		m_SourceData.assign((std::istreambuf_iterator< char >(sourceFile)), std::istreambuf_iterator< char >());
+		
 		//Create shader ID
 		m_ShaderID = glCreateShader(shaderType);
 
 		//Set shader source
-		const GLchar* shaderSource = shaderString.c_str();
-		glShaderSource(shaderID, 1, (const GLchar**)&shaderSource, NULL);
+		const GLchar* shaderSource = m_SourceData.c_str();
+		glShaderSource(m_ShaderID, 1, (const GLchar**)&m_SourceData, NULL);
 
 		//Compile shader source
-		glCompileShader(shaderID);
+		glCompileShader(m_ShaderID);
 
 		//Check shader for errors
 		GLint shaderCompiled = GL_FALSE;
-		glGetShaderiv(shaderID, GL_COMPILE_STATUS, &shaderCompiled);
+		glGetShaderiv(m_ShaderID, GL_COMPILE_STATUS, &shaderCompiled);
 		if (shaderCompiled != GL_TRUE)
 		{
-			printf("Unable to compile shader %d!\n\nSource:\n%s\n", shaderID, shaderSource);
-			printShaderLog(shaderID);
-			glDeleteShader(shaderID);
-			shaderID = 0;
+			BOOST_LOG_TRIVIAL(error) << "Uncompilable shader: " << path;
+			ShaderLog();
+			glDeleteShader(m_ShaderID);
+			m_ShaderID = -1;
 		}
 	}
 	else
 	{
-		printf("Unable to open file %s\n", path.c_str());
-	}*/
+		BOOST_LOG_TRIVIAL(error) << "Invalid shader file : " << path;
+	}
+}
+
+void nxShader::ShaderLog()
+{
+	//Make sure name is shader
+	if (glIsShader(m_ShaderID))
+	{
+		//Shader log length
+		int infoLogLength = 0;
+		int maxLength = infoLogLength;
+
+		//Get info string length
+		glGetShaderiv(m_ShaderID, GL_INFO_LOG_LENGTH, &maxLength);
+
+		//Allocate string
+		char* infoLog = new char[maxLength];
+
+		//Get info log
+		glGetShaderInfoLog(m_ShaderID, maxLength, &infoLogLength, infoLog);
+		if (infoLogLength > 0)
+		{
+			BOOST_LOG_TRIVIAL(error) << "Shader Log : " << infoLog;
+		}
+
+		delete[] infoLog;
+	}
+	else
+	{
+		BOOST_LOG_TRIVIAL(error) << "Shader "<< m_ShaderID <<" : not a shader ";
+	}
+}
+
+std::map<std::string, GLenum> gc_TypeMappings =
+				boost::assign::map_list_of	("compute", GL_COMPUTE_SHADER)
+											("vertex", GL_VERTEX_SHADER)
+											("tess_control", GL_TESS_CONTROL_SHADER)
+											("tess_evaluation", GL_TESS_EVALUATION_SHADER)
+											("geometry", GL_GEOMETRY_SHADER)
+											("fragment", GL_FRAGMENT_SHADER);
+
+bool nxShaderLoader::operator()(void* data) {
+
+	return true;
 }
