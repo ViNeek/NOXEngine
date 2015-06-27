@@ -1,10 +1,12 @@
 #pragma once
 
-#include "wx/wx.h"
+#include "Utils.h"
 
-#include "GL/glew.h"
+#include <wx/wx.h>
 
-#include "wx/glcanvas.h"
+#include <GL/glew.h>
+
+#include <wx/glcanvas.h>
 
 // Forward declares
 class nxRenderer;
@@ -12,6 +14,7 @@ class nxScheduler;
 class nxStatusBar;
 class nxGLPanel;
 class nxSynchronizer;
+class nxScene;
 
 /* GL Rendering Window */
 class nxFrame : public wxFrame
@@ -21,6 +24,7 @@ public:
 	/* Constructor. Creates a new window for gl rendering */
 	nxFrame(const wxChar *title, int xpos, int ypos, int width, int height);
 
+	void				InitScene(std::string path);
 	void				InitRenderer();
 	bool				IsRendererFinished() { return m_RendererFinished; };
 	void				InitScheduler();
@@ -51,6 +55,8 @@ private:
 	nxScheduler*		m_pScheduler;
 	bool				m_SchedulerFinished;
 
+	nxScene*			m_Scene;
+
 	// Handlers
 	void				OnClose(wxCloseEvent& evt);
 	void				OnResize(wxSizeEvent& evt) { evt.Skip(); }
@@ -58,7 +64,7 @@ private:
 	void				OnSchedulerExit(wxCommandEvent& evt);
 
 	// StatusBar
-	virtual void PositionStatusBar();
+	virtual void		PositionStatusBar();
 };
 
 /* GL Panel */

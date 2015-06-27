@@ -1,3 +1,3 @@
 #pragma once
 
-#define BYTE unsigned char
+typedef unsigned char nxByte;

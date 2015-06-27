@@ -11,13 +11,13 @@ class nxEntity {
 public:
 
 							nxEntity();
-							nxEntity(const std::string& filename);
+							nxEntity(const std::string filename);
 	void					InitFromFile(const std::string& filename);
 	void					ClearData();
 
 private:
 
-	std::vector<BYTE>		m_EntityData;
+	std::vector<nxByte>		m_EntityData;
 
 	GLuint					m_VBOData;
 	GLuint					m_VAOData;

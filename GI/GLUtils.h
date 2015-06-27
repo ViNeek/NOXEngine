@@ -2,6 +2,9 @@
 
 #include <GL/glew.h>
 
+// Transformation
+#include "bullet/btTransform.h"
+
 #include "JobFactory.h"
 
 namespace Utils {

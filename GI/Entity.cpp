@@ -8,7 +8,7 @@ nxEntity::nxEntity() {
 	m_SceneIndex = -1;
 }
 
-nxEntity::nxEntity(const std::string& filename) {
+nxEntity::nxEntity(const std::string filename) {
 	m_IBOData = -1;
 	m_VBOData = -1;
 	m_VAOData = -1;
@@ -16,4 +16,8 @@ nxEntity::nxEntity(const std::string& filename) {
 	m_SceneIndex = -1;
 
 	InitFromFile(filename);
+}
+
+void nxEntity::InitFromFile(const std::string& path) {
+
 }

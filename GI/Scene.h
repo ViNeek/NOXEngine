@@ -19,8 +19,12 @@ public:
 
 private:
 
-	std::vector<BYTE>			m_SceneData;
+	int							m_EntitiesCount;
+	std::string					m_SceneName;
+
+	std::vector<nxByte>			m_SceneData;
 	std::vector<nxEntity*>		m_Entities;
 	boost::mutex				m_SceneGuard;
+
 
 };

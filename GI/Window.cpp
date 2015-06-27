@@ -7,6 +7,7 @@
 
 #include "JobFactory.h"
 #include "CustomEvents.h"
+#include "Scene.h"
 
 nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 	: wxFrame((wxFrame *)NULL, -1, title, wxPoint(xpos, ypos), wxSize(width, height) )
@@ -68,6 +69,9 @@ nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 	this->SetSizer(sizer);
 	this->SetAutoLayout(true);
 
+	// Init NOX Engine state
+
+	m_Scene = new nxScene;
 	m_pScheduler = new nxScheduler(this);
 	m_pRenderer = new nxRenderer(m_pGLPanel);
 	Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_EXTENSION_INIT));
@@ -112,6 +116,11 @@ void nxFrame::InitScheduler()
 		//m_pScheduler->ScheduleOwnJob(nxJobFactory::CreateJob(NX_JOB_DUMMY));
 		//m_pScheduler->ScheduleJob(nxJobFactory::CreateJob(NX_JOB_DUMMY));
 	}
+}
+
+void nxFrame::InitScene(std::string path)
+{
+	m_Scene->InitFromFile(path);
 }
 
 void nxFrame::PositionStatusBar()

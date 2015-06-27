@@ -14,7 +14,7 @@ nxShader::nxShader(std::string& path) {
 }
 
 void nxShader::LoadFromFile(std::string& path) {
-	std::ifstream	sourceFile(path.c_str());
+	/*std::ifstream	sourceFile(path.c_str());
 
 	if (sourceFile)
 	{
@@ -44,5 +44,5 @@ void nxShader::LoadFromFile(std::string& path) {
 	else
 	{
 		printf("Unable to open file %s\n", path.c_str());
-	}
+	}*/
 }

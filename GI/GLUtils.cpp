@@ -77,7 +77,7 @@ void Utils::GL::Frustum(float *matrix, float left, float right, float bottom, fl
 	float znear, float zfar)
 {
 	float temp, temp2, temp3, temp4;
-	temp = 2.0 * znear;
+	temp = 2.0f * znear;
 	temp2 = right - left;
 	temp3 = top - bottom;
 	temp4 = zfar - znear;
