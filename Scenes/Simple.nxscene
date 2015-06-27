@@ -1,0 +1,19 @@
+{
+   "Scene":
+   {
+      "count": 1,
+      "name": "Simple Scene",
+      "entities":
+      [
+         {"name1": "New", "pos": "coords"},
+         {"name2": "New", "pos": "coords"},
+      ]
+	  "shaders":
+      [
+         {"compute": "compute"},
+         {"fragment": "fragment"},
+		 {"vertex": "vertex"},
+		 {"geometry": "geometry"},
+      ]
+   }
+}

@@ -71,18 +71,17 @@ nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 	m_pScheduler = new nxScheduler(this);
 	m_pRenderer = new nxRenderer(m_pGLPanel);
 	Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_EXTENSION_INIT));
-
+	
 	// Setup callbacks
-	//Bind(wxEVT_SIZE, &nxFrame::onResize, this, wxID_ANY);
+	Bind(wxEVT_SIZE, &nxFrame::OnResize, this, wxID_ANY);
 	Bind(wxEVT_CLOSE_WINDOW, &nxFrame::OnClose, this, wxID_ANY);
 	Bind(nxRENDERER_EXIT_EVENT, &nxFrame::OnRendererExit, this, wxID_ANY);
 	Bind(nxSCHEDULER_EXIT_EVENT, &nxFrame::OnSchedulerExit, this, wxID_ANY);
 }
  
 void nxFrame::OnClose(wxCloseEvent& evt) {
-	wxMessageBox(wxT("closing"));
-
-	Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_JOB_EXIT, this));
+	Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_JOB_RENDERER_EXIT, this));
+	Scheduler()->ScheduleOwnJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_SCHEDULER_EXIT, Scheduler()));
 }
 
 void nxFrame::OnRendererExit(wxCommandEvent& evt) {
@@ -93,6 +92,7 @@ void nxFrame::OnRendererExit(wxCommandEvent& evt) {
 }
 
 void nxFrame::OnSchedulerExit(wxCommandEvent& evt) {
+	std::cout << "would exit scheduler" << std::endl;
 	m_SchedulerFinished = true;
 	if ( m_RendererFinished && m_SchedulerFinished )
 		Destroy();
@@ -100,12 +100,18 @@ void nxFrame::OnSchedulerExit(wxCommandEvent& evt) {
 
 void nxFrame::InitRenderer()
 {
+	m_pRenderer->Create();
 	m_pRenderer->Run();
 }
 
 void nxFrame::InitScheduler()
 {
-	std::cout << wxThread::GetCPUCount() << std::endl;
+	m_pScheduler->Create();
+	m_pScheduler->Run();
+	for (int i = 0; i < 100; i++) {
+		//m_pScheduler->ScheduleOwnJob(nxJobFactory::CreateJob(NX_JOB_DUMMY));
+		//m_pScheduler->ScheduleJob(nxJobFactory::CreateJob(NX_JOB_DUMMY));
+	}
 }
 
 void nxFrame::PositionStatusBar()

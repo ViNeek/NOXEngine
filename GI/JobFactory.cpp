@@ -2,6 +2,8 @@
 
 #include "Job.h"
 #include "CustomEvents.h"
+#include "Scheduler.h"
+#include "Worker.h"
 
 #include <GL/glew.h>
 
@@ -13,12 +15,31 @@ nxJob* nxJobFactory::CreateJob(nxJobID id, void* data)
 	switch (id) {
 	case NX_JOB_DUMMY:
 	{
-		//nxJob* j = new nxJob();
+		nxDummyJob cb;
+		j = new nxJob(data, cb);
 	}
 		break;
-	case NX_JOB_EXIT:
+	case NX_JOB_WORKER_FINISHED:
+	{
+		nxWorkerNotifier cb;
+		j = new nxJob(data, cb);
+	}
+		break;
+	case NX_JOB_RENDERER_EXIT:
 	{
 		nxRendererTerminator cb;
+		j = new nxJob(data, cb);
+	}
+		break;
+	case NX_JOB_WORKER_EXIT:
+	{
+		nxWorkerTerminator cb;
+		j = new nxJob(data, cb);
+	}
+		break;
+	case NX_JOB_SCHEDULER_EXIT:
+	{
+		nxSchedulerTerminator cb;
 		j = new nxJob(data, cb);
 	}
 		break;
@@ -38,30 +59,11 @@ nxJob* nxJobFactory::CreateJob(nxJobID id, void* data)
 	return j;
 }
 
-bool nxExtensionInitializer::operator()(void* data) {
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	{
-		/* Problem: glewInit failed, something is seriously wrong. */
-		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-
-		return false;
-	}
-	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+bool nxDummyJob::operator()(void* data) {
+	wxThread::Sleep(200);
+	std::cout << "dummy here ";
 
 	return true;
-}
-
-bool nxRendererTerminator::operator()(void* data) {
-	return false;
-}
-
-bool nxSchedulerTerminator::operator()(void* data) {
-	wxFrame* evtHandler = (wxFrame*)data;
-	wxCommandEvent* evt = new wxCommandEvent(nxSCHEDULER_EXIT_EVENT); // Still keeping it simple, don't give a specific event ID
-	wxQueueEvent(evtHandler, evt); // This posts to ourselves: it'll be caught and sent to a different method
-
-	return false;
 }
 
 nxJob::nxJob(void* data, nxJobCallback cb)

@@ -22,7 +22,7 @@
 
 // NOX Engine
 #include "Utils.h"
-
+#include "GLUtils.h"
 
 #endif
 #include "wx/wx.h"
@@ -98,7 +98,7 @@ bool nxApp::OnInit()
 	BOOST_LOG_TRIVIAL(error) << "An error severity message";
 	BOOST_LOG_TRIVIAL(fatal) << "A fatal severity message";
 
-	
+	btTransform bt = Utils::GL::getOrtho(-10, 10, -10, 10, 1, 100);
 
 	m_pFrame->Show();
 

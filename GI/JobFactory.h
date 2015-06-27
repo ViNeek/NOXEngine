@@ -5,6 +5,11 @@ class nxJob;
 enum nxJobID {
 	NX_JOB_DUMMY,
 	NX_JOB_EXIT,
+	NX_JOB_RENDERER_EXIT,
+	NX_JOB_SCHEDULER_EXIT,
+	NX_JOB_WORKER_EXIT,
+	NX_JOB_RENDERER_FINISHED,
+	NX_JOB_WORKER_FINISHED,
 	NX_JOB_LOAD_SCENE,
 	NX_JOB_LOAD_ASSET,
 	NX_GL_JOB_EXTENSION_INIT,
@@ -19,6 +24,10 @@ public:
 
 private:
 
+};
+
+struct nxDummyJob {
+	bool operator()(void* data);
 };
 
 struct nxExtensionInitializer {
@@ -42,5 +51,13 @@ struct nxRendererTerminator {
 };
 
 struct nxSchedulerTerminator {
+	bool operator()(void* data);
+};
+
+struct nxWorkerTerminator {
+	bool operator()(void* data);
+};
+
+struct nxWorkerNotifier {
 	bool operator()(void* data);
 };

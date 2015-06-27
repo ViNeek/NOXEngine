@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include "Job.h"
-
+#include "Scheduler.h"
+#include "JobFactory.h"
 #include "CustomEvents.h"
 
 nxRenderer::nxRenderer(wxGLCanvas* frame)
@@ -20,7 +21,6 @@ void *nxRenderer::Entry()
 	m_pParent->SetCurrent(*m_pGLCtx);
 
 	while ( m_IsActive ) {
-
 		if (m_pGLCommandQueue->pop(currentJob))
 			m_IsActive = currentJob->Execute();
 
@@ -48,4 +48,22 @@ void nxRenderer::Init() {
 
 	if ( NULL != m_pGLCtx )
 		std::cout << "Context Inited";
+}
+
+bool nxRendererTerminator::operator()(void* data) {
+	return false;
+}
+
+bool nxExtensionInitializer::operator()(void* data) {
+	GLenum err = glewInit();
+	if (GLEW_OK != err)
+	{
+		/* Problem: glewInit failed, something is seriously wrong. */
+		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+
+		return false;
+	}
+	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+
+	return true;
 }

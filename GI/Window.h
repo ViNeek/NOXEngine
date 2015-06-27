@@ -11,6 +11,7 @@ class nxRenderer;
 class nxScheduler;
 class nxStatusBar;
 class nxGLPanel;
+class nxSynchronizer;
 
 /* GL Rendering Window */
 class nxFrame : public wxFrame
@@ -19,8 +20,6 @@ public:
 
 	/* Constructor. Creates a new window for gl rendering */
 	nxFrame(const wxChar *title, int xpos, int ypos, int width, int height);
-
-	void OnResize(wxSizeEvent evt);
 
 	void				InitRenderer();
 	bool				IsRendererFinished() { return m_RendererFinished; };
@@ -47,13 +46,16 @@ private:
 	// NOX Engine State
 	nxRenderer*			m_pRenderer;
 	bool				m_RendererFinished;
+
+	nxSynchronizer*		m_SchedulerSync;
 	nxScheduler*		m_pScheduler;
 	bool				m_SchedulerFinished;
 
 	// Handlers
-	void OnClose(wxCloseEvent& evt);
-	void OnRendererExit(wxCommandEvent& evt);
-	void OnSchedulerExit(wxCommandEvent& evt);
+	void				OnClose(wxCloseEvent& evt);
+	void				OnResize(wxSizeEvent& evt) { evt.Skip(); }
+	void				OnRendererExit(wxCommandEvent& evt);
+	void				OnSchedulerExit(wxCommandEvent& evt);
 
 	// StatusBar
 	virtual void PositionStatusBar();

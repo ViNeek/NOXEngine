@@ -55,7 +55,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>boost_log_setup-vc120-mt-gd-1_57.lib;boost_log-vc120-mt-gd-1_57.lib;wxmsw30ud_core.lib;wxbase30ud.lib;wxmsw30ud_gl.lib;assimpd.lib;opengl32.lib;glew32d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>boost_log_setup-vc120-mt-gd-1_57.lib;boost_log-vc120-mt-gd-1_57.lib;boost_date_time-vc120-mt-gd-1_57.lib;boost_system-vc120-mt-gd-1_57.lib;boost_thread-vc120-mt-gd-1_57.lib;wxmsw30ud_core.lib;wxbase30ud.lib;wxmsw30ud_gl.lib;assimpd.lib;opengl32.lib;glew32d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -71,7 +71,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>boost_log_setup-vc120-mt-1_57.lib;boost_log-vc120-mt-1_57.lib;wxmsw30u_core.lib;wxbase30u.lib;wxmsw30u_gl.lib;assimp.lib;opengl32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>boost_log_setup-vc120-mt-1_57.lib;boost_log-vc120-mt-1_57.lib;boost_date_time-vc120-mt-1_57.lib;boost_system-vc120-mt-1_57.lib;boost_thread-vc120-mt-1_57.lib;wxmsw30u_core.lib;wxbase30u.lib;wxmsw30u_gl.lib;assimp.lib;opengl32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -84,10 +84,14 @@
     <ClCompile Include="bullet\btSerializer.cpp" />
     <ClCompile Include="bullet\btVector3.cpp" />
     <ClCompile Include="CustomEvents.cpp" />
+    <ClCompile Include="GLUtils.cpp" />
     <ClCompile Include="JobFactory.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Scheduler.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="Worker.cpp" />
@@ -123,13 +127,31 @@
     <ClInclude Include="bullet\btTransformUtil.h" />
     <ClInclude Include="bullet\btVector3.h" />
     <ClInclude Include="CustomEvents.h" />
+    <ClInclude Include="CustomTypes.h" />
+    <ClInclude Include="Entity.h" />
+    <ClInclude Include="GLUtils.h" />
     <ClInclude Include="Job.h" />
     <ClInclude Include="JobFactory.h" />
+    <ClInclude Include="Program.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="Scheduler.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="Synchronizer.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="Worker.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\Shaders\Shaders.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Scenes\MetalGearSolid.nxscene" />
+    <None Include="..\Scenes\Simple.nxscene" />
+    <None Include="..\Shaders\SimplePass.c.glsl" />
+    <None Include="..\Shaders\SimplePass.f.glsl" />
+    <None Include="..\Shaders\SimplePass.g.glsl" />
+    <None Include="..\Shaders\SimplePass.v.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

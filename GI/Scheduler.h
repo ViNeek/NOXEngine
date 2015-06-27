@@ -8,23 +8,38 @@
 
 class nxWorker;
 class nxJob;
+class nxSynchronizer;
 
 typedef boost::lockfree::queue< nxJob* > nxJobQueue;
 
 class nxScheduler : public wxThread {
 public:
-								nxScheduler(wxFrame* parent);
-	void*						Entry();
+									nxScheduler(wxFrame* parent);
+	void*							Entry();
 
-	void						ScheduleJob(nxJob* j);
+	// Assign to workers
+	void							ScheduleJob(nxJob* j);
+	void							ScheduleJobBatch(std::vector<nxJob*> jobs);
 
+	// Assign to scheduler
+	void							ScheduleOwnJob(nxJob* j);
+
+	int								WorkerCount() { return m_WorkerCount; }
+	bool							KillWorker() { return (--m_WorkerCount) == 0; };
+	std::vector<nxWorker*>&			Workers() { return m_vWorkers; }
+	nxJobQueue*						WorkerQueue() { return m_pWorkersCommandQueue; };
 private:
+	wxFrame*						m_pParent;
 
-	std::vector<nxWorker*>		m_vWorkers;
-	nxJobQueue*					m_pWorkersCommandQueue;
-	nxJobQueue*					m_pCommandQueue;
-	bool						m_IsActive;
-	int							m_WorkerCount;
+	std::vector<nxWorker*>			m_vWorkers;
+	nxJobQueue*						m_pWorkersCommandQueue;
+	nxJobQueue*						m_pCommandQueue;
 
-	void						Init();
+	nxSynchronizer*					m_SchedulerSync;
+	nxSynchronizer*					m_WorkersSync;
+
+	bool							m_IsActive;
+	int								m_WorkerCount;
+
+	void							Init();
 };
