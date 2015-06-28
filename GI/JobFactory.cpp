@@ -55,16 +55,34 @@ nxJob* nxJobFactory::CreateJob(nxJobID id, void* data)
 		j = new nxJob(data, cb);
 	}
 		break;
+	case NX_JOB_LOAD_SHADER:
+	{
+		nxShaderLoader cb;
+		j = new nxJob(data, cb);
+	}
+		break;
 	case NX_GL_JOB_EXTENSION_INIT:
 	{
 		nxExtensionInitializer cb;
 		j = new nxGLJob(data, cb);
 	}
 		break;
-	case NX_GL_JOB_LOAD_SHADER:
+	case NX_GL_JOB_COMPILE_SHADER:
 	{
-		nxShaderLoader cb;
-		j = new nxJob(data, cb);
+		nxShaderCompiler cb;
+		j = new nxGLJob(data, cb);
+	}
+		break;
+	case NX_GL_JOB_LINK_PROGRAM:
+	{
+		nxProgramLinker cb;
+		j = new nxGLJob(data, cb);
+	}
+		break;
+	case NX_GL_JOB_LOAD_ASSET:
+	{
+		nxGLAssetLoader cb;
+		j = new nxGLJob(data, cb);
 	}
 		break;
 	default:
@@ -75,7 +93,7 @@ nxJob* nxJobFactory::CreateJob(nxJobID id, void* data)
 }
 
 bool nxDummyJob::operator()(void* data) {
-	wxThread::Sleep(200);
+	//wxThread::Sleep(200);
 	std::cout << "dummy here ";
 
 	return true;

@@ -4,11 +4,11 @@
 
 #include <fstream>
 #include <string>
+#include "Engine.h"
+#include "Renderer.h"
+#include "Program.h"
 
 #include <boost/log/trivial.hpp>
-#include <boost/assign/list_of.hpp> // for 'map_list_of()'
-
-#include <map>
 
 nxShader::nxShader() {
 	m_ShaderID = -1;
@@ -16,24 +16,50 @@ nxShader::nxShader() {
 
 nxShader::nxShader(std::string& path, GLenum shaderType) {
 	m_ShaderID = -1;
+	m_Type = shaderType;
 
-	LoadFromFile(path, shaderType);
+	LoadSourceFromFile(path);
 }
 
-void nxShader::LoadFromFile(std::string& path, GLenum shaderType) {
+void nxShader::Create() {
+	//Create shader ID
+	m_ShaderID = glCreateShader(m_Type);
+
+	//Set shader source
+	const GLchar* shaderSource = m_SourceData.c_str();
+	glShaderSource(m_ShaderID, 1, (const GLchar**)&shaderSource, NULL);
+
+	//Compile shader source
+	glCompileShader(m_ShaderID);
+
+	//Check shader for errors
+	GLint shaderCompiled = GL_FALSE;
+	glGetShaderiv(m_ShaderID, GL_COMPILE_STATUS, &shaderCompiled);
+	if (shaderCompiled != GL_TRUE)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Uncompilable shader: ";
+		ShaderLog();
+		glDeleteShader(m_ShaderID);
+		m_ShaderID = -1;
+	}
+}
+
+void nxShader::LoadSourceFromFile(std::string& path) {
 	std::ifstream	sourceFile(path.c_str());
 
 	if (sourceFile)
 	{
 		//Get shader source
 		m_SourceData.assign((std::istreambuf_iterator< char >(sourceFile)), std::istreambuf_iterator< char >());
-		
+		BOOST_LOG_TRIVIAL(info) << "Shader source: " << m_SourceData ;
+
+		/*
 		//Create shader ID
 		m_ShaderID = glCreateShader(shaderType);
 
 		//Set shader source
 		const GLchar* shaderSource = m_SourceData.c_str();
-		glShaderSource(m_ShaderID, 1, (const GLchar**)&m_SourceData, NULL);
+		glShaderSource(m_ShaderID, 1, (const GLchar**)&shaderSource, NULL);
 
 		//Compile shader source
 		glCompileShader(m_ShaderID);
@@ -48,6 +74,7 @@ void nxShader::LoadFromFile(std::string& path, GLenum shaderType) {
 			glDeleteShader(m_ShaderID);
 			m_ShaderID = -1;
 		}
+		*/
 	}
 	else
 	{
@@ -85,15 +112,34 @@ void nxShader::ShaderLog()
 	}
 }
 
-std::map<std::string, GLenum> gc_TypeMappings =
-				boost::assign::map_list_of	("compute", GL_COMPUTE_SHADER)
-											("vertex", GL_VERTEX_SHADER)
-											("tess_control", GL_TESS_CONTROL_SHADER)
-											("tess_evaluation", GL_TESS_EVALUATION_SHADER)
-											("geometry", GL_GEOMETRY_SHADER)
-											("fragment", GL_FRAGMENT_SHADER);
 
 bool nxShaderLoader::operator()(void* data) {
+	nxShaderLoaderBlob* blob = (nxShaderLoaderBlob*)data;
 
+	nxShader* newShader = new nxShader(blob->m_Source, blob->m_Type);
+
+	nxShaderCompilerBlob* newData =
+		new nxShaderCompilerBlob(blob->m_Engine, blob->m_Prog, newShader);
+
+	blob->m_Engine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_COMPILE_SHADER, newData));
+	
 	return true;
 }
+
+bool nxShaderCompiler::operator()(void* data) {
+	nxShaderCompilerBlob* blob = (nxShaderCompilerBlob*)data;
+
+	blob->m_Shader->Create();
+
+	blob->m_Prog->AddShader(blob->m_Shader);
+
+	if (blob->m_Prog->ReadyForLinking()) {
+		std::cout << "Ready for linking" << std::endl;
+		nxProgramLinkerBlob* newData =
+			new nxProgramLinkerBlob(blob->m_Engine, blob->m_Prog);
+		blob->m_Engine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LINK_PROGRAM, newData));
+
+	}
+
+	return true;
+};

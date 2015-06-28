@@ -31,9 +31,11 @@ void* nxWorker::Entry() {
 		//boost::system_time const timeout = boost::get_system_time() + boost::posix_time::milliseconds(1000);
 		boost::unique_lock<boost::mutex> lock(m_WorkersSync->Mutex());
 		m_WorkersSync->ConditionVariable().wait(lock);
-		//std::cout << "worker released" << std::endl;
-		while (m_pCommandQueue->pop(currentJob)) {
-			//std::cout << "lock free ";
+		lock.unlock();
+		//std::cout << "Thread " << wxThread::GetId() << " worker released" << std::endl;
+		while (m_pCommandQueue->pop(currentJob) ) {
+			std::cout << "Thread "<< wxThread::GetId() <<"\n";
+			
 			m_IsActive = currentJob->Execute();
 		}
 	}

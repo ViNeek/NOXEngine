@@ -49,13 +49,13 @@ void* nxScheduler::Entry()
 	// blocking, lock-free queue loop
 	while (m_IsActive) {
 		//std::cout << "waiting" << std::endl;
-		boost::system_time const timeout = boost::get_system_time() + boost::posix_time::milliseconds(5);
+		boost::system_time const timeout = boost::get_system_time() + boost::posix_time::milliseconds(1);
 		boost::unique_lock<boost::mutex> lock( m_SchedulerSync->Mutex() );
 		m_SchedulerSync->ConditionVariable().timed_wait(lock, timeout);
-		m_WorkersSync->ConditionVariable().notify_one();
+		m_WorkersSync->ConditionVariable().notify_all();
 		//std::cout << "released" << std::endl;
-		while (m_pCommandQueue->pop(currentJob)) {
-			std::cout << "lock free ";
+		while (m_pCommandQueue->pop(currentJob) ) {
+			//std::cout << "lock free ";
 			m_IsActive = currentJob->Execute();
 		}
 	}
@@ -69,7 +69,7 @@ void* nxScheduler::Entry()
 
 void nxScheduler::ScheduleJob(nxJob* job) {
 	m_pWorkersCommandQueue->push(job);
-	m_WorkersSync->ConditionVariable().notify_one();
+	m_WorkersSync->ConditionVariable().notify_all();
 }
 
 void nxScheduler::ScheduleJobBatch(std::vector<nxJob*> jobs) {
@@ -88,6 +88,8 @@ void nxScheduler::Init() {
 	m_WorkerCount = wxThread::GetCPUCount() - BASE_THREAD_COUNT;
 	if (m_WorkerCount <= 3)
 		m_WorkerCount = 2;
+
+	m_WorkerCount *= 2;
 
 	BOOST_LOG_TRIVIAL(info) << "CPU Count : " << wxThread::GetCPUCount;
 	BOOST_LOG_TRIVIAL(info) << "Worker Count : " << m_WorkerCount;

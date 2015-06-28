@@ -30,7 +30,8 @@ void *nxRenderer::Entry()
 	m_pParent->SetCurrent(*m_pGLCtx);
 
 	while ( m_IsActive ) {
-		if (m_pGLCommandQueue->pop(currentJob))
+
+		while ( m_pGLCommandQueue->pop(currentJob) )
 			m_IsActive = currentJob->Execute();
 
 		m_pParent->SetCurrent(*m_pGLCtx);

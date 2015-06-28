@@ -4,12 +4,16 @@
 #include "Renderer.h"
 #include "Entity.h"
 #include "Job.h"
+#include "Program.h"
 #include "JobFactory.h"
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/foreach.hpp>
 #include <boost/log/trivial.hpp>
+#include <boost/assign/list_of.hpp> // for 'map_list_of()'
+
+#include <map>
 #include <string>
 #include <set>
 #include <exception>
@@ -27,6 +31,14 @@ nxScene::nxScene(std::string& path) {
 	m_SceneFilename = path;
 }
 
+std::map<std::string, GLenum> gc_TypeMappings =
+boost::assign::map_list_of("Compute", GL_COMPUTE_SHADER)
+("Vertex", GL_VERTEX_SHADER)
+("Tess_control", GL_TESS_CONTROL_SHADER)
+("Tess_evaluation", GL_TESS_EVALUATION_SHADER)
+("Geometry", GL_GEOMETRY_SHADER)
+("Fragment", GL_FRAGMENT_SHADER);
+
 void nxScene::Init() {
 	try {
 		// Create empty property tree object
@@ -38,8 +50,8 @@ void nxScene::Init() {
 
 		// Use the default-value version of get to find the debug level.
 		// Note that the default value is used to deduce the target type.
-		m_EntitiesCount = tree.get("Scene.count", 0);
-		m_SceneName = tree.get<std::string>("Scene.name", "unknown");
+		m_EntitiesCount = tree.get("Scene.Count", 0);
+		m_SceneName = tree.get<std::string>("Scene.Name", "unknown");
 
 		BOOST_LOG_TRIVIAL(info) << "SceneCount : " << m_EntitiesCount;
 		BOOST_LOG_TRIVIAL(info) << "Scene Name : " << m_SceneName;
@@ -47,30 +59,59 @@ void nxScene::Init() {
 		// Use get_child to find the node containing the modules, and iterate over
 		// its children. If the path cannot be resolved, get_child throws.
 		// A C++11 for-range loop would also work.
-		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.shaders")) {
-			// The data function is used to access the data stored in a node.
-			BOOST_FOREACH(pt::ptree::value_type &v1, v.second) {
-				std::string* shaderPath = new std::string(v1.second.data());
-				m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_SHADER, shaderPath));
-				BOOST_LOG_TRIVIAL(info) << "Shader : " << v1.second.data();
+		BOOST_LOG_TRIVIAL(info) << "Program shader count : " << tree.get_child("Scene.Programs").size();
+		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Programs")) {
+			nxProgram* prog = new nxProgram(v.second.get_child("Shaders").size());
+			BOOST_FOREACH(pt::ptree::value_type &v1, v.second.get_child("Shaders")) {
+				BOOST_FOREACH(pt::ptree::value_type &v2, v1.second) {
+					nxShaderLoaderBlob* data = new nxShaderLoaderBlob(m_pEngine, prog, v2.second.data(), gc_TypeMappings.at(v2.first.data()));
+					m_pEngine->Scheduler()->ScheduleJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_LOAD_SHADER, data));
+					BOOST_LOG_TRIVIAL(info) << "Shader : " << v2.second.data();
+				}
 			}
-			//m_modules.insert(v.second.data());
-			}
-		/*
-		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.entities")) {
-			// The data function is used to access the data stored in a node.
-			BOOST_FOREACH(pt::ptree::value_type &v, v.second.get_child("f")) {
-			}
-			BOOST_LOG_TRIVIAL(info) << "Entity : " << v.second.data().at(0);
 			//m_modules.insert(v.second.data());
 		}
-		*/
+		
+		BOOST_LOG_TRIVIAL(info) << "Entities : " << tree.get_child("Scene.Entities").size();
+		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Entities")) {
+			BOOST_LOG_TRIVIAL(info) << "STUFF : " << v.second.get("ModelName", "unknkown");
+			nxAssetLoaderBlob* data = new nxAssetLoaderBlob(
+				m_pEngine,
+				v.second.get("ModelName", "unknkown"),
+				v.second.get("ModelType", "unknkown"),
+				glm::vec3(stof(v.second.get("CenterX", "0.0f")),
+							stof(v.second.get("CenterY", "0.0f")),
+							stof(v.second.get("CenterZ", "0.0f"))));
+
+			m_pEngine->Scheduler()->ScheduleJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_LOAD_ASSET, data));
+
+			/*
+			BOOST_FOREACH(pt::ptree::value_type &v1, v.second) {
+				nxAssetLoaderBlob* data = new nxAssetLoaderBlob(m_pEngine, std::string("a") );
+				//nxShaderLoaderBlob* data = new nxShaderLoaderBlob(m_pEngine, prog, v2.second.data(), gc_TypeMappings.at(v2.first.data()));
+				//m_pEngine->Scheduler()->ScheduleJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_LOAD_SHADER, data));
+				BOOST_LOG_TRIVIAL(info) << "Model : " << v1.second.data() << " " << v1.first.data();
+			}
+			*/
+		}
+		
 	} catch (std::exception const& e)
 	{
 		BOOST_LOG_TRIVIAL(error) << "Scene parse error : " << e.what();
 	}
 }
 
+/*
+stringstream ss( "1,1,1,1, or something else ,1,1,1,0" );
+vector<string> result;
+
+while( ss.good() )
+{
+string substr;
+getline( ss, substr, ',' );
+result.push_back( substr );
+}
+*/
 void nxScene::PushEntity(nxEntity* ent) {
 
 }

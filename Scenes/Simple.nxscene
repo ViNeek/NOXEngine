@@ -1,19 +1,34 @@
 {
-   "Scene":
-   {
-      "count": 1,
-      "name": "Simple Scene",
-      "entities":
-      [
-         {"name1": "New", "pos": "coords"},
-         {"name2": "New", "pos": "coords"},
-      ]
-	  "shaders":
-      [
-         {"compute": "compute"},
-         {"fragment": "fragment"},
-		 {"vertex": "vertex"},
-		 {"geometry": "geometry"},
-      ]
-   }
+    "Scene": {
+        "Count": 1,
+        "Name": "Simple Scene",
+        "Entities": [
+            {
+                "ModelName": "Models/Cube",
+                "ModelType": ".3DS",
+                "CenterX": "0.0f",
+                "CenterY": "0.0f",
+                "CenterZ": "1.0f"
+            },
+            {
+                "ModelName": "Models/REX",
+                "ModelType": ".obj",
+                "CenterX": "0.0f",
+                "CenterY": "0.0f",
+                "CenterZ": "1.0f"
+            }
+        ],
+        "Programs": [
+            {
+                "Shaders": [
+                    {
+                        "Fragment": "Shaders/SimplePass.f.glsl"
+                    },
+                    {
+                        "Vertex": "Shaders/SimplePass.v.glsl"
+                    }
+                ]
+            }
+        ]
+    }
 }

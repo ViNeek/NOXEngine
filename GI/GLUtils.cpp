@@ -1,6 +1,11 @@
 #include "GLUtils.h"
 
 #include <boost/log/trivial.hpp>
+#include <boost/assign/list_of.hpp> // for 'map_list_of()'
+
+#include <string>
+#include <map>
+#include <iostream>
 
 void Utils::GL::PerspectiveMatrix(float *matrix, float fovyInDegrees, float aspectRatio,
 	float znear, float zfar)
@@ -97,4 +102,27 @@ void Utils::GL::Frustum(float *matrix, float left, float right, float bottom, fl
 	matrix[13] = 0.0;
 	matrix[14] = (-temp * zfar) / temp4;
 	matrix[15] = 0.0;
+}
+
+std::map<GLenum, std::string> gc_ErrorMappings =
+boost::assign::map_list_of(GL_NO_ERROR, "No error")
+(GL_INVALID_ENUM, "Invalid enum")
+(GL_INVALID_OPERATION, "Invalid operation")
+(GL_INVALID_VALUE, "Invalid value")
+(GL_INVALID_FRAMEBUFFER_OPERATION, "Invalid framebuffer operation")
+(GL_STACK_UNDERFLOW, "Stack undeflow")
+(GL_STACK_OVERFLOW, "Stack overflow")
+(GL_OUT_OF_MEMORY, "Out of memeory");
+
+void Utils::GL::CheckGLState(const std::string context) {
+	//GLenum				errCode;
+	//const GLubyte*		errString;
+
+	//if ( (errCode = glGetError()) != GL_NO_ERROR ) {
+		//errString = gluErrorString(errCode);
+	
+	BOOST_LOG_TRIVIAL(error) << context << " : " << gc_ErrorMappings.at(glGetError());
+
+	//}
+
 }

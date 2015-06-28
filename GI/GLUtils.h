@@ -10,6 +10,7 @@
 namespace Utils {
 
 	namespace GL {
+		void CheckGLState(const std::string context);
 		btTransform getPerspective(float fovyInDegrees,
 			float aspectRatio,
 			float znear, float zfar);

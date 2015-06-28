@@ -83,12 +83,14 @@
     <ClCompile Include="bullet\btQuickprof.cpp" />
     <ClCompile Include="bullet\btSerializer.cpp" />
     <ClCompile Include="bullet\btVector3.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CustomEvents.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="GLUtils.cpp" />
     <ClCompile Include="JobFactory.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="Program.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Scheduler.cpp" />
@@ -127,6 +129,7 @@
     <ClInclude Include="bullet\btTransform.h" />
     <ClInclude Include="bullet\btTransformUtil.h" />
     <ClInclude Include="bullet\btVector3.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="CustomEvents.h" />
     <ClInclude Include="CustomTypes.h" />
     <ClInclude Include="Entity.h" />

@@ -1,18 +1,33 @@
 {
-   "Scene":
-   {
-      "count": 1,
-      "name": "Metal Gear Solid Tribute",
-      "entities":
-      [
-         {"ModelName": "MetalGear", "ModelType": ".obj", "Center":  "0.0f 0.0f 0.0f"}
-      ],
-	  "shaders":
-      [
-         {"Compute": "Shaders/SimplePass.c.glsl"},
-         {"Fragment": "Shaders/SimplePass.f.glsl"},
-		 {"Vertex": "Shaders/SimplePass.v.glsl"},
-		 {"Geometry": "Shaders/SimplePass.g.glsl"}
-      ]
-   }
+    "Scene": {
+        "count": 1,
+        "name": "Metal Gear Solid Tribute",
+        "entities": [
+            {
+                "ModelName": "MetalGear",
+                "ModelType": ".obj",
+                "CenterX": "0.0f",
+                "CenterY": "0.0f",
+                "CenterZ": "0.0f"
+            }
+        ],
+        "programs": [
+            {
+                "shaders": [
+                    {
+                        "Compute": "Shaders/SimplePass.c.glsl"
+                    },
+                    {
+                        "Fragment": "Shaders/SimplePass.f.glsl"
+                    },
+                    {
+                        "Vertex": "Shaders/SimplePass.v.glsl"
+                    },
+                    {
+                        "Geometry": "Shaders/SimplePass.g.glsl"
+                    }
+                ]
+            }
+        ]
+    }
 }

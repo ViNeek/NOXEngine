@@ -15,20 +15,25 @@ public:
 	void					InitFromFile(const std::string& filename);
 	void					ClearData();
 
+	void					UploadData();
+	void					Draw();
+
 	float					MaxX(){ return m_MaxX; }
 	float					MaxY(){ return m_MaxY; }
 	float					MaxZ(){ return m_MaxZ; }
 	float					MinX(){ return m_MinX; }
 	float					MinY(){ return m_MinY; }
 	float					MinZ(){ return m_MinZ; }
+	std::string				ModelName() { return m_ModelName; }
 
 private:
 
 	std::vector<nxByte>		m_EntityData;
 
-	GLuint					m_VBOData;
-	GLuint					m_VAOData;
-	GLuint					m_IBOData;
+	GLuint					m_VBO;
+	GLuint					m_VAO;
+	GLuint					m_IBO;
+
 	unsigned int			m_Indices;
 	unsigned int			m_MaterialIndex;
 
@@ -49,5 +54,7 @@ private:
 	std::vector<int>		m_MaterialIndices;
 	std::vector<int>		m_MeshStartIndices;
 	std::vector<int>		m_MeshSizes;
+
+	std::string				m_ModelName;
 
 };
