@@ -109,6 +109,7 @@ void nxEntity::InitFromFile(const std::string& path) {
 				m_DataCurrentSize += sizeof(aiVector3D);
 			}
 		}
+
 		m_MeshSizes.push_back((m_DataCurrentSize - before_size) / vertex_size);
 	}
 	std::cout << "Entity Data Length " << m_EntityData.size() << std::endl;
@@ -140,7 +141,10 @@ void nxEntity::UploadData() {
 }
 
 void nxEntity::Draw() {
-
+	for (size_t i = 0; i < m_NumMeshes; i++)
+	{
+		glDrawArrays(GL_TRIANGLES, m_MeshStartIndices[i], m_MeshSizes[i]);
+	}
 }
 
 bool nxAssetLoader::operator()(void* data) {

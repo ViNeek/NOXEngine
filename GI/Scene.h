@@ -29,7 +29,7 @@ public:
 
 	glm::mat4&					Projection(){ return m_PMatrix; };
 	glm::mat4&					View(){ return m_VMatrix; };
-	glm::mat4&					Normal(){ return glm::mat4(); };
+	glm::mat4&					Normal();
 	glm::mat4&					Rotation(){ return m_RMatrix; };
 	glm::mat4&					Modelview(){ return m_MMatrix; };
 

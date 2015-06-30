@@ -20,6 +20,7 @@
 #include <iostream>
 
 #include "Scheduler.h"
+#include "Camera.h"
 
 namespace pt = boost::property_tree;
 
@@ -94,7 +95,12 @@ void nxScene::Init() {
 			}
 			*/
 		}
-		
+		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Camera")) {
+			BOOST_LOG_TRIVIAL(info) << "STUFF : " << v.second.get("ModelName", "unknkown");
+			m_Camera->SetPosition(stof(v.second.get("PositionX", "0.0f")),
+				stof(v.second.get("PositionY", "0.0f")),
+				stof(v.second.get("PositionZ", "0.0f")));
+		}
 	} catch (std::exception const& e)
 	{
 		BOOST_LOG_TRIVIAL(error) << "Scene parse error : " << e.what();

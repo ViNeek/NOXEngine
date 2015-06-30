@@ -13,7 +13,6 @@ class nxArcballCamera
 
 public:
 	
-
 	//Create/Destroy
 	nxArcballCamera(GLfloat NewWidth, GLfloat NewHeight);
 	nxArcballCamera() { /* nothing to do */ };
@@ -37,6 +36,8 @@ public:
 	//Mouse drag, calculate rotation
 	void			Drag(const glm::uvec2* NewPt, glm::vec4* NewRot);
 	glm::mat4		Update(glm::uvec2 &cursor);
+	void			SetPosition(float x, float y, float z) { m_Position = glm::vec3(x, y, -z); };
+	glm::vec3&		Position(float x, float y, float z) { return m_Position; };
 
 private:
 
@@ -46,6 +47,7 @@ private:
 	bool			m_Dragging;
 	glm::vec3		m_ClickVec;          //Saved click vector
 	glm::vec3		m_DragVec;          //Saved drag vector
+	glm::vec3		m_Position;
 	glm::mat4		m_ActiveRot;
 	glm::mat4		m_LastRot;
 	GLfloat			m_AdjustWidth;    //Mouse bounds width

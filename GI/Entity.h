@@ -16,7 +16,6 @@ public:
 	void					ClearData();
 
 	void					UploadData();
-	void					Draw();
 
 	float					MaxX(){ return m_MaxX; }
 	float					MaxY(){ return m_MaxY; }
@@ -25,6 +24,11 @@ public:
 	float					MinY(){ return m_MinY; }
 	float					MinZ(){ return m_MinZ; }
 	std::string				ModelName() { return m_ModelName; }
+
+	void					BindVAO(){ glBindVertexArray(m_VAO); };
+	static void				BindVAO(GLuint id){ glBindVertexArray(id); };
+
+	void					Draw();
 
 private:
 

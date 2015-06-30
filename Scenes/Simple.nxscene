@@ -2,6 +2,11 @@
     "Scene": {
         "Count": 1,
         "Name": "Simple Scene",
+        "Camera": {
+            "PositionX": "0.0f",
+            "PositionY": "0.0f",
+            "PositionZ": "10.0f"
+        },
         "Entities": [
             {
                 "ModelName": "Models/Cube",
@@ -26,6 +31,9 @@
                     },
                     {
                         "Vertex": "Shaders/SimplePass.v.glsl"
+                    },
+                    {
+                        "Geometry": "Shaders/SimplePass.g.glsl"
                     }
                 ]
             }
