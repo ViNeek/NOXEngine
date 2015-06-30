@@ -51,7 +51,7 @@ private:
 
 	// Handlers
 	void					OnClose(wxCloseEvent& evt);
-	void					OnResize(wxSizeEvent& evt) { evt.Skip(); }
+	void					OnResize(wxSizeEvent& evt);
 	void					OnRendererExit(wxCommandEvent& evt);
 	void					OnSchedulerExit(wxCommandEvent& evt);
 	void					OnLoadScene(wxCommandEvent& evt);

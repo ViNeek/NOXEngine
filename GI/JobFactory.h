@@ -11,6 +11,8 @@ class nxShader;
 class nxProgram;
 class nxEngine;
 class nxEntity;
+class nxScene;
+class nxRenderer;
 
 // Request from glbal NOX Engine State
 #define NOX_ENGINE_GET(Object) ((nxEngine*)data)->Object()
@@ -27,6 +29,8 @@ enum nxJobID {
 	NX_JOB_LOAD_ASSET,
 	NX_JOB_LOAD_SHADER,
 	NX_GL_JOB_EXTENSION_INIT,
+	NX_GL_JOB_FRAMEBUFFER_INIT,
+	NX_GL_JOB_FRAMEBUFFER_RESIZE,
 	NX_GL_JOB_COMPILE_SHADER,
 	NX_GL_JOB_LOAD_ASSET,
 	NX_GL_JOB_LINK_PROGRAM
@@ -46,13 +50,46 @@ struct nxDummyJob {
 	bool operator()(void* data);
 };
 
+struct nxFramebufferResizerBlob {
+	nxFramebufferResizerBlob(nxEngine* eng, nxRenderer* rend)
+		: m_Engine(eng), m_Renderer(rend) {}
+
+	nxEngine*		m_Engine;
+	nxRenderer*		m_Renderer;
+};
+
+struct nxFramebufferResizer {
+	bool operator()(void* data);
+};
+
+struct nxExtensionInitializerBlob {
+	nxExtensionInitializerBlob(nxEngine* eng, nxRenderer* rend)
+		: m_Engine(eng), m_Renderer(rend) {}
+
+	nxEngine*		m_Engine;
+	nxRenderer*		m_Renderer;
+};
+
 struct nxExtensionInitializer {
+	bool operator()(void* data);
+};
+
+struct nxFramebufferInitializerBlob {
+	nxFramebufferInitializerBlob(nxEngine* eng, nxRenderer* rend)
+		: m_Engine(eng), m_Renderer(rend) {}
+
+	nxEngine*		m_Engine;
+	nxRenderer*		m_Renderer;
+
+};
+
+struct nxFramebufferInitializer {
 	bool operator()(void* data);
 };
 
 struct nxShaderLoaderBlob {
 	nxShaderLoaderBlob(nxEngine* eng, nxProgram* prog, std::string source, GLenum type)
-		: m_Engine{ eng }, m_Prog{ prog }, m_Source{ source }, m_Type{ type } {}
+		: m_Engine( eng ), m_Prog( prog ), m_Source( source ), m_Type( type ) {}
 
 	nxEngine*		m_Engine;
 	nxProgram*		m_Prog;
@@ -67,7 +104,7 @@ struct nxShaderLoader {
 
 struct nxShaderCompilerBlob {
 	nxShaderCompilerBlob(nxEngine* eng, nxProgram* prog, nxShader* shad )
-		: m_Engine{ eng }, m_Prog{ prog }, m_Shader{ shad } {}
+		: m_Engine( eng ), m_Prog( prog ), m_Shader( shad ) {}
 
 	nxEngine*		m_Engine;
 	nxProgram*		m_Prog;
@@ -81,7 +118,7 @@ struct nxShaderCompiler {
 
 struct nxProgramLinkerBlob {
 	nxProgramLinkerBlob(nxEngine* eng, nxProgram* prog)
-		: m_Engine{ eng }, m_Prog{ prog } {}
+		: m_Engine( eng ), m_Prog( prog ) {}
 
 	nxEngine*		m_Engine;
 	nxProgram*		m_Prog;
@@ -98,7 +135,7 @@ struct nxSceneLoader {
 
 struct nxGLAssetLoaderBlob {
 	nxGLAssetLoaderBlob(nxEngine* eng, nxEntity* ent )
-		: m_Engine{ eng }, m_Entity{ ent } {}
+		: m_Engine( eng ), m_Entity( ent ) {}
 
 	nxEngine*		m_Engine;
 	nxEntity*		m_Entity;
@@ -111,7 +148,7 @@ struct nxGLAssetLoader {
 
 struct nxAssetLoaderBlob {
 	nxAssetLoaderBlob(nxEngine* eng, std::string path, std::string type, glm::vec3 cent)
-		: m_Engine{ eng }, m_ResourcePath{ path }, m_ResourceType{ type }, m_Center{ cent } {}
+		: m_Engine( eng ), m_ResourcePath( path ), m_ResourceType( type ), m_Center( cent ) {}
 
 	nxEngine*		m_Engine;
 	std::string		m_ResourcePath;

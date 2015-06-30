@@ -8,15 +8,15 @@
 
 #define EPSILON 10e-5
 
-class ArcballCamera
+class nxArcballCamera
 {
 
 public:
 	
 
 	//Create/Destroy
-	ArcballCamera(GLfloat NewWidth, GLfloat NewHeight);
-	ArcballCamera() { /* nothing to do */ };
+	nxArcballCamera(GLfloat NewWidth, GLfloat NewHeight);
+	nxArcballCamera() { /* nothing to do */ };
 
 	//Set new bounds
 	inline void    SetBounds(GLfloat NewWidth, GLfloat NewHeight)

@@ -79,8 +79,11 @@ nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 
 	Engine()->Start();
 
-	Engine()->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_EXTENSION_INIT));
-	
+	nxExtensionInitializerBlob* dataExt = new nxExtensionInitializerBlob(Engine(), Engine()->Renderer());
+	Engine()->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_EXTENSION_INIT, dataExt));
+	nxFramebufferInitializerBlob* dataFBO = new nxFramebufferInitializerBlob(Engine(), Engine()->Renderer());
+	Engine()->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_FRAMEBUFFER_INIT, dataFBO));
+
 	// Setup callbacks
 	Bind(wxEVT_SIZE, &nxFrame::OnResize, this, wxID_ANY);
 	Bind(wxEVT_CLOSE_WINDOW, &nxFrame::OnClose, this, wxID_ANY);
@@ -100,6 +103,13 @@ bool nxFrame::IsRendererFinished()
 bool nxFrame::IsSchedulerFinished() 
 { 
 	return Engine()->IsRendererFinished();
+}
+
+void nxFrame::OnResize(wxSizeEvent& evt) {
+	nxFramebufferResizerBlob* data = new nxFramebufferResizerBlob(Engine(), Engine()->Renderer());
+	Engine()->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_FRAMEBUFFER_RESIZE, data));
+
+	evt.Skip();
 }
 
 void nxFrame::OnClose(wxCloseEvent& evt) {

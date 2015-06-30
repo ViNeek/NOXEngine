@@ -8,6 +8,7 @@
 
 class nxEntity;
 class nxEngine;
+class nxArcballCamera;
 
 class nxScene {
 public:
@@ -29,6 +30,8 @@ private:
 	std::vector<nxByte>			m_SceneData;
 	std::vector<nxEntity*>		m_Entities;
 	boost::mutex				m_SceneGuard;
+
+	nxArcballCamera*			m_Camera;
 
 	nxEngine*					m_pEngine;
 };

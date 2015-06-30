@@ -7,6 +7,13 @@
 
 #include <boost/lockfree/queue.hpp>
 
+enum nxRendererState {
+	NX_RENDERER_OFF = (1 << 0),
+	NX_RENDERER_EXTENSIONS_READY = (1 << 1),
+	NX_RENDERER_FRAMEBUFFER_READY = (1 << 2),
+	NX_RENDERER_DRAW_READY = NX_RENDERER_FRAMEBUFFER_READY | NX_RENDERER_EXTENSIONS_READY
+};
+
 class nxGLJob;
 class nxEngine;
 
@@ -23,6 +30,11 @@ public:
 
 	void				ScheduleGLJob(nxGLJob* job) { m_pGLCommandQueue->push(job); };
 	void				SetDrawingCanvas(wxGLCanvas* frame) { m_pParent = frame; }
+	bool				IsFramebufferReady() { return m_FBOInited; }
+
+	void				InitFramebuffer();
+	void				ResizeFramebuffer();
+	bool				InitExtensions();
 
 private:
 
@@ -32,6 +44,13 @@ private:
 	nxGLJobQueue*		m_pGLCommandQueue;
 
 	nxEngine*			m_pEngine;
+
+	GLuint				m_FBO;
+	GLuint				m_RBO;
+
+	bool				m_FBOInited;
+
+	unsigned int		m_State;
 
 	void				Init();
 };

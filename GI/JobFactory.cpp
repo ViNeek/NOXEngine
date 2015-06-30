@@ -85,6 +85,18 @@ nxJob* nxJobFactory::CreateJob(nxJobID id, void* data)
 		j = new nxGLJob(data, cb);
 	}
 		break;
+	case NX_GL_JOB_FRAMEBUFFER_INIT:
+	{
+		nxFramebufferInitializer cb;
+		j = new nxGLJob(data, cb);
+	}
+		break;
+	case NX_GL_JOB_FRAMEBUFFER_RESIZE:
+	{
+		nxFramebufferResizer cb;
+		j = new nxGLJob(data, cb);
+	}
+		break;
 	default:
 		break;
 	}
