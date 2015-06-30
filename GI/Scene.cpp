@@ -116,6 +116,10 @@ void nxScene::PushEntity(nxEntity* ent) {
 
 }
 
+void nxScene::SetProjection(float angle, float fov, float zNear, float zFar) {
+	m_PMatrix = glm::perspective(angle, fov, zNear, zFar);
+}
+
 bool nxSceneLoader::operator()(void* data) {
 	nxScene* scene = NOX_ENGINE_GET(Scene);
 

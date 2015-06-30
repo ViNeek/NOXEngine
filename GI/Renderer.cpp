@@ -142,13 +142,13 @@ void nxRenderer::InitFramebuffer() {
 void nxRenderer::ResizeFramebuffer() {
 
 	if (m_State > NX_RENDERER_FRAMEBUFFER_READY) {
-		if (glIsRenderbuffer(m_FBO)) {
-			glDeleteRenderbuffers(1, &m_FBO);
-			glGenRenderbuffers(1, &m_FBO);
-			glBindRenderbuffer(GL_RENDERBUFFER, m_FBO);
+		if (glIsRenderbuffer(m_RBO)) {
+			glDeleteRenderbuffers(1, &m_RBO);
+			glGenRenderbuffers(1, &m_RBO);
+			glBindRenderbuffer(GL_RENDERBUFFER, m_RBO);
 			glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, m_pParent->GetClientSize().GetX(), m_pParent->GetClientSize().GetY());
 
-			Utils::GL::CheckGLState("FrameBuffer Creation");
+			//Utils::GL::CheckGLState("FrameBuffer Creation");
 
 			m_State |= NX_RENDERER_FRAMEBUFFER_READY;
 		}
@@ -179,8 +179,8 @@ bool nxFramebufferInitializer::operator() (void* data) {
 bool nxFramebufferResizer::operator()(void* data) {
 	nxFramebufferResizerBlob* blob = (nxFramebufferResizerBlob*)data;
 
-	std::cout << "resizing\n";
+	//std::cout << "resizing\n";
 	blob->m_Renderer->ResizeFramebuffer();
 
 	return true;
-}
+} 
