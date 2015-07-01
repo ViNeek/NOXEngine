@@ -2,6 +2,7 @@
 
 #include "GLUtils.h"
 
+#include "Program.h"
 #include "Renderer.h"
 #include "Job.h"
 #include "Scheduler.h"
@@ -19,6 +20,7 @@ nxRenderer::nxRenderer(wxGLCanvas* frame)
 	m_VWidth = 0;
 	m_VHeight = 0;
 	m_FBO = -1;
+	m_ProgramIndex = 0;
 } 
 
 nxRenderer::nxRenderer(nxEngine* eng) {
@@ -29,6 +31,13 @@ nxRenderer::nxRenderer(nxEngine* eng) {
 	m_pGLCommandQueue = new nxGLJobQueue(0);
 	m_VWidth = 0;
 	m_VHeight = 0;
+	m_FBO = -1;
+	m_ProgramIndex = 0;
+}
+
+void nxRenderer::UseProgram() {
+	if ((size_t)m_ProgramIndex < m_ShaderPrograms.size() )
+		m_ShaderPrograms[m_ProgramIndex]->Use();
 }
 
 void *nxRenderer::Entry()
@@ -43,6 +52,8 @@ void *nxRenderer::Entry()
 
 		while ( m_pGLCommandQueue->pop(currentJob) )
 			m_IsActive = currentJob->Execute();
+
+		UseProgram();
 
 		RenderFrame();
 
@@ -60,22 +71,28 @@ void *nxRenderer::Entry()
 bool error = true;
 void nxRenderer::RenderFrame() {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	glViewport(0, 0, m_VWidth, m_VHeight);
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	glViewport(0, 0, m_VWidth, m_VHeight);
+	if (error) Utils::GL::CheckGLState("Frame");
 
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 
-	glBlitFramebuffer(0, 0, m_VWidth - 1, m_VHeight - 1,
-		0, 0, m_VWidth - 1, m_VHeight - 1,
-		GL_COLOR_BUFFER_BIT , GL_NEAREST);
+	if (error) Utils::GL::CheckGLState("Swap");
 
-	error = false;
+	glBlitFramebuffer(0, 0, m_VWidth - 1, m_VHeight - 1,
+				      0, 0, m_VWidth - 1, m_VHeight - 1,
+					  GL_COLOR_BUFFER_BIT , GL_NEAREST);
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+	//error = false;
 }
 
 void nxRenderer::Init() {
@@ -134,12 +151,22 @@ void nxRenderer::InitFramebuffer() {
 	glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
 
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glShadeModel(GL_SMOOTH);							// Enable Smooth Shading
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);				// Black Background
+	glClearDepth(1.0f);									// Depth Buffer Setup
+	glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
+	glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
+
+
 	m_State |= NX_RENDERER_FRAMEBUFFER_READY;
 
 }
 
 void nxRenderer::ResizeFramebuffer() {
-
+	
 	if (m_State > NX_RENDERER_FRAMEBUFFER_READY) {
 		if (glIsRenderbuffer(m_RBO)) {
 			glDeleteRenderbuffers(1, &m_RBO);
@@ -150,8 +177,17 @@ void nxRenderer::ResizeFramebuffer() {
 			//Utils::GL::CheckGLState("FrameBuffer Creation");
 
 			m_State |= NX_RENDERER_FRAMEBUFFER_READY;
+
+			glShadeModel(GL_SMOOTH);							// Enable Smooth Shading
+			glClearColor(0.0f, 0.0f, 1.0f, 1.0f);				// Black Background
+			glClearDepth(1.0f);									// Depth Buffer Setup
+			glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
+			glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
+			glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
+
 		}
 	}
+	
 }
 
 bool nxRendererTerminator::operator()(void* data) {

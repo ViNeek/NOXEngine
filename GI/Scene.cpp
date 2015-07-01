@@ -101,19 +101,15 @@ void nxScene::Init() {
 	}
 }
 
-void nxScene::PushEntity(nxEntity* ent) {
-
-}
-
 void nxScene::Draw() {
 	for (size_t i = 0; i < m_Entities.size(); i++) {
-		m_MMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
+		m_MState.m_MMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
 		m_Entities[i]->Draw();
 	}
 }
 
 void nxScene::SetProjection(float angle, float fov, float zNear, float zFar) {
-	m_PMatrix = glm::perspective(angle, fov, zNear, zFar);
+	m_MState.m_PMatrix = glm::perspective(angle, fov, zNear, zFar);
 }
 
 bool nxSceneLoader::operator()(void* data) {

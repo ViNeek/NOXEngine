@@ -185,6 +185,9 @@ bool nxProgramLinker::operator()(void* data) {
 
 	blob->m_Engine->Renderer()->AddProgram(blob->m_Prog);
 
+	blob->m_Prog->ShowActiveUniforms();
+	blob->m_Prog->ShowActiveAttributes();
+
 	std::cout << "Program Linked " << blob->m_Prog->IsLinked();
 
 	return true;

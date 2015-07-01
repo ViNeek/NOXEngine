@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <GL/glew.h>
 
 #include "wx/wx.h"
@@ -35,6 +36,7 @@ public:
 
 	void						InitFramebuffer();
 	void						ResizeFramebuffer();
+	void						UseProgram();
 	bool						InitExtensions();
 
 	void						SetViewportSize(int w, int h) { m_VWidth = w; m_VHeight = h; };
@@ -62,6 +64,7 @@ private:
 
 	int							m_VWidth;
 	int							m_VHeight;
+	int							m_ProgramIndex;
 
 	std::vector<nxProgram*>		m_ShaderPrograms;
 

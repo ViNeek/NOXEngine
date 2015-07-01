@@ -16,16 +16,17 @@ class nxProgram {
 
 public:
 
-											nxProgram(int initCount);
+	nxProgram(int initCount);
 
 	void									ProgramLog();
 	bool									ReadyForLinking() { return m_InitShaderCount == m_Shaders.size(); }
-	
+
 	void									Attach();
 	void									Link();
 	void									Unlink();
 	void									Destroy();
 	void									Create();
+	void									Use() { glUseProgram(m_ProgramID); }
 
 	bool									IsLinked() { return m_Linked; };
 	void									AddShader(nxShader* shader) { m_Shaders.push_back(shader); }
