@@ -23,7 +23,6 @@ public:
 								nxScene(std::string& path);
 
 	void						Init();
-	void						PushEntity(nxEntity* ent);
 	const std::string&			Filename(){ return m_SceneFilename; }
 	void						SetFilename(std::string& path) { m_SceneFilename = path; }
 
@@ -35,6 +34,10 @@ public:
 
 	void						SetProjection(float angle, float fov, float zNear, float zFar);
 	
+	void						AddEntity(nxEntity* ent) { m_Entities.push_back(ent); }
+
+	void						Draw();
+
 private:
 
 	int							m_EntitiesCount;

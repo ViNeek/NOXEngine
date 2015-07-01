@@ -3,6 +3,7 @@
 #include "JobFactory.h"
 #include "Engine.h"
 #include "Renderer.h"
+#include "Scene.h"
 
 #include "GLUtils.h"
 
@@ -141,6 +142,7 @@ void nxEntity::UploadData() {
 }
 
 void nxEntity::Draw() {
+	BindVAO();
 	for (size_t i = 0; i < m_NumMeshes; i++)
 	{
 		glDrawArrays(GL_TRIANGLES, m_MeshStartIndices[i], m_MeshSizes[i]);
@@ -167,9 +169,7 @@ bool nxGLAssetLoader::operator()(void* data) {
 
 	blob->m_Entity->UploadData();
 
-	//std::cout << "Model name " << blob->m_Entity->ModelName() << std::endl;
-	//std::cout << "Asset Loading " << blob->m_ResourceType << std::endl;
-	//std::cout << "Asset Loading " << blob->m_Center.z << std::endl;
+	blob->m_Engine->Scene()->AddEntity(blob->m_Entity);
 
 	return true;
 }

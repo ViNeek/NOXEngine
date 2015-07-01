@@ -4,11 +4,14 @@
 #include "Scene.h"
 #include "Scheduler.h"
 
+#include <boost/align/aligned_alloc.hpp>
+
 nxEngine::nxEngine() {
 	m_RendererFinished = false;
 	m_SchedulerFinished = false;
 
-	m_Scene = new nxScene(this);
+	//m_Scene = new nxScene(this);
+	m_Scene = (nxScene*)boost::alignment::aligned_alloc(16, sizeof(nxScene));
 	m_pScheduler = new nxScheduler(this);
 	m_pRenderer = new nxRenderer(this);
 }

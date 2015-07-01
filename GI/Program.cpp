@@ -3,6 +3,8 @@
 #include "Job.h"
 #include "JobFactory.h"
 #include "Shader.h"
+#include "Engine.h"
+#include "Renderer.h"
 
 #include "GLUtils.h"
 
@@ -180,6 +182,8 @@ bool nxProgramLinker::operator()(void* data) {
 	Utils::GL::CheckGLState("Attaching");
 	blob->m_Prog->Link();
 	Utils::GL::CheckGLState("Linking");
+
+	blob->m_Engine->Renderer()->AddProgram(blob->m_Prog);
 
 	std::cout << "Program Linked " << blob->m_Prog->IsLinked();
 

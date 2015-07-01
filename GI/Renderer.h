@@ -16,6 +16,7 @@ enum nxRendererState {
 
 class nxGLJob;
 class nxEngine;
+class nxProgram;
 
 typedef boost::lockfree::queue< nxGLJob* > nxGLJobQueue;
 
@@ -23,34 +24,49 @@ class nxRenderer : public wxThread
 {
 public:
 
-						nxRenderer(nxEngine* eng);
-						nxRenderer(wxGLCanvas* frame);
+								nxRenderer(nxEngine* eng);
+								nxRenderer(wxGLCanvas* frame);
 
-	void*				Entry();
+	void*						Entry();
 
-	void				ScheduleGLJob(nxGLJob* job) { m_pGLCommandQueue->push(job); };
-	void				SetDrawingCanvas(wxGLCanvas* frame) { m_pParent = frame; }
-	bool				IsFramebufferReady() { return m_FBOInited; }
+	void						ScheduleGLJob(nxGLJob* job) { m_pGLCommandQueue->push(job); };
+	void						SetDrawingCanvas(wxGLCanvas* frame) { m_pParent = frame; }
+	bool						IsFramebufferReady() { return m_FBOInited; }
 
-	void				InitFramebuffer();
-	void				ResizeFramebuffer();
-	bool				InitExtensions();
+	void						InitFramebuffer();
+	void						ResizeFramebuffer();
+	bool						InitExtensions();
+
+	void						SetViewportSize(int w, int h) { m_VWidth = w; m_VHeight = h; };
+
+	int							Width() { return m_VWidth; }
+	int							Height() { return m_VHeight; }
+
+	void						AddProgram(nxProgram* prog) { m_ShaderPrograms.push_back(prog); }
 
 private:
 
-	bool				m_IsActive;
-	wxGLCanvas*			m_pParent;
-	wxGLContext*		m_pGLCtx;
-	nxGLJobQueue*		m_pGLCommandQueue;
+	bool						m_IsActive;
+	wxGLCanvas*					m_pParent;
+	wxGLContext*				m_pGLCtx;
+	nxGLJobQueue*				m_pGLCommandQueue;
 
-	nxEngine*			m_pEngine;
+	nxEngine*					m_pEngine;
 
-	GLuint				m_FBO;
-	GLuint				m_RBO;
+	GLuint						m_FBO;
+	GLuint						m_RBO;
 
-	bool				m_FBOInited;
+	bool						m_FBOInited;
 
-	unsigned int		m_State;
+	unsigned int				m_State;
 
-	void				Init();
+	int							m_VWidth;
+	int							m_VHeight;
+
+	std::vector<nxProgram*>		m_ShaderPrograms;
+
+	void						Init();
+	void						RenderFrame();
+	void						SwapBuffers() { m_pParent->SwapBuffers(); }
+
 };
