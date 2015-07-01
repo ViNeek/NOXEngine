@@ -1,0 +1,42 @@
+{
+    "Scene": {
+        "Count": 1,
+        "Name": "Simple Scene",
+        "Camera": {
+            "PositionX": "0.0f",
+            "PositionY": "0.0f",
+            "PositionZ": "10.0f"
+        },
+        "Entities": [
+            {
+                "ModelName": "Models/Cube",
+                "ModelType": ".3DS",
+                "CenterX": "0.0f",
+                "CenterY": "0.0f",
+                "CenterZ": "1.0f"
+            },
+            {
+                "ModelName": "Models/REX",
+                "ModelType": ".obj",
+                "CenterX": "0.0f",
+                "CenterY": "0.0f",
+                "CenterZ": "1.0f"
+            }
+        ],
+        "Programs": [
+            {
+                "Shaders": [
+                    {
+                        "Fragment": "Shaders/SimplePass.f.glsl"
+                    },
+                    {
+                        "Vertex": "Shaders/SimplePass.v.glsl"
+                    },
+                    {
+                        "Geometry": "Shaders/SimplePass.g.glsl"
+                    }
+                ]
+            }
+        ]
+    }
+}
