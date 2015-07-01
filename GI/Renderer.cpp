@@ -79,12 +79,12 @@ void nxRenderer::RenderFrame() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glViewport(0, 0, m_VWidth, m_VHeight);
-	if (error) Utils::GL::CheckGLState("Frame");
+	//if (error) Utils::GL::CheckGLState("Frame");
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 
-	if (error) Utils::GL::CheckGLState("Swap");
+	//if (error) Utils::GL::CheckGLState("Swap");
 
 	glBlitFramebuffer(0, 0, m_VWidth - 1, m_VHeight - 1,
 				      0, 0, m_VWidth - 1, m_VHeight - 1,

@@ -87,8 +87,8 @@ void nxScene::Init() {
 			m_pEngine->Scheduler()->ScheduleJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_LOAD_ASSET, data));
 		}
 
+		m_Camera = new nxArcballCamera();
 		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Camera")) {
-			BOOST_LOG_TRIVIAL(info) << "STUFF : " << v.second.get("ModelName", "unknkown");
 			m_Camera->SetPosition(stof(v.second.get("PositionX", "0.0f")),
 				stof(v.second.get("PositionY", "0.0f")),
 				stof(v.second.get("PositionZ", "0.0f")));

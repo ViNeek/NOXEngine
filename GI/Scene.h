@@ -58,7 +58,8 @@ public:
 
 private:
 
-	__declspec(align(16)) nxMatrixState				m_MState;
+	__declspec(align(16)) 
+	nxMatrixState				m_MState;
 
 	int							m_EntitiesCount;
 	std::string					m_SceneName;
