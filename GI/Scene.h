@@ -5,6 +5,7 @@
 #include "CustomTypes.h"
 
 #include <boost/thread/mutex.hpp>
+#include <boost/align/align.hpp>
 
 #include <glm/mat3x3.hpp>
 #include <glm/vec3.hpp>
@@ -16,26 +17,48 @@ class nxEntity;
 class nxEngine;
 class nxArcballCamera;
 
-class nxScene {
+struct nxMatrixState {
+	glm::mat4					m_VMatrix;
+	glm::mat4					m_RMatrix;
+	glm::mat4					m_MMatrix;
+	glm::mat4					m_PMatrix;
+};
+
+class nxScene{
 public:
 
 								nxScene(nxEngine* eng);
 								nxScene(std::string& path);
 
-	void						Init();
-	void						PushEntity(nxEntity* ent);
-	const std::string&			Filename(){ return m_SceneFilename; }
-	void						SetFilename(std::string& path) { m_SceneFilename = path; }
+	void*						operator new(size_t i)
+	{
+		return _mm_malloc(i, 16);
+	}
 
-	glm::mat4&					Projection(){ return m_PMatrix; };
-	glm::mat4&					View(){ return m_VMatrix; };
-	glm::mat4&					Normal();
-	glm::mat4&					Rotation(){ return m_RMatrix; };
-	glm::mat4&					Modelview(){ return m_MMatrix; };
+	void operator delete(void* p)
+	{
+		_mm_free(p);
+	}
+
+	void						Init();
+	const std::string&			Filename(){ return m_SceneFilename; }
+	void						SetFilename(std::string path) { m_SceneFilename = path; }
+
+	glm::mat4					Projection(){ return m_MState.m_PMatrix; };
+	glm::mat4					View(){ return m_MState.m_VMatrix; };
+	glm::mat4					Normal();
+	glm::mat4					Rotation(){ return m_MState.m_RMatrix; };
+	glm::mat4					Modelview(){ return m_MState.m_MMatrix; };
 
 	void						SetProjection(float angle, float fov, float zNear, float zFar);
 	
+	void						AddEntity(nxEntity* ent) { m_Entities.push_back(ent); }
+
+	void						Draw();
+
 private:
+
+	__declspec(align(16)) nxMatrixState				m_MState;
 
 	int							m_EntitiesCount;
 	std::string					m_SceneName;
@@ -47,11 +70,6 @@ private:
 
 	nxArcballCamera*			m_Camera;
 
-	glm::mat4					m_VMatrix;
-	glm::mat3					m_NMatrix;
-	glm::mat4					m_RMatrix;
-	glm::mat4					m_MMatrix;
-	glm::mat4					m_PMatrix;
-
 	nxEngine*					m_pEngine;
 };
+

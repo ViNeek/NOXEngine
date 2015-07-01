@@ -2,6 +2,8 @@
 
 #include <gl/glew.h>
 
+#include <glm/vec3.hpp>
+
 #include <string>
 #include <vector>
 
@@ -24,6 +26,7 @@ public:
 	float					MinY(){ return m_MinY; }
 	float					MinZ(){ return m_MinZ; }
 	std::string				ModelName() { return m_ModelName; }
+	glm::vec3				ModelTransform() { return m_ModelTransform; }
 
 	void					BindVAO(){ glBindVertexArray(m_VAO); };
 	static void				BindVAO(GLuint id){ glBindVertexArray(id); };
@@ -60,5 +63,7 @@ private:
 	std::vector<int>		m_MeshSizes;
 
 	std::string				m_ModelName;
+
+	glm::vec3				m_ModelTransform;
 
 };

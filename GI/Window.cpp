@@ -75,6 +75,7 @@ nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 	m_EngineState = new nxEngine;
 
 	Engine()->Renderer()->SetDrawingCanvas(m_pGLPanel);
+	Engine()->Renderer()->SetViewportSize(width, height);
 	Engine()->Scheduler()->SetFrame(this);
 
 	Engine()->Start();
@@ -108,6 +109,8 @@ bool nxFrame::IsSchedulerFinished()
 void nxFrame::OnResize(wxSizeEvent& evt) {
 	nxFramebufferResizerBlob* data = new nxFramebufferResizerBlob(Engine(), Engine()->Renderer());
 	Engine()->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_FRAMEBUFFER_RESIZE, data));
+
+	Engine()->Renderer()->SetViewportSize(evt.GetSize().GetX(), evt.GetSize().GetY());
 
 	evt.Skip();
 }

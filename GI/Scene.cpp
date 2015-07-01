@@ -85,45 +85,31 @@ void nxScene::Init() {
 							stof(v.second.get("CenterZ", "0.0f"))));
 
 			m_pEngine->Scheduler()->ScheduleJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_LOAD_ASSET, data));
-
-			/*
-			BOOST_FOREACH(pt::ptree::value_type &v1, v.second) {
-				nxAssetLoaderBlob* data = new nxAssetLoaderBlob(m_pEngine, std::string("a") );
-				//nxShaderLoaderBlob* data = new nxShaderLoaderBlob(m_pEngine, prog, v2.second.data(), gc_TypeMappings.at(v2.first.data()));
-				//m_pEngine->Scheduler()->ScheduleJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_LOAD_SHADER, data));
-				BOOST_LOG_TRIVIAL(info) << "Model : " << v1.second.data() << " " << v1.first.data();
-			}
-			*/
 		}
+
 		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Camera")) {
 			BOOST_LOG_TRIVIAL(info) << "STUFF : " << v.second.get("ModelName", "unknkown");
 			m_Camera->SetPosition(stof(v.second.get("PositionX", "0.0f")),
 				stof(v.second.get("PositionY", "0.0f")),
 				stof(v.second.get("PositionZ", "0.0f")));
 		}
+
+		//SetProjection();
 	} catch (std::exception const& e)
 	{
 		BOOST_LOG_TRIVIAL(error) << "Scene parse error : " << e.what();
 	}
 }
 
-/*
-stringstream ss( "1,1,1,1, or something else ,1,1,1,0" );
-vector<string> result;
-
-while( ss.good() )
-{
-string substr;
-getline( ss, substr, ',' );
-result.push_back( substr );
-}
-*/
-void nxScene::PushEntity(nxEntity* ent) {
-
+void nxScene::Draw() {
+	for (size_t i = 0; i < m_Entities.size(); i++) {
+		m_MState.m_MMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
+		m_Entities[i]->Draw();
+	}
 }
 
 void nxScene::SetProjection(float angle, float fov, float zNear, float zFar) {
-	m_PMatrix = glm::perspective(angle, fov, zNear, zFar);
+	m_MState.m_PMatrix = glm::perspective(angle, fov, zNear, zFar);
 }
 
 bool nxSceneLoader::operator()(void* data) {
