@@ -24,6 +24,7 @@ struct nxMatrixState {
 	glm::mat4					m_RMatrix;
 	glm::mat4					m_MMatrix;
 	glm::mat4					m_PMatrix;
+	glm::mat3					m_NMatrix;
 };
 
 class nxScene{
@@ -42,18 +43,19 @@ public:
 
 	void operator delete(void* p)
 	{
-		_mm_free(p);
+		boost::alignment::aligned_free(p);
+		//_mm_free(p);
 	}
 
 	void						Init();
 	const std::string&			Filename(){ return m_SceneFilename; }
 	void						SetFilename(std::string path) { m_SceneFilename = path; }
 
-	glm::mat4					Projection(){ return m_MState.m_PMatrix; };
-	glm::mat4					View(){ return m_MState.m_VMatrix; };
-	glm::mat4					Normal();
-	glm::mat4					Rotation(){ return m_MState.m_RMatrix; };
-	glm::mat4					Modelview(){ return m_MState.m_MMatrix; };
+	glm::mat4&					Projection(){ return m_MState.m_PMatrix; };
+	glm::mat4&					View(){ return m_MState.m_VMatrix; };
+	glm::mat3&					Normal();
+	glm::mat4&					Rotation(){ return m_MState.m_RMatrix; };
+	glm::mat4&					Modelview(){ return m_MState.m_MMatrix; };
 
 	void						SetProjection(float angle, float fov, float zNear, float zFar);
 	

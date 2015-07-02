@@ -2,9 +2,13 @@
 
 #include <GL/glew.h>
 
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtx/transform2.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform2.hpp>
+
+#include <boost/align/align.hpp>
+#include <boost/align/aligned_alloc.hpp>
+#include <boost/align/is_aligned.hpp>
 
 #define EPSILON 10e-5
 
@@ -13,9 +17,23 @@ class nxArcballCamera
 
 public:
 	
-	//Create/Destroy
-	nxArcballCamera(GLfloat NewWidth, GLfloat NewHeight);
-	nxArcballCamera() { /* nothing to do */ };
+					//Create/Destroy
+					nxArcballCamera(GLfloat NewWidth, GLfloat NewHeight);
+					nxArcballCamera() { /* nothing to do */ };
+
+	void*			operator new(size_t i)
+	{
+		//void *p = _mm_malloc(i, 16);
+		void *p = boost::alignment::aligned_alloc(16, i);
+		assert(boost::alignment::is_aligned(16, p));
+		return p;
+	}
+
+	void			operator delete(void* p)
+	{
+		boost::alignment::aligned_free(p);
+		//_mm_free(p);
+	}
 
 	//Set new bounds
 	inline void    SetBounds(GLfloat NewWidth, GLfloat NewHeight)
@@ -36,8 +54,8 @@ public:
 	//Mouse drag, calculate rotation
 	void			Drag(const glm::uvec2* NewPt, glm::vec4* NewRot);
 	glm::mat4		Update(glm::uvec2 &cursor);
-	void			SetPosition(float x, float y, float z) { m_Position = glm::vec3(x, y, -z); };
-	glm::vec3&		Position(float x, float y, float z) { return m_Position; };
+	void			SetPosition(float x, float y, float z) { m_Position = glm::vec3(-x, -y, -z); };
+	glm::vec3&		Position() { return m_Position; };
 
 private:
 

@@ -37,6 +37,8 @@ public:
 	void						InitFramebuffer();
 	void						ResizeFramebuffer();
 	void						UseProgram();
+	nxProgram*					Program() { return m_ShaderPrograms[m_ProgramIndex]; }
+
 	bool						InitExtensions();
 
 	void						SetViewportSize(int w, int h) { m_VWidth = w; m_VHeight = h; };
@@ -57,6 +59,7 @@ private:
 
 	GLuint						m_FBO;
 	GLuint						m_RBO;
+	GLuint						m_DepthTexture;
 
 	bool						m_FBOInited;
 

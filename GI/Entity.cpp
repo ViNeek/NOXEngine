@@ -13,6 +13,8 @@
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h> 
 
+#include <boost/log/trivial.hpp>
+
 nxEntity::nxEntity() {
 	m_IBO = -1;
 	m_VBO = -1;
@@ -152,11 +154,22 @@ void nxEntity::Draw() {
 bool nxAssetLoader::operator()(void* data) {
 	nxAssetLoaderBlob* blob = (nxAssetLoaderBlob*)data;
 	
-	//std::cout << "Asset Loading " << blob->m_ResourcePath << std::endl;
-	//std::cout << "Asset Loading " << blob->m_ResourceType << std::endl;
-	//std::cout << "Asset Loading " << blob->m_Center.z << std::endl;
+	std::cout << "Asset Loading " << blob->m_ResourcePath << std::endl;
+	std::cout << "Asset Loading " << blob->m_ResourceType << std::endl;
+	std::cout << "Asset Loading " << blob->m_Center.z << std::endl;
 
 	nxEntity* ent = new nxEntity(blob->m_ResourcePath + blob->m_ResourceType);
+
+	ent->SetModelTransform(blob->m_Center);
+
+	BOOST_LOG_TRIVIAL(info) << "Asset MaxX " << ent->MaxX();
+	BOOST_LOG_TRIVIAL(info) << "Asset MaxY " << ent->MaxY();
+	BOOST_LOG_TRIVIAL(info) << "Asset MaxZ " << ent->MaxZ();
+	BOOST_LOG_TRIVIAL(info) << "Asset MaxX " << ent->MinX();
+	BOOST_LOG_TRIVIAL(info) << "Asset MaxY " << ent->MinY();
+	BOOST_LOG_TRIVIAL(info) << "Asset MaxZ " << ent->MinZ();
+
+	std::cout << "Asset MaxX " << blob->m_Center.z << std::endl;
 
 	nxGLAssetLoaderBlob* newData = new nxGLAssetLoaderBlob(blob->m_Engine, ent);
 	blob->m_Engine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_ASSET, newData));

@@ -1,5 +1,6 @@
 #include "Scene.h"
 
+#include "GLUtils.h"
 #include "Engine.h"
 #include "Renderer.h"
 #include "Entity.h"
@@ -76,36 +77,71 @@ void nxScene::Init() {
 		BOOST_LOG_TRIVIAL(info) << "Entities : " << tree.get_child("Scene.Entities").size();
 		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Entities")) {
 			BOOST_LOG_TRIVIAL(info) << "STUFF : " << v.second.get("ModelName", "unknkown");
+			BOOST_LOG_TRIVIAL(info) << "Camera X position : " << v.second.get<float>("CenterX", 0.0f);
+			BOOST_LOG_TRIVIAL(info) << "Camera Y position : " << v.second.get<float>("CenterY", 0.0f);
+			BOOST_LOG_TRIVIAL(info) << "Camera Z position : " << v.second.get<float>("CenterZ", 0.0f);
 			nxAssetLoaderBlob* data = new nxAssetLoaderBlob(
 				m_pEngine,
 				v.second.get("ModelName", "unknkown"),
 				v.second.get("ModelType", "unknkown"),
-				glm::vec3(stof(v.second.get("CenterX", "0.0f")),
-							stof(v.second.get("CenterY", "0.0f")),
-							stof(v.second.get("CenterZ", "0.0f"))));
-
+				glm::vec3(v.second.get<float>("CenterX", 0.0f),
+				v.second.get<float>("CenterY", 0.0f),
+							v.second.get<float>("CenterZ", 0.0f)));
+			
 			m_pEngine->Scheduler()->ScheduleJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_LOAD_ASSET, data));
 		}
 
 		m_Camera = new nxArcballCamera();
-		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Camera")) {
-			m_Camera->SetPosition(stof(v.second.get("PositionX", "0.0f")),
-				stof(v.second.get("PositionY", "0.0f")),
-				stof(v.second.get("PositionZ", "0.0f")));
-		}
+		//BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Camera")) {
+			//BOOST_LOG_TRIVIAL(info) << "Camera X position : " << tree.get_child("Scene.Camera").get<float>("PositionX", 0.0f);
+			//BOOST_LOG_TRIVIAL(info) << "Camera Y position : " << tree.get_child("Scene.Camera").get<float>("PositionY", 0.0f);
+			//BOOST_LOG_TRIVIAL(info) << "Camera Z position : " << tree.get_child("Scene.Camera").get<float>("PositionZ", 0.0f);
+			m_Camera->SetPosition(tree.get_child("Scene.Camera").get<float>("PositionX", 0.0f),
+				tree.get_child("Scene.Camera").get<float>("PositionY", 0.0f),
+				tree.get_child("Scene.Camera").get<float>("PositionZ", 0.0f));
+		//}
 
-		//SetProjection();
+		SetProjection(45.0f, (float)m_pEngine->Renderer()->Width() / m_pEngine->Renderer()->Height(), 1.0f, 1000.0f);
+	
 	} catch (std::exception const& e)
 	{
 		BOOST_LOG_TRIVIAL(error) << "Scene parse error : " << e.what();
 	}
 }
 
+glm::mat3& nxScene::Normal() {
+	m_MState.m_NMatrix = glm::mat3(m_MState.m_MMatrix);
+	m_MState.m_NMatrix = glm::inverse(m_MState.m_NMatrix);
+	m_MState.m_NMatrix = glm::transpose(m_MState.m_NMatrix);
+
+	return m_MState.m_NMatrix;
+}
+
+bool errorGL = true;
 void nxScene::Draw() {
+	m_MState.m_VMatrix = glm::mat4();
+
+	m_pEngine->Renderer()->UseProgram();
+	if (errorGL) Utils::GL::CheckGLState("Program USE");
+
 	for (size_t i = 0; i < m_Entities.size(); i++) {
-		m_MState.m_MMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
+		m_MState.m_VMatrix = glm::translate(View(),
+			m_Camera->Position());
+
+		//m_MState.m_MMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
+		m_pEngine->Renderer()->Program()->SetUniform("NormalMatrix", Normal());
+		if (errorGL) Utils::GL::CheckGLState("Set Normal");
+
+		m_pEngine->Renderer()->Program()->SetUniform("MVP", m_MState.m_PMatrix*m_MState.m_VMatrix);
+		//m_pEngine->Renderer()->Program()->SetUniform("MVP", View());
+		if (errorGL) Utils::GL::CheckGLState("Set MVP");
+
 		m_Entities[i]->Draw();
+		if (errorGL) Utils::GL::CheckGLState("Draw : " + i);
+
 	}
+
+	errorGL = false;
 }
 
 void nxScene::SetProjection(float angle, float fov, float zNear, float zFar) {
