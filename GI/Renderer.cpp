@@ -71,9 +71,13 @@ void *nxRenderer::Entry()
 bool error = true;
 void nxRenderer::RenderFrame() {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
+	if (error) Utils::GL::CheckGLState("Draw");
+
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glViewport(0, 0, m_VWidth, m_VHeight);
+
+	//if (error) Utils::GL::CheckGLState("Draw");
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -168,15 +172,41 @@ void nxRenderer::InitFramebuffer() {
 void nxRenderer::ResizeFramebuffer() {
 	
 	if (m_State > NX_RENDERER_FRAMEBUFFER_READY) {
-		if (glIsRenderbuffer(m_RBO)) {
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		if (glIsFramebuffer(m_FBO)) {
 			glDeleteRenderbuffers(1, &m_RBO);
+			glDeleteFramebuffers(1, &m_FBO);
+
 			glGenRenderbuffers(1, &m_RBO);
 			glBindRenderbuffer(GL_RENDERBUFFER, m_RBO);
 			glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, m_VWidth, m_VHeight);
 
 			//Utils::GL::CheckGLState("FrameBuffer Creation");
+			glGenRenderbuffers(1, &m_RBO);
+			glBindRenderbuffer(GL_RENDERBUFFER, m_RBO);
+			glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, m_VWidth, m_VHeight);
 
-			m_State |= NX_RENDERER_FRAMEBUFFER_READY;
+			glGenFramebuffers(1, &m_FBO);
+			glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+
+			//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, sl_SceneState.depthSingleLayer, 0);
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, m_RBO);
+
+			/*
+			GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+			Utils::GL::CheckGLState("Framebuffer Creation");
+			switch (status)
+			{
+			case GL_FRAMEBUFFER_COMPLETE:
+				printf("Single Layered FBO Complete %x\n", status);
+				BOOST_LOG_TRIVIAL(info) << "Single Layered FBO Complete ";
+				break;
+			default:
+				BOOST_LOG_TRIVIAL(error) << "Single Layered FBO Incomplete ";
+				break;
+			}
+			*/
 
 			glShadeModel(GL_SMOOTH);							// Enable Smooth Shading
 			glClearColor(0.0f, 0.0f, 1.0f, 1.0f);				// Black Background
@@ -184,6 +214,8 @@ void nxRenderer::ResizeFramebuffer() {
 			glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
 			glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
 			glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
+
+			m_State |= NX_RENDERER_FRAMEBUFFER_READY;
 
 		}
 	}

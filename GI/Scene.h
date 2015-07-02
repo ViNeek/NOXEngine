@@ -6,6 +6,8 @@
 
 #include <boost/thread/mutex.hpp>
 #include <boost/align/align.hpp>
+#include <boost/align/aligned_alloc.hpp>
+#include <boost/align/is_aligned.hpp>
 
 #include <glm/mat3x3.hpp>
 #include <glm/vec3.hpp>
@@ -32,7 +34,10 @@ public:
 
 	void*						operator new(size_t i)
 	{
-		return _mm_malloc(i, 16);
+		//void *p = _mm_malloc(i, 16);
+		void *p = boost::alignment::aligned_alloc(16, i);
+		assert(boost::alignment::is_aligned(16, p));
+		return p;
 	}
 
 	void operator delete(void* p)
