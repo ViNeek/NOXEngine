@@ -6,6 +6,7 @@
 #include "JobFactory.h"
 #include "CustomEvents.h"
 
+#include "Camera.h"
 #include "Scene.h"
 #include "Renderer.h"
 #include "Scheduler.h"
@@ -16,11 +17,13 @@
 nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 	: wxFrame((wxFrame *)NULL, -1, title, wxPoint(xpos, ypos), wxSize(width, height) )
 {
+	m_EngineState = new nxEngine;
+
 	wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
 
 	int args[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, 0 };
 
-	m_pGLPanel = new nxGLPanel((wxFrame*)this, args);
+	m_pGLPanel = new nxGLPanel(this, args);
 	sizer->Add(m_pGLPanel, 1, wxEXPAND);
 
 	m_pMenuBar = new wxMenuBar(0);
@@ -72,8 +75,6 @@ nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 
 	// Init NOX Engine state
 
-	m_EngineState = new nxEngine;
-
 	Engine()->Renderer()->SetDrawingCanvas(m_pGLPanel);
 	Engine()->Renderer()->SetViewportSize(width, height);
 	Engine()->Scheduler()->SetFrame(this);
@@ -91,6 +92,7 @@ nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 	Bind(wxEVT_CLOSE_WINDOW, &nxFrame::OnClose, this, wxID_ANY);
 	Bind(wxEVT_COMMAND_MENU_SELECTED, &nxFrame::OnLoadScene, this, LOAD_SCENE_ID);
 
+	// Custom
 	Bind(nxRENDERER_EXIT_EVENT, &nxFrame::OnRendererExit, this, wxID_ANY);
 	Bind(nxSCHEDULER_EXIT_EVENT, &nxFrame::OnSchedulerExit, this, wxID_ANY);
 
@@ -113,6 +115,46 @@ void nxFrame::OnResize(wxSizeEvent& evt) {
 	Engine()->Renderer()->SetViewportSize(evt.GetSize().GetX(), evt.GetSize().GetY());
 
 	evt.Skip();
+}
+
+void nxGLPanel::OnLeftClickPressed(wxMouseEvent& evt) {
+	//wxMessageBox("left click press");
+
+	// Take focus and Capture mouse
+	SetFocus();
+	CaptureMouse();
+
+	m_pEngine->Scene()->Camera()->SetClicked(true);
+
+}
+
+void nxGLPanel::OnLeftClickReleased(wxMouseEvent& evt) {
+	//wxMessageBox("left click release");
+
+	// Release previously captured mouse
+	if (HasCapture())
+		ReleaseMouse();
+
+	m_pEngine->Scene()->Camera()->SetClicked(false);
+}
+
+void nxGLPanel::OnMouseWheelRolled(wxMouseEvent& evt) {
+	//wxMessageBox("mouse roll");
+	if (m_pEngine->Scene()->CameraReady()) {
+		float moved = (float)evt.GetWheelDelta() / 80;
+		
+		if (evt.GetWheelRotation() < 0)
+			m_pEngine->Scene()->Camera()->SetZ(m_pEngine->Scene()->Camera()->Position().z - moved);
+		else
+			m_pEngine->Scene()->Camera()->SetZ(m_pEngine->Scene()->Camera()->Position().z + moved);
+	}
+}
+
+void nxGLPanel::OnMouseMoved(wxMouseEvent& evt) {
+	m_pEngine->Scene()->Camera()->SetClicked( evt.LeftIsDown() );
+	if (m_pEngine->Scene()->Camera()->IsClicked()){
+		wxMessageBox("Dragging clicked");
+	}
 }
 
 void nxFrame::OnClose(wxCloseEvent& evt) {
@@ -178,10 +220,20 @@ void nxFrame::PositionStatusBar()
 	wxFrame::PositionStatusBar();
 }
 
-nxGLPanel::nxGLPanel(wxFrame* parent, int* args)
+nxGLPanel::nxGLPanel(nxFrame* parent, int* args)
 	: wxGLCanvas(parent, wxID_ANY, args, wxDefaultPosition, wxDefaultSize, wxFULL_REPAINT_ON_RESIZE)
 {
 	//m_pGLCtx = new wxGLContext(this);
+
+	// Keyboard Input Callbacks
+	//Bind(wxEVT_KEY_DOWN, wxKeyEventHandler(nxFrame::OnKeyPressed), NULL, this);
+	//Bind(wxEVT_KEY_UP, wxKeyEventHandler(nxFrame::OnKeyReleased), NULL, this);
+	Bind(wxEVT_LEFT_DOWN, wxMouseEventHandler(nxGLPanel::OnLeftClickPressed), this, wxID_ANY);
+	Bind(wxEVT_LEFT_UP, wxMouseEventHandler(nxGLPanel::OnLeftClickReleased), this, wxID_ANY);
+	Bind(wxEVT_MOUSEWHEEL, wxMouseEventHandler(nxGLPanel::OnMouseWheelRolled), this, wxID_ANY);
+	Bind(wxEVT_MOTION, wxMouseEventHandler(nxGLPanel::OnMouseMoved));
+
+	m_pEngine = parent->Engine();
 
 	// To avoid flashing on MSW
 	SetBackgroundStyle(wxBG_STYLE_CUSTOM);

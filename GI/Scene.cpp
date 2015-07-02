@@ -27,10 +27,12 @@ namespace pt = boost::property_tree;
 
 nxScene::nxScene(nxEngine* eng) {
 	m_pEngine = eng;
+	m_Camera = NULL;
 }
 
 nxScene::nxScene(std::string& path) {
 	m_SceneFilename = path;
+	m_Camera = NULL;
 }
 
 std::map<std::string, GLenum> gc_TypeMappings =
@@ -85,8 +87,9 @@ void nxScene::Init() {
 				v.second.get("ModelName", "unknkown"),
 				v.second.get("ModelType", "unknkown"),
 				glm::vec3(v.second.get<float>("CenterX", 0.0f),
-				v.second.get<float>("CenterY", 0.0f),
-							v.second.get<float>("CenterZ", 0.0f)));
+						  v.second.get<float>("CenterY", 0.0f),
+						  v.second.get<float>("CenterZ", 0.0f)),
+						  v.second.get<float>("Scale", 1.0f));
 			
 			m_pEngine->Scheduler()->ScheduleJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_LOAD_ASSET, data));
 		}

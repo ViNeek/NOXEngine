@@ -25,13 +25,17 @@ public:
 	float					MinX(){ return m_MinX; }
 	float					MinY(){ return m_MinY; }
 	float					MinZ(){ return m_MinZ; }
+	float					Scale(){ return m_Scale; }
+
 	std::string				ModelName() { return m_ModelName; }
 	glm::vec3&				ModelTransform() { return m_ModelTransform; }
 	void					SetModelTransform(glm::vec3 trans) { m_ModelTransform = trans; }
 
+	void					SetScale(float factor) { m_Scale = factor; }
 	void					BindVAO(){ glBindVertexArray(m_VAO); };
 	static void				BindVAO(GLuint id){ glBindVertexArray(id); };
 
+	void					Scale(float factor);
 	void					Draw();
 
 private:
@@ -55,6 +59,7 @@ private:
 
 	float					m_MaxX, m_MaxY, m_MaxZ;
 	float					m_MinX, m_MinY, m_MinZ;
+	float					m_Scale;
 
 	unsigned int			m_DataCurrentSize;
 	unsigned int			m_VertexDataSize;

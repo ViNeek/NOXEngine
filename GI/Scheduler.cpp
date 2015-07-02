@@ -89,7 +89,7 @@ void nxScheduler::Init() {
 	if (m_WorkerCount <= 3)
 		m_WorkerCount = 2;
 
-	m_WorkerCount *= 2;
+	//m_WorkerCount = 1;
 
 	BOOST_LOG_TRIVIAL(info) << "CPU Count : " << wxThread::GetCPUCount;
 	BOOST_LOG_TRIVIAL(info) << "Worker Count : " << m_WorkerCount;

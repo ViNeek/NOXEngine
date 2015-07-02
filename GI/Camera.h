@@ -51,10 +51,19 @@ public:
 	//Mouse down
 	void			Click(const glm::uvec2* NewPt);
 
+
+	void			SetClicked(bool clicked) { m_Clicked = clicked; }
+	void			SetDragged(bool dragging) { m_Dragging = dragging; };
+	bool			IsClicked() { return m_Clicked; }
+	bool			IsDragging() { return m_Dragging; };
+
 	//Mouse drag, calculate rotation
 	void			Drag(const glm::uvec2* NewPt, glm::vec4* NewRot);
 	glm::mat4		Update(glm::uvec2 &cursor);
 	void			SetPosition(float x, float y, float z) { m_Position = glm::vec3(-x, -y, -z); };
+	void			SetX(float x) { m_Position.x = x; };
+	void			SetY(float y) { m_Position.y = y; };
+	void			SetZ(float z) { m_Position.z = z; };
 	glm::vec3&		Position() { return m_Position; };
 
 private:

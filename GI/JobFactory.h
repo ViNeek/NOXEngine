@@ -147,14 +147,14 @@ struct nxGLAssetLoader {
 };
 
 struct nxAssetLoaderBlob {
-	nxAssetLoaderBlob(nxEngine* eng, std::string path, std::string type, glm::vec3 cent)
-		: m_Engine( eng ), m_ResourcePath( path ), m_ResourceType( type ), m_Center( cent ) {}
+	nxAssetLoaderBlob(nxEngine* eng, std::string path, std::string type, glm::vec3 cent, float scale)
+		: m_Engine( eng ), m_ResourcePath( path ), m_ResourceType( type ), m_Center( cent ), m_ScaleFactor( scale ) {}
 
 	nxEngine*		m_Engine;
 	std::string		m_ResourcePath;
 	std::string		m_ResourceType;
 	glm::vec3		m_Center;
-
+	float			m_ScaleFactor;
 };
 
 struct nxAssetLoader {

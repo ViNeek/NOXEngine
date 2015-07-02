@@ -63,6 +63,10 @@ public:
 
 	void						Draw();
 
+	bool						CameraReady() { return m_Camera != NULL; }
+
+	nxArcballCamera*			Camera() { return m_Camera; }
+
 private:
 
 	__declspec(align(16)) 

@@ -3,17 +3,18 @@
         "Count": 1,
         "Name": "Simple Scene",
         "Camera": {
-            "PositionX": 0.0,
-            "PositionY": 0.0,
-            "PositionZ": 100.0
+            "PositionX": 0,
+            "PositionY": 0,
+            "PositionZ": 500
         },
         "Entities": [
             {
-                "ModelName": "Models/Cube",
-                "ModelType": ".3DS",
-                "CenterX": 0.0,
-                "CenterY": 0.0,
-                "CenterZ": 0.0
+                "ModelName": "Models/REX",
+                "ModelType": ".obj",
+                "CenterX": 0,
+                "CenterY": 0,
+                "CenterZ": 0,
+                "Scale": 2
             }
         ],
         "Programs": [
