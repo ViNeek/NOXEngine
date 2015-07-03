@@ -114,12 +114,11 @@ void nxFrame::OnProgramAdded(wxCommandEvent& evt) {
 	m_pShaderMenu->Append(wxID_HIGHEST + evt.GetInt(), evt.GetString(), "Simple Shader", true );
 	std::string *thedata = new std::string;
 	*thedata = "User data " + evt.GetString();
-	
-	Bind(wxEVT_COMMAND_MENU_SELECTED, &nxFrame::OnProgramSwitch, this, wxID_HIGHEST + evt.GetInt(), wxID_ANY, (wxObject*) thedata);
+	m_pShaderMenu->Bind(wxEVT_COMMAND_MENU_SELECTED, &nxFrame::OnProgramSwitch, this, wxID_HIGHEST + evt.GetInt(), wxID_HIGHEST + evt.GetInt() + 1, (wxObject*) new wxString(*thedata));
 }
 
 void nxFrame::OnProgramSwitch(wxCommandEvent& evt) {
-	wxMessageBox(*((std::string*)evt.GetEventUserData()));
+	//wxMessageBox(*((wxString*)evt.GetEventUserData()));
 }
 
 void nxFrame::OnResize(wxSizeEvent& evt) {
