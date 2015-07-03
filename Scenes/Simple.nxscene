@@ -5,13 +5,13 @@
         "Camera": {
             "PositionX": 0,
             "PositionY": 0,
-            "PositionZ": 500
+            "PositionZ": 1000
         },
         "Entities": [
             {
                 "ModelName": "Models/REX",
                 "ModelType": ".obj",
-                "CenterX": 0,
+                "CenterX": 300,
                 "CenterY": 0,
                 "CenterZ": 0,
                 "Scale": 2
@@ -19,6 +19,35 @@
         ],
         "Programs": [
             {
+                "Name":  "Simple Pass",
+                "Shaders": [
+                    {
+                        "Fragment": "../Shaders/SimplePass.f.glsl"
+                    },
+                    {
+                        "Vertex": "../Shaders/SimplePass.v.glsl"
+                    },
+                    {
+                        "Geometry": "../Shaders/SimplePass.g.glsl"
+                    }
+                ]
+            },
+            {
+                "Name":  "Voxelize",
+                "Shaders": [
+                    {
+                        "Fragment": "../Shaders/SimplePass.f.glsl"
+                    },
+                    {
+                        "Vertex": "../Shaders/SimplePass.v.glsl"
+                    },
+                    {
+                        "Geometry": "../Shaders/SimplePass.g.glsl"
+                    }
+                ]
+            },
+            {
+                "Name":  "Voxelize Preview",
                 "Shaders": [
                     {
                         "Fragment": "../Shaders/SimplePass.f.glsl"

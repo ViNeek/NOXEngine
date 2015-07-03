@@ -1,10 +1,12 @@
 #include "Program.h"
 
+#include "CustomEvents.h"
 #include "Job.h"
 #include "JobFactory.h"
 #include "Shader.h"
 #include "Engine.h"
 #include "Renderer.h"
+#include "Scheduler.h"
 
 #include "GLUtils.h"
 
@@ -173,6 +175,7 @@ void nxProgram::ShowActiveUniforms(){
 	free(name);
 }
 
+static int i = 1000;
 bool nxProgramLinker::operator()(void* data) {
 	nxProgramLinkerBlob* blob = (nxProgramLinkerBlob*)data;
 
@@ -189,6 +192,12 @@ bool nxProgramLinker::operator()(void* data) {
 	blob->m_Prog->ShowActiveAttributes();
 
 	std::cout << "Program Linked " << blob->m_Prog->IsLinked();
+
+	wxFrame* evtHandler = blob->m_Engine->Scheduler()->EventHandler();
+	wxCommandEvent* evt = new wxCommandEvent(nxPROGRAM_ADDED_EVENT); // Still keeping it simple, don't give a specific event ID
+	evt->SetInt(i++);
+	evt->SetString( blob->m_Prog->GetName() );
+	wxQueueEvent(evtHandler, evt); // This posts to ourselves: it'll be caught and sent to a different method
 
 	return true;
 };

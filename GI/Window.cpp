@@ -95,6 +95,7 @@ nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 	// Custom
 	Bind(nxRENDERER_EXIT_EVENT, &nxFrame::OnRendererExit, this, wxID_ANY);
 	Bind(nxSCHEDULER_EXIT_EVENT, &nxFrame::OnSchedulerExit, this, wxID_ANY);
+	Bind(nxPROGRAM_ADDED_EVENT, &nxFrame::OnProgramAdded, this, wxID_ANY);
 
 }
  
@@ -108,11 +109,27 @@ bool nxFrame::IsSchedulerFinished()
 	return Engine()->IsRendererFinished();
 }
 
+void nxFrame::OnProgramAdded(wxCommandEvent& evt) {
+	std::cout << "Adding Program " << evt.GetString();
+	m_pShaderMenu->Append(wxID_HIGHEST + evt.GetInt(), evt.GetString(), "Simple Shader", true );
+	std::string *thedata = new std::string;
+	*thedata = "User data " + evt.GetString();
+	
+	Bind(wxEVT_COMMAND_MENU_SELECTED, &nxFrame::OnProgramSwitch, this, wxID_HIGHEST + evt.GetInt(), wxID_ANY, (wxObject*) thedata);
+}
+
+void nxFrame::OnProgramSwitch(wxCommandEvent& evt) {
+	wxMessageBox(*((std::string*)evt.GetEventUserData()));
+}
+
 void nxFrame::OnResize(wxSizeEvent& evt) {
 	nxFramebufferResizerBlob* data = new nxFramebufferResizerBlob(Engine(), Engine()->Renderer());
 	Engine()->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_FRAMEBUFFER_RESIZE, data));
-
 	Engine()->Renderer()->SetViewportSize(evt.GetSize().GetX(), evt.GetSize().GetY());
+
+	if (Engine()->Scene()->CameraReady()) {
+		Engine()->Scene()->Camera()->SetBounds(evt.GetSize().GetX(), evt.GetSize().GetY());
+	}
 
 	evt.Skip();
 }
@@ -124,7 +141,10 @@ void nxGLPanel::OnLeftClickPressed(wxMouseEvent& evt) {
 	SetFocus();
 	CaptureMouse();
 
-	m_pEngine->Scene()->Camera()->SetClicked(true);
+	if (m_pEngine->Scene()->CameraReady()) {
+		m_pEngine->Scene()->Camera()->SetCursor(evt.GetPosition().x, evt.GetPosition().y);
+		m_pEngine->Scene()->Camera()->SetClicked(true);
+	}
 
 }
 
@@ -135,7 +155,10 @@ void nxGLPanel::OnLeftClickReleased(wxMouseEvent& evt) {
 	if (HasCapture())
 		ReleaseMouse();
 
-	m_pEngine->Scene()->Camera()->SetClicked(false);
+	if (m_pEngine->Scene()->CameraReady()) {
+		m_pEngine->Scene()->Camera()->SetCursor(evt.GetPosition().x, evt.GetPosition().y);
+		m_pEngine->Scene()->Camera()->SetClicked(false);
+	}
 }
 
 void nxGLPanel::OnMouseWheelRolled(wxMouseEvent& evt) {
@@ -151,9 +174,9 @@ void nxGLPanel::OnMouseWheelRolled(wxMouseEvent& evt) {
 }
 
 void nxGLPanel::OnMouseMoved(wxMouseEvent& evt) {
-	m_pEngine->Scene()->Camera()->SetClicked( evt.LeftIsDown() );
-	if (m_pEngine->Scene()->Camera()->IsClicked()){
-		wxMessageBox("Dragging clicked");
+	if (m_pEngine->Scene()->CameraReady()) {
+		m_pEngine->Scene()->Camera()->SetCursor(evt.GetPosition().x, evt.GetPosition().y);
+		m_pEngine->Scene()->Camera()->SetClicked(evt.LeftIsDown());
 	}
 }
 
@@ -231,7 +254,7 @@ nxGLPanel::nxGLPanel(nxFrame* parent, int* args)
 	Bind(wxEVT_LEFT_DOWN, wxMouseEventHandler(nxGLPanel::OnLeftClickPressed), this, wxID_ANY);
 	Bind(wxEVT_LEFT_UP, wxMouseEventHandler(nxGLPanel::OnLeftClickReleased), this, wxID_ANY);
 	Bind(wxEVT_MOUSEWHEEL, wxMouseEventHandler(nxGLPanel::OnMouseWheelRolled), this, wxID_ANY);
-	Bind(wxEVT_MOTION, wxMouseEventHandler(nxGLPanel::OnMouseMoved));
+	Bind(wxEVT_MOTION, wxMouseEventHandler(nxGLPanel::OnMouseMoved), this, wxID_ANY);
 
 	m_pEngine = parent->Engine();
 

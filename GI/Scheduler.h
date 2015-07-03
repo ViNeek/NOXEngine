@@ -31,7 +31,11 @@ public:
 	bool							KillWorker() { return (--m_WorkerCount) == 0; };
 	std::vector<nxWorker*>&			Workers() { return m_vWorkers; }
 	nxJobQueue*						WorkerQueue() { return m_pWorkersCommandQueue; };
+
+	wxFrame*						EventHandler() { return m_pParent; }
+
 private:
+
 	wxFrame*						m_pParent;
 
 	std::vector<nxWorker*>			m_vWorkers;

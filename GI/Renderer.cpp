@@ -4,6 +4,7 @@
 
 #include "Program.h"
 #include "Renderer.h"
+#include "Camera.h"
 #include "Job.h"
 #include "Scheduler.h"
 #include "JobFactory.h"
@@ -256,6 +257,12 @@ void nxRenderer::ResizeFramebuffer() {
 			m_State |= NX_RENDERER_FRAMEBUFFER_READY;
 
 		}
+
+		if (m_pEngine->Scene()->CameraReady())
+			m_pEngine->Scene()->Camera()->SetBounds((GLfloat)m_VWidth, (GLfloat)m_VHeight);
+		
+		m_pEngine->Scene()->SetProjection(45.0f, (GLfloat)m_VWidth / (GLfloat)m_VHeight, 1.0f, 2000.0f);
+
 	}
 	
 }

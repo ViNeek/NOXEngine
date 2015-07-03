@@ -45,12 +45,17 @@ public:
 	void									ShowActiveUniforms();
 	void									ShowActiveAttributes();
 
+	void									SetName(std::string& name) { m_ProgramName = name; };
+	const std::string&						GetName() { return m_ProgramName; };
+
 private:
 
 	GLuint									m_ProgramID;
 
 	bool									m_Linked;
 	std::vector<nxShader*>					m_Shaders;
+
+	std::string								m_ProgramName;
 
 	size_t									m_InitShaderCount;
 

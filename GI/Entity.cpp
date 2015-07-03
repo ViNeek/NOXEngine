@@ -160,7 +160,13 @@ bool nxAssetLoader::operator()(void* data) {
 
 	nxEntity* ent = new nxEntity(blob->m_ResourcePath + blob->m_ResourceType);
 
-	ent->SetModelTransform(blob->m_Center);
+	glm::vec3 center;
+	center.x = ((ent->MaxX() + ent->MinX())) / 2.0f;
+	center.y = ((ent->MaxY() + ent->MinY())) / 2.0f;
+	center.z = ((ent->MaxZ() + ent->MinZ())) / 2.0f;
+
+	//ent->SetModelTransform(blob->m_Center);
+	ent->SetModelTransform(center);
 
 	BOOST_LOG_TRIVIAL(info) << "Asset MaxX " << ent->MaxX();
 	BOOST_LOG_TRIVIAL(info) << "Asset MaxY " << ent->MaxY();

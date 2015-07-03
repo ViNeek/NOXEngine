@@ -66,6 +66,7 @@ void nxScene::Init() {
 		BOOST_LOG_TRIVIAL(info) << "Program shader count : " << tree.get_child("Scene.Programs").size();
 		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Programs")) {
 			nxProgram* prog = new nxProgram(v.second.get_child("Shaders").size());
+			prog->SetName(v.second.get<std::string>("Name"));
 			BOOST_FOREACH(pt::ptree::value_type &v1, v.second.get_child("Shaders")) {
 				BOOST_FOREACH(pt::ptree::value_type &v2, v1.second) {
 					nxShaderLoaderBlob* data = new nxShaderLoaderBlob(m_pEngine, prog, v2.second.data(), gc_TypeMappings.at(v2.first.data()));
@@ -122,6 +123,11 @@ glm::mat3& nxScene::Normal() {
 
 bool errorGL = true;
 void nxScene::Draw() {
+	if (CameraReady())
+		m_MState.m_RMatrix = Camera()->Update();
+	else
+		m_MState.m_RMatrix = glm::mat4();
+
 	m_MState.m_VMatrix = glm::mat4();
 
 	m_pEngine->Renderer()->UseProgram();
@@ -130,6 +136,9 @@ void nxScene::Draw() {
 	for (size_t i = 0; i < m_Entities.size(); i++) {
 		m_MState.m_VMatrix = glm::translate(View(),
 			m_Camera->Position());
+
+		m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
+		m_MState.m_VMatrix *= m_MState.m_RMatrix;
 
 		//m_MState.m_MMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
 		m_pEngine->Renderer()->Program()->SetUniform("NormalMatrix", Normal());

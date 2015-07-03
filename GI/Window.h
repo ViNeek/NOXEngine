@@ -55,6 +55,8 @@ private:
 	void					OnRendererExit(wxCommandEvent& evt);
 	void					OnSchedulerExit(wxCommandEvent& evt);
 	void					OnLoadScene(wxCommandEvent& evt);
+	void					OnProgramAdded(wxCommandEvent& evt);
+	void					OnProgramSwitch(wxCommandEvent& evt);
 
 	// StatusBar
 	virtual void			PositionStatusBar();
