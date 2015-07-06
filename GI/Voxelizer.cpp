@@ -49,6 +49,128 @@ void nxVoxelizer::Init() {
 	}
 }
 
+void nxVoxelizer::PrintGrid() {
+	GLuint width = m_dimensions.x;
+	GLuint height = m_dimensions.y;
+	GLuint depth = m_dimensions.z;
+	GLuint voxel_grid_size = width * height * depth;
+
+	GLuint count = width * height * 3;
+	int f = sizeof(glm::uvec4);
+	//glm::uvec4 * data = (glm::uvec4 *)boost::alignment::aligned_alloc(16, count * sizeof(glm::uvec4));
+	glm::uvec4 * data = new glm::uvec4[count];
+	GLuint channels = 4;
+	GLuint byteSizePerChannel = 4;
+	memset(data, 0, width * height * channels * byteSizePerChannel * 3);
+	std::cout << "malloc" << std::endl;
+	glBindTexture(GL_TEXTURE_2D_ARRAY, m_texture_3_axis_id);
+	glGetTexImage(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT, data);
+	std::cout << "mapping" << std::endl;
+
+	unsigned int counter = 0;
+	for (unsigned int g = 0; g < 3; g++) {
+		int occupied_voxels = 0;
+		for (unsigned int w = 0; w < width; ++w)
+		{
+			for (unsigned int h = 0; h < height; ++h)
+			{
+				unsigned long index = g * width * height + h * width + w;
+				glm::uvec4 compressed_uint = data[index];
+
+				//std::cout << " X " << compressed_uint.x << std::endl;
+				//std::cout << " Y " << compressed_uint.y << std::endl;
+				//std::cout << " Z " << compressed_uint.z << std::endl;
+				//std::cout << " W " << compressed_uint.w << std::endl;
+				bool occupied_slice = false;
+				for (unsigned int i = 0; i < 4; ++i)
+					occupied_slice |= compressed_uint[i] > 0u;
+
+				if (!occupied_slice) continue;
+
+				for (unsigned int d = 0; d < depth; ++d)
+				{
+					glm::uint bitPosIndex = d / 32;
+
+					glm::uvec4 bitPos = glm::uvec4(0u);
+					bitPos[bitPosIndex] = 1u << (d % 32);
+
+					bool occupied_voxel = (compressed_uint[bitPosIndex] & bitPos[bitPosIndex]) > 0u;
+
+					if (occupied_voxel)
+					{
+						occupied_voxels++;
+					}
+				}
+			}
+		}
+		printf("Occupied Voxels %d : %d\n", g, occupied_voxels);
+	}
+	//boost::alignment::aligned_free(data);
+	delete[] data;
+}
+
+void nxVoxelizer::GeneratePreviewGrid() {
+	GLuint width = m_dimensions.x;
+	GLuint height = m_dimensions.y;
+	GLuint depth = m_dimensions.z;
+	GLuint voxel_grid_size = width * height * depth;
+
+	GLuint count = width * height * 3;
+	int f = sizeof(glm::uvec4);
+	glm::uvec4 * data = (glm::uvec4 *)boost::alignment::aligned_alloc(16, count * sizeof(glm::uvec4));
+	//glm::uvec4 * data = new glm::uvec4[count];
+	GLuint channels = 4;
+	GLuint byteSizePerChannel = 4;
+	memset(data, 0, width * height * channels * byteSizePerChannel * 3);
+	std::cout << "malloc" << std::endl;
+	glBindTexture(GL_TEXTURE_2D_ARRAY, m_texture_3_axis_id);
+	glGetTexImage(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT, data);
+	std::cout << "mapping" << std::endl;
+
+	unsigned int counter = 0;
+	for (unsigned int g = 0; g < 3; g++) {
+		int occupied_voxels = 0;
+		for (unsigned int w = 0; w < width; ++w)
+		{
+			for (unsigned int h = 0; h < height; ++h)
+			{
+				unsigned long index = g * width * height + h * width + w;
+				glm::uvec4 compressed_uint = data[index];
+
+				bool occupied_slice = false;
+				for (unsigned int i = 0; i < 4; ++i)
+					occupied_slice |= compressed_uint[i] > 0u;
+
+				if (!occupied_slice) continue;
+
+				for (unsigned int d = 0; d < depth; ++d)
+				{
+					glm::uint bitPosIndex = d / 32;
+
+					glm::uvec4 bitPos = glm::uvec4(0u);
+					bitPos[bitPosIndex] = 1u << (d % 32);
+
+					bool occupied_voxel = (compressed_uint[bitPosIndex] & bitPos[bitPosIndex]) > 0u;
+
+					if (occupied_voxel)
+					{
+						occupied_voxels++;
+					}
+				}
+			}
+		}
+		printf("Occupied Voxels %d : %d\n", g, occupied_voxels);
+	}
+	boost::alignment::aligned_free(data);
+	//delete[] data;
+}
+
+void nxVoxelizer::CalculateViewProjection() {
+	//m_view_proj_axis[0] = m_proj_axis[0] * m_view_axis[0];
+	//m_view_proj_axis[1] = m_proj_axis[1] * m_view_axis[1];
+	//m_view_proj_axis[2] = m_proj_axis[2] * m_view_axis[2];
+}
+
 glm::vec3 nxVoxelizer::GridSize() {
 	if (m_pEngine->Scene()->GMaxX() > 0) {
 		return glm::vec3(

@@ -39,12 +39,20 @@ public:
 	glm::uvec3							Dimesions() { return m_dimensions; }
 	void								SetMatrices();
 	glm::mat4*							Views() { return m_view_axis; };
+	glm::vec4*							Viewports() { return m_viewport; };
 	glm::mat4*							Projections() { return m_proj_axis; };
+	glm::mat4*							ViewProjections() { return m_view_proj_axis; };
+	void								CalculateViewProjection();
+	void								GeneratePreviewGrid();
 
 	glm::vec3							GridSize();
 	glm::vec3							GridCenter();
 	glm::vec3							GridMax();
 	glm::vec3							GridMin();
+
+	GLuint								VoxelizerFramebuffer() { return m_fbo_3_axis; };
+
+	void								PrintGrid();
 
 private:
 

@@ -42,7 +42,7 @@ uvec4 encodeBinaryVoxel(int position)
 	// the logical OR operator has been set externally so that an occupied voxel is not altered
 	return uvec4(voxelId1, voxelId2, voxelId3, voxelId4);
 }
-//#define VER1
+#define VER1
 // this function is currently called for each different layer (X, Y, Z)
 void main(void)
 {

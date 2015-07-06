@@ -162,6 +162,9 @@
     <None Include="..\Shaders\ThreeWayBinary.f.glsl" />
     <None Include="..\Shaders\ThreeWayBinary.g.glsl" />
     <None Include="..\Shaders\ThreeWayBinary.v.glsl" />
+    <None Include="..\Shaders\VoxelPreview.f.glsl" />
+    <None Include="..\Shaders\VoxelPreview.g.glsl" />
+    <None Include="..\Shaders\VoxelPreview.v.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

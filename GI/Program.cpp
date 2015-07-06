@@ -97,6 +97,10 @@ void nxProgram::SetUniform(const char *name, const glm::ivec3 & v)
 {
 	glUniform3iv(GetUniformLocation(name), 1, &v[0]);
 }
+void nxProgram::SetUniform(const char *name, const glm::uvec3 & v)
+{
+	glUniform3uiv(GetUniformLocation(name), 1, &v[0]);
+}
 void nxProgram::SetUniform(const char *name, const glm::vec3 & v)
 {
 	glUniform3fv(GetUniformLocation(name), 1, &v[0]);
@@ -108,6 +112,10 @@ void nxProgram::SetUniform(const char *name, const glm::vec4 & v)
 void nxProgram::SetUniform(const char *name, const glm::mat4 & m)
 {
 	glUniformMatrix4fv(GetUniformLocation(name), 1, false, &m[0][0]);
+}
+void nxProgram::SetUniform(const char *name, int count, const glm::mat4 * m)
+{
+	glUniformMatrix4fv(GetUniformLocation(name), count, false, &m[0][0][0]);
 }
 void nxProgram::SetUniform(const char *name, const glm::mat3 & m)
 {

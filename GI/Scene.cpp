@@ -185,24 +185,29 @@ void nxScene::DrawVoxelized() {
 	m_pEngine->Renderer()->UseProgram();
 	if (errorGL) Utils::GL::CheckGLState("Program USE");
 
-	if (m_pEngine->Renderer()->VoxelizerReady() )
-		m_MState.m_PMatrix = m_pEngine->Renderer()->Voxelizer()->Projections()[0];
+	if (m_pEngine->Renderer()->VoxelizerReady()) {
+		//m_MState.m_PMatrix = m_pEngine->Renderer()->Voxelizer()->Projections()[0];
+		//m_pEngine->Renderer()->Voxelizer()->CalculateViewProjection();
+		glViewportArrayv(0, 3, &m_pEngine->Renderer()->Voxelizer()->Viewports()[0][0]);
+	}
 
 	for (size_t i = 0; i < m_Entities.size(); i++) {
-		if (m_pEngine->Renderer()->VoxelizerReady())
-			m_MState.m_VMatrix = m_pEngine->Renderer()->Voxelizer()->Views()[0];
-		else
+		if (!m_pEngine->Renderer()->VoxelizerReady())
+			//m_MState.m_VMatrix = m_pEngine->Renderer()->Voxelizer()->Views()[0];
+		//else
 			m_MState.m_VMatrix = glm::translate(View(),
 				m_Camera->Position());
 
 		m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
-		m_MState.m_VMatrix *= m_MState.m_RMatrix;
+		//m_MState.m_VMatrix *= m_MState.m_RMatrix;
 
-		//m_MState.m_MMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
-		m_pEngine->Renderer()->Program()->SetUniform("NormalMatrix", Normal());
+		// = glm::translate(View(), m_Entities[i]->ModelTransform());
+		//m_pEngine->Renderer()->Program()->SetUniform("NormalMatrix", Normal());
+		m_pEngine->Renderer()->Program()->SetUniform("uniform_model", View());
+		m_pEngine->Renderer()->Program()->SetUniform("uniform_size", m_pEngine->Renderer()->Voxelizer()->Dimesions());
 		if (errorGL) Utils::GL::CheckGLState("Set Normal");
 
-		m_pEngine->Renderer()->Program()->SetUniform("MVP", m_MState.m_PMatrix*m_MState.m_VMatrix);
+		m_pEngine->Renderer()->Program()->SetUniform("uniform_view_proj", 3, m_pEngine->Renderer()->Voxelizer()->ViewProjections());
 		//m_pEngine->Renderer()->Program()->SetUniform("MVP", View());
 		if (errorGL) Utils::GL::CheckGLState("Set MVP");
 
@@ -210,6 +215,9 @@ void nxScene::DrawVoxelized() {
 		if (errorGL) Utils::GL::CheckGLState("Draw : " + i);
 
 	}
+
+	if (m_pEngine->Renderer()->VoxelizerReady()) 
+		m_pEngine->Renderer()->Voxelizer()->PrintGrid();
 
 	errorGL = false;
 }

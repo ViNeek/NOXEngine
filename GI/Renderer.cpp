@@ -4,6 +4,7 @@
 
 #include "Program.h"
 #include "Renderer.h"
+#include "Voxelizer.h"
 #include "Camera.h"
 #include "Job.h"
 #include "Scheduler.h"
@@ -63,7 +64,8 @@ void *nxRenderer::Entry()
 
 		UseProgram();
 
-		RenderFrameDemo();
+		//RenderFrameDemo();
+		RenderFrame();
 
 		SwapBuffers();
 		
@@ -115,16 +117,24 @@ void nxRenderer::RenderFrameDemo() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//glViewport(0, 0, m_VWidth, m_VHeight);
-	glViewport(0, 0, 128, 128);
+	//glViewport(0, 0, 128, 128);
 	//if (error) Utils::GL::CheckGLState("Frame");
 
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
+	if ( VoxelizerReady() )
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Voxelizer()->VoxelizerFramebuffer());
+
 	//if (error) Utils::GL::CheckGLState("Draw");
+
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_BLEND);
+	glEnable(GL_COLOR_LOGIC_OP);
+	glLogicOp(GL_OR);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//glViewport(0, 0, m_VWidth, m_VHeight);
-	glViewport(0, 0, 128, 128);
+	//glViewport(0, 0, 128, 128);
 
 	//m_pEngine->Scene()->Draw();
 	m_pEngine->Scene()->DrawVoxelized();
@@ -132,16 +142,16 @@ void nxRenderer::RenderFrameDemo() {
 	//if (error) Utils::GL::CheckGLState("Draw");
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
+	//glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 
 	//if (error) Utils::GL::CheckGLState("Swap");
 
 	//glBlitFramebuffer(0, 0, m_VWidth - 1, m_VHeight - 1,
 	//			      0, 0, m_VWidth - 1, m_VHeight - 1,
 	//				  GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-	glBlitFramebuffer(0, 0, 128 - 1, 128 - 1,
-		0, 0, 128 - 1, 128 - 1,
-		GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+	//glBlitFramebuffer(0, 0, 128 - 1, 128 - 1,
+	//	0, 0, 128 - 1, 128 - 1,
+	//	GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 

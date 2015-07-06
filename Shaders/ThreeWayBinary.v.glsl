@@ -14,8 +14,7 @@
 #extension GL_EXT_gpu_shader4 : enable
 
 layout(location = 0) in vec3 position;
-layout(location = 1) in vec3 normal;
-layout(location = 2) in vec4 color;
+layout(location = 2) in vec3 normal;
 layout(location = 3) in vec2 texcoord0;
 layout(location = 4) in vec2 texcoord1;
 layout(location = 5) in vec3 tangent;
