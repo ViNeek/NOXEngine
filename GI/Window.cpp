@@ -251,9 +251,11 @@ void nxFrame::PositionStatusBar()
 	nxStatusBar* status = (nxStatusBar*)GetStatusBar();
 	wxScopedPtr<wxWindowUpdateLocker> lock;
 
-	if ( status ) 
+	if (status)
 		lock.reset(new wxWindowUpdateLocker(status));
-	
+	else
+		return;
+
 	status->Resize();
 
 	wxFrame::PositionStatusBar();
