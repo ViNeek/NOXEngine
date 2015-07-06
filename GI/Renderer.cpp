@@ -18,6 +18,7 @@ nxRenderer::nxRenderer(wxGLCanvas* frame)
 	m_pGLCtx = NULL;
 	m_IsActive = true;
 	m_FBOInited = false;
+	m_IsVoxelizerReady = false;
 	m_pGLCommandQueue = new nxGLJobQueue(0);
 	m_VWidth = 0;
 	m_VHeight = 0;
@@ -30,6 +31,8 @@ nxRenderer::nxRenderer(nxEngine* eng) {
 	m_pParent = NULL;
 	m_pGLCtx = NULL;
 	m_IsActive = true;
+	m_FBOInited = false;
+	m_IsVoxelizerReady = false;
 	m_pGLCommandQueue = new nxGLJobQueue(0);
 	m_VWidth = 0;
 	m_VHeight = 0;
@@ -39,8 +42,10 @@ nxRenderer::nxRenderer(nxEngine* eng) {
 }
 
 void nxRenderer::UseProgram() {
-	if ((size_t)m_ProgramIndex < m_ShaderPrograms.size() )
-		m_ShaderPrograms[m_ProgramIndex]->Use();
+	//if ((size_t)m_ProgramIndex < m_ShaderPrograms.size() )
+	nxProgram* prog = m_ShaderPrograms[m_ProgramName];
+	if ( prog )
+		prog->Use();
 }
 
 void *nxRenderer::Entry()
@@ -58,7 +63,7 @@ void *nxRenderer::Entry()
 
 		UseProgram();
 
-		RenderFrame();
+		RenderFrameDemo();
 
 		SwapBuffers();
 		
@@ -87,6 +92,7 @@ void nxRenderer::RenderFrame() {
 	glViewport(0, 0, m_VWidth, m_VHeight);
 
 	m_pEngine->Scene()->Draw();
+	//m_pEngine->Scene()->DrawVoxelized();
 
 	//if (error) Utils::GL::CheckGLState("Draw");
 
@@ -98,6 +104,44 @@ void nxRenderer::RenderFrame() {
 	glBlitFramebuffer(0, 0, m_VWidth - 1, m_VHeight - 1,
 				      0, 0, m_VWidth - 1, m_VHeight - 1,
 					  GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+	
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+	//error = false;
+}
+
+void nxRenderer::RenderFrameDemo() {
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//glViewport(0, 0, m_VWidth, m_VHeight);
+	glViewport(0, 0, 128, 128);
+	//if (error) Utils::GL::CheckGLState("Frame");
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
+	//if (error) Utils::GL::CheckGLState("Draw");
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//glViewport(0, 0, m_VWidth, m_VHeight);
+	glViewport(0, 0, 128, 128);
+
+	//m_pEngine->Scene()->Draw();
+	m_pEngine->Scene()->DrawVoxelized();
+
+	//if (error) Utils::GL::CheckGLState("Draw");
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
+
+	//if (error) Utils::GL::CheckGLState("Swap");
+
+	//glBlitFramebuffer(0, 0, m_VWidth - 1, m_VHeight - 1,
+	//			      0, 0, m_VWidth - 1, m_VHeight - 1,
+	//				  GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+	glBlitFramebuffer(0, 0, 128 - 1, 128 - 1,
+		0, 0, 128 - 1, 128 - 1,
+		GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
@@ -171,7 +215,7 @@ void nxRenderer::InitFramebuffer() {
 		break;
 	}
 
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
 	glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
@@ -181,7 +225,7 @@ void nxRenderer::InitFramebuffer() {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
 	glShadeModel(GL_SMOOTH);							// Enable Smooth Shading
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);				// Black Background
@@ -257,9 +301,6 @@ void nxRenderer::ResizeFramebuffer() {
 			m_State |= NX_RENDERER_FRAMEBUFFER_READY;
 
 		}
-
-		if (m_pEngine->Scene()->CameraReady())
-			m_pEngine->Scene()->Camera()->SetBounds((GLfloat)m_VWidth, (GLfloat)m_VHeight);
 		
 		m_pEngine->Scene()->SetProjection(45.0f, (GLfloat)m_VWidth / (GLfloat)m_VHeight, 1.0f, 2000.0f);
 

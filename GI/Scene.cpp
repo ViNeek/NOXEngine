@@ -22,12 +22,17 @@
 
 #include "Scheduler.h"
 #include "Camera.h"
+#include "Voxelizer.h"
 
 namespace pt = boost::property_tree;
 
 nxScene::nxScene(nxEngine* eng) {
 	m_pEngine = eng;
 	m_Camera = NULL;
+
+	m_GMaxX = m_GMaxY = m_GMaxZ = -100000.0f;
+	m_GMinX = m_GMinY = m_GMinZ = 100000.0f;
+
 }
 
 nxScene::nxScene(std::string& path) {
@@ -77,6 +82,8 @@ void nxScene::Init() {
 			//m_modules.insert(v.second.data());
 		}
 		
+		m_pEngine->Renderer()->SetActiveProgram("Simple Pass");
+
 		BOOST_LOG_TRIVIAL(info) << "Entities : " << tree.get_child("Scene.Entities").size();
 		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Entities")) {
 			BOOST_LOG_TRIVIAL(info) << "STUFF : " << v.second.get("ModelName", "unknkown");
@@ -100,10 +107,20 @@ void nxScene::Init() {
 			//BOOST_LOG_TRIVIAL(info) << "Camera X position : " << tree.get_child("Scene.Camera").get<float>("PositionX", 0.0f);
 			//BOOST_LOG_TRIVIAL(info) << "Camera Y position : " << tree.get_child("Scene.Camera").get<float>("PositionY", 0.0f);
 			//BOOST_LOG_TRIVIAL(info) << "Camera Z position : " << tree.get_child("Scene.Camera").get<float>("PositionZ", 0.0f);
-			m_Camera->SetPosition(tree.get_child("Scene.Camera").get<float>("PositionX", 0.0f),
-				tree.get_child("Scene.Camera").get<float>("PositionY", 0.0f),
-				tree.get_child("Scene.Camera").get<float>("PositionZ", 0.0f));
+		m_Camera->SetPosition(tree.get_child("Scene.Camera").get<float>("PositionX", 0.0f),
+			tree.get_child("Scene.Camera").get<float>("PositionY", 0.0f),
+			tree.get_child("Scene.Camera").get<float>("PositionZ", 0.0f));
 		//}
+
+		glm::uvec3 dimensions(tree.get_child("Scene.Voxelizer").get<int>("DimX", 128),
+			tree.get_child("Scene.Voxelizer").get<int>("DimY", 128),
+			tree.get_child("Scene.Voxelizer").get<int>("DimZ", 128));
+
+		nxVoxelizer* voxel = new nxVoxelizer(m_pEngine, dimensions.x);
+		m_pEngine->Renderer()->SetVoxelizer(voxel);
+
+		nxVoxelizerInitializerBlob* voxelData = new nxVoxelizerInitializerBlob(m_pEngine, dimensions);
+		m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_VOXELIZER_INIT, voxelData));
 
 		SetProjection(45.0f, (float)m_pEngine->Renderer()->Width() / m_pEngine->Renderer()->Height(), 1.0f, 1000.0f);
 	
@@ -156,8 +173,64 @@ void nxScene::Draw() {
 	errorGL = false;
 }
 
+void nxScene::DrawVoxelized() {
+	if (CameraReady())
+		m_MState.m_RMatrix = Camera()->Update();
+	else
+		m_MState.m_RMatrix = glm::mat4();
+
+	m_MState.m_VMatrix = glm::mat4();
+
+	m_pEngine->Renderer()->SetActiveProgram("Voxelize");
+	m_pEngine->Renderer()->UseProgram();
+	if (errorGL) Utils::GL::CheckGLState("Program USE");
+
+	if (m_pEngine->Renderer()->VoxelizerReady() )
+		m_MState.m_PMatrix = m_pEngine->Renderer()->Voxelizer()->Projections()[0];
+
+	for (size_t i = 0; i < m_Entities.size(); i++) {
+		if (m_pEngine->Renderer()->VoxelizerReady())
+			m_MState.m_VMatrix = m_pEngine->Renderer()->Voxelizer()->Views()[0];
+		else
+			m_MState.m_VMatrix = glm::translate(View(),
+				m_Camera->Position());
+
+		m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
+		m_MState.m_VMatrix *= m_MState.m_RMatrix;
+
+		//m_MState.m_MMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
+		m_pEngine->Renderer()->Program()->SetUniform("NormalMatrix", Normal());
+		if (errorGL) Utils::GL::CheckGLState("Set Normal");
+
+		m_pEngine->Renderer()->Program()->SetUniform("MVP", m_MState.m_PMatrix*m_MState.m_VMatrix);
+		//m_pEngine->Renderer()->Program()->SetUniform("MVP", View());
+		if (errorGL) Utils::GL::CheckGLState("Set MVP");
+
+		m_Entities[i]->Draw();
+		if (errorGL) Utils::GL::CheckGLState("Draw : " + i);
+
+	}
+
+	errorGL = false;
+}
+
+void nxScene::UpdateBounds(nxEntity* ent) {
+
+	if (ent->MinX() < m_GMinX) m_GMinX = ent->MinX();
+	if (ent->MinY() < m_GMinY) m_GMinY = ent->MinY();
+	if (ent->MinZ() < m_GMinZ) m_GMinZ = ent->MinZ();
+	if (ent->MaxX() > m_GMaxX) m_GMaxX = ent->MaxX();
+	if (ent->MaxY() > m_GMaxY) m_GMaxY = ent->MaxY();
+	if (ent->MaxZ() > m_GMaxZ) m_GMaxZ = ent->MaxZ();
+
+}
+
 void nxScene::SetProjection(float angle, float fov, float zNear, float zFar) {
 	m_MState.m_PMatrix = glm::perspective(angle, fov, zNear, zFar);
+}
+
+void nxScene::SetProjection(glm::mat4& proj) {
+	m_MState.m_PMatrix = proj;
 }
 
 bool nxSceneLoader::operator()(void* data) {

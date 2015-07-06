@@ -30,6 +30,7 @@ enum nxJobID {
 	NX_JOB_LOAD_SHADER,
 	NX_GL_JOB_EXTENSION_INIT,
 	NX_GL_JOB_FRAMEBUFFER_INIT,
+	NX_GL_JOB_VOXELIZER_INIT,
 	NX_GL_JOB_FRAMEBUFFER_RESIZE,
 	NX_GL_JOB_COMPILE_SHADER,
 	NX_GL_JOB_LOAD_ASSET,
@@ -158,6 +159,18 @@ struct nxAssetLoaderBlob {
 };
 
 struct nxAssetLoader {
+	bool operator()(void* data);
+};
+
+struct nxVoxelizerInitializerBlob {
+	nxVoxelizerInitializerBlob(nxEngine* eng, glm::uvec3 dims)
+		: m_Engine(eng), m_Dimensions(dims) {}
+
+	nxEngine*		m_Engine;
+	glm::uvec3		m_Dimensions;
+};
+
+struct nxVoxelizerInitializer {
 	bool operator()(void* data);
 };
 

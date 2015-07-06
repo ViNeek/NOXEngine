@@ -42,10 +42,9 @@ public:
 			NewWidth = 1.0f;
 			NewHeight = 1.0f;
 		}
-
 		//Set adjustment factor for width/height
-		m_AdjustHeight = 1.0f / ((NewWidth - 1.0f) * 0.5f);
-		m_AdjustWidth = 1.0f / ((NewHeight - 1.0f) * 0.5f);
+		m_AdjustWidth = 1.0f / ((NewWidth - 1.0f) * 0.5f);
+		m_AdjustHeight = 1.0f / ((NewHeight - 1.0f) * 0.5f);
 	}
 
 	//Mouse down
@@ -66,15 +65,20 @@ public:
 	void					SetZ(float z) { m_Position.z = z; };
 	glm::vec3&				Position() { return m_Position; };
 
+	float					Width() { return m_AdjustWidth; }
+	float					Height() { return m_AdjustHeight; }
+
 	const glm::uvec2&		Cursor() { return m_Cursor; };
 	inline void				SetCursor(int x, int y) { m_Cursor.x = x; m_Cursor.y = y; };
 
 private:
 
-	inline void		MapToSphere(glm::vec3& vec) const;
+	inline void				MapToSphere(glm::vec3& vec) const;
 
 	bool					m_Clicked;
 	bool					m_Dragging;
+	bool					m_WClicked;
+
 	glm::vec3				m_ClickVec;          //Saved click vector
 	glm::vec3				m_DragVec;          //Saved drag vector
 	glm::vec3				m_Position;

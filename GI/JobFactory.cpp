@@ -73,6 +73,12 @@ nxJob* nxJobFactory::CreateJob(nxJobID id, void* data)
 		j = new nxGLJob(data, cb);
 	}
 		break;
+	case NX_GL_JOB_VOXELIZER_INIT:
+	{
+		nxVoxelizerInitializer cb;
+		j = new nxGLJob(data, cb);
+	}
+		break;
 	case NX_GL_JOB_LINK_PROGRAM:
 	{
 		nxProgramLinker cb;

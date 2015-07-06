@@ -4,6 +4,7 @@
 #include "Engine.h"
 #include "Renderer.h"
 #include "Scene.h"
+#include "Voxelizer.h"
 
 #include "GLUtils.h"
 
@@ -64,8 +65,6 @@ void nxEntity::InitFromFile(const std::string& path) {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path,
 		aiProcess_CalcTangentSpace |
-		aiProcess_Triangulate |
-		aiProcess_JoinIdenticalVertices |
 		aiProcess_SortByPType);
 
 	if (!scene)
@@ -160,6 +159,8 @@ bool nxAssetLoader::operator()(void* data) {
 
 	nxEntity* ent = new nxEntity(blob->m_ResourcePath + blob->m_ResourceType);
 
+	blob->m_Engine->Scene()->UpdateBounds(ent);
+
 	glm::vec3 center;
 	center.x = ((ent->MaxX() + ent->MinX())) / 2.0f;
 	center.y = ((ent->MaxY() + ent->MinY())) / 2.0f;
@@ -189,6 +190,7 @@ bool nxGLAssetLoader::operator()(void* data) {
 	blob->m_Entity->UploadData();
 
 	blob->m_Engine->Scene()->AddEntity(blob->m_Entity);
+	blob->m_Engine->Renderer()->Voxelizer()->SetMatrices();
 
 	return true;
 }

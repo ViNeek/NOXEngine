@@ -1,8 +1,11 @@
 #pragma once
 
 #include <vector>
+#include <map>
+
 #include <GL/glew.h>
 
+#include "Program.h"
 #include "wx/wx.h"
 #include "wx/glcanvas.h"
 
@@ -18,6 +21,7 @@ enum nxRendererState {
 class nxGLJob;
 class nxEngine;
 class nxProgram;
+class nxVoxelizer;
 
 typedef boost::lockfree::queue< nxGLJob* > nxGLJobQueue;
 
@@ -25,54 +29,67 @@ class nxRenderer : public wxThread
 {
 public:
 
-								nxRenderer(nxEngine* eng);
-								nxRenderer(wxGLCanvas* frame);
+											nxRenderer(nxEngine* eng);
+											nxRenderer(wxGLCanvas* frame);
 
-	void*						Entry();
+	void*									Entry();
 
-	void						ScheduleGLJob(nxGLJob* job) { m_pGLCommandQueue->push(job); };
-	void						SetDrawingCanvas(wxGLCanvas* frame) { m_pParent = frame; }
-	bool						IsFramebufferReady() { return m_FBOInited; }
+	void									ScheduleGLJob(nxGLJob* job) { m_pGLCommandQueue->push(job); };
+	void									SetDrawingCanvas(wxGLCanvas* frame) { m_pParent = frame; }
+	bool									IsFramebufferReady() { return m_FBOInited; }
 
-	void						InitFramebuffer();
-	void						ResizeFramebuffer();
-	void						UseProgram();
-	nxProgram*					Program() { return m_ShaderPrograms[m_ProgramIndex]; }
+	void									InitFramebuffer();
+	void									ResizeFramebuffer();
+	void									UseProgram();
+	//nxProgram*							Program() { return m_ShaderPrograms[m_ProgramIndex]; }
+	nxProgram*								Program() { return m_ShaderPrograms[m_ProgramName]; }
+	nxVoxelizer*							Voxelizer() { return m_Voxelizer; }
 
-	bool						InitExtensions();
+	bool									InitExtensions();
+	bool									VoxelizerReady() { return m_IsVoxelizerReady; };
+	void									SetVoxelizerReady(bool val) { m_IsVoxelizerReady = val; };
 
-	void						SetViewportSize(int w, int h) { m_VWidth = w; m_VHeight = h; };
+	void									SetViewportSize(int w, int h) { m_VWidth = w; m_VHeight = h; };
+	void									SetVoxelizer(nxVoxelizer* voxel) { m_Voxelizer = voxel; };
 
-	int							Width() { return m_VWidth; }
-	int							Height() { return m_VHeight; }
+	int										Width() { return m_VWidth; }
+	int										Height() { return m_VHeight; }
 
-	void						AddProgram(nxProgram* prog) { m_ShaderPrograms.push_back(prog); }
+	void									AddProgram(nxProgram* prog) { m_ShaderPrograms[prog->GetName()] = prog; }
+
+	void									SetActiveProgram(std::string name) { m_ProgramName = name; }
+	void									SetActiveProgram(int index) { m_ProgramIndex = 0; }
 
 private:
 
-	bool						m_IsActive;
-	wxGLCanvas*					m_pParent;
-	wxGLContext*				m_pGLCtx;
-	nxGLJobQueue*				m_pGLCommandQueue;
+	bool									m_IsActive;
+	wxGLCanvas*								m_pParent;
+	wxGLContext*							m_pGLCtx;
+	nxGLJobQueue*							m_pGLCommandQueue;
 
-	nxEngine*					m_pEngine;
+	nxEngine*								m_pEngine;
+	nxVoxelizer*							m_Voxelizer;
 
-	GLuint						m_FBO;
-	GLuint						m_RBO;
-	GLuint						m_DepthTexture;
+	GLuint									m_FBO;
+	GLuint									m_RBO;
+	GLuint									m_DepthTexture;
 
-	bool						m_FBOInited;
+	bool									m_FBOInited;
+	bool									m_IsVoxelizerReady;
 
-	unsigned int				m_State;
+	unsigned int							m_State;
 
-	int							m_VWidth;
-	int							m_VHeight;
-	int							m_ProgramIndex;
+	int										m_VWidth;
+	int										m_VHeight;
+	int										m_ProgramIndex;
+	std::string								m_ProgramName;
 
-	std::vector<nxProgram*>		m_ShaderPrograms;
+	//std::vector<nxProgram*>				m_ShaderPrograms;
+	std::map<std::string, nxProgram*>		m_ShaderPrograms;
 
-	void						Init();
-	void						RenderFrame();
-	void						SwapBuffers() { m_pParent->SwapBuffers(); }
+	void									Init();
+	void									RenderFrame();
+	void									RenderFrameDemo();
+	void									SwapBuffers() { m_pParent->SwapBuffers(); }
 
 };

@@ -96,6 +96,7 @@
     <ClCompile Include="Scheduler.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="Voxelizer.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="Worker.cpp" />
   </ItemGroup>
@@ -144,6 +145,7 @@
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Synchronizer.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="Voxelizer.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="Worker.h" />
   </ItemGroup>
@@ -157,6 +159,9 @@
     <None Include="..\Shaders\SimplePass.f.glsl" />
     <None Include="..\Shaders\SimplePass.g.glsl" />
     <None Include="..\Shaders\SimplePass.v.glsl" />
+    <None Include="..\Shaders\ThreeWayBinary.f.glsl" />
+    <None Include="..\Shaders\ThreeWayBinary.g.glsl" />
+    <None Include="..\Shaders\ThreeWayBinary.v.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

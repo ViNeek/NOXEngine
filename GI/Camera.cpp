@@ -20,8 +20,8 @@ inline void nxArcballCamera::MapToSphere(glm::vec3& vec) const {
 	TempPt = m_Cursor;
 	//printf("Point %d %d\n",TempPt.x,TempPt.y);
 	//Adjust point coords and scale down to range of [-1 ... 1]
-	TempPt.x = (TempPt.x * m_AdjustWidth) - 1.0f;
-	TempPt.y = 1.0f - (TempPt.y * m_AdjustHeight);
+	TempPt.x = ((float)TempPt.x * m_AdjustWidth) - 1.0f;
+	TempPt.y = 1.0f - ((float)TempPt.y * m_AdjustHeight);
 
 	//Compute the square of the length of the vector to the point from the center
 	length = (TempPt.x * TempPt.x) + (TempPt.y * TempPt.y);

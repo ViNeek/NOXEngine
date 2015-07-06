@@ -178,7 +178,7 @@ void nxProgram::ShowActiveUniforms(){
 static int i = 1000;
 bool nxProgramLinker::operator()(void* data) {
 	nxProgramLinkerBlob* blob = (nxProgramLinkerBlob*)data;
-
+	
 	blob->m_Prog->Create();
 	Utils::GL::CheckGLState("Creating");
 	blob->m_Prog->Attach();

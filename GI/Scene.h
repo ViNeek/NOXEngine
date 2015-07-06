@@ -18,6 +18,7 @@
 class nxEntity;
 class nxEngine;
 class nxArcballCamera;
+class nxVoxelizer;
 
 struct nxMatrixState {
 	glm::mat4					m_VMatrix;
@@ -58,14 +59,24 @@ public:
 	glm::mat4&					Modelview(){ return m_MState.m_MMatrix; };
 
 	void						SetProjection(float angle, float fov, float zNear, float zFar);
-	
+	void						SetProjection(glm::mat4& proj);
+
 	void						AddEntity(nxEntity* ent) { m_Entities.push_back(ent); }
 
 	void						Draw();
+	void						DrawVoxelized();
 
 	bool						CameraReady() { return m_Camera != NULL; }
 
 	nxArcballCamera*			Camera() { return m_Camera; }
+
+	void						UpdateBounds(nxEntity* ent);
+	float						GMaxX(){ return m_GMaxX; }
+	float						GMaxY(){ return m_GMaxY; }
+	float						GMaxZ(){ return m_GMaxZ; }
+	float						GMinX(){ return m_GMinX; }
+	float						GMinY(){ return m_GMinY; }
+	float						GMinZ(){ return m_GMinZ; }
 
 private:
 
@@ -83,5 +94,9 @@ private:
 	nxArcballCamera*			m_Camera;
 
 	nxEngine*					m_pEngine;
+
+	float						m_GMaxX, m_GMaxY, m_GMaxZ;
+	float						m_GMinX, m_GMinY, m_GMinZ;
+
 };
 

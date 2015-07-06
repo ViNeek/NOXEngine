@@ -7,11 +7,16 @@
             "PositionY": 0,
             "PositionZ": 1000
         },
+        "Voxelizer": {
+            "DimX": 128,
+            "DimY": 128,
+            "DimZ": 128
+        },
         "Entities": [
             {
-                "ModelName": "Models/REX",
+                "ModelName": "Models/REX2",
                 "ModelType": ".obj",
-                "CenterX": 300,
+                "CenterX": 0,
                 "CenterY": 0,
                 "CenterZ": 0,
                 "Scale": 2
@@ -36,13 +41,13 @@
                 "Name":  "Voxelize",
                 "Shaders": [
                     {
-                        "Fragment": "../Shaders/SimplePass.f.glsl"
+                        "Fragment": "../Shaders/ThreeWayBinary.f.glsl"
                     },
                     {
-                        "Vertex": "../Shaders/SimplePass.v.glsl"
+                        "Vertex": "../Shaders/ThreeWayBinary.v.glsl"
                     },
                     {
-                        "Geometry": "../Shaders/SimplePass.g.glsl"
+                        "Geometry": "../Shaders/ThreeWayBinary.g.glsl"
                     }
                 ]
             },

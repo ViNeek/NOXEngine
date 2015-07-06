@@ -112,13 +112,15 @@ bool nxFrame::IsSchedulerFinished()
 void nxFrame::OnProgramAdded(wxCommandEvent& evt) {
 	std::cout << "Adding Program " << evt.GetString();
 	m_pShaderMenu->Append(wxID_HIGHEST + evt.GetInt(), evt.GetString(), "Simple Shader", true );
-	std::string *thedata = new std::string;
-	*thedata = "User data " + evt.GetString();
-	m_pShaderMenu->Bind(wxEVT_COMMAND_MENU_SELECTED, &nxFrame::OnProgramSwitch, this, wxID_HIGHEST + evt.GetInt(), wxID_HIGHEST + evt.GetInt() + 1, (wxObject*) new wxString(*thedata));
+	m_pShaderMenu->Check(wxID_HIGHEST + evt.GetInt(), true);
+	wxCommandEvent* newEvt = new wxCommandEvent();
+	newEvt->SetString("User data " + evt.GetString());
+
+	m_pShaderMenu->Bind(wxEVT_COMMAND_MENU_SELECTED, &nxFrame::OnProgramSwitch, this, wxID_HIGHEST + evt.GetInt(), wxID_HIGHEST + evt.GetInt() + 1, newEvt );
 }
 
 void nxFrame::OnProgramSwitch(wxCommandEvent& evt) {
-	//wxMessageBox(*((wxString*)evt.GetEventUserData()));
+	wxMessageBox(((wxCommandEvent*)evt.GetEventUserData())->GetString());
 }
 
 void nxFrame::OnResize(wxSizeEvent& evt) {
@@ -128,6 +130,12 @@ void nxFrame::OnResize(wxSizeEvent& evt) {
 
 	if (Engine()->Scene()->CameraReady()) {
 		Engine()->Scene()->Camera()->SetBounds(evt.GetSize().GetX(), evt.GetSize().GetY());
+		
+		std::cout << "Width : " << evt.GetSize().GetX();
+		std::cout << "Height : " << evt.GetSize().GetY();
+		std::cout << "Width : " << Engine()->Scene()->Camera()->Width();
+		std::cout << "Height : " << Engine()->Scene()->Camera()->Height();
+
 	}
 
 	evt.Skip();
@@ -173,9 +181,18 @@ void nxGLPanel::OnMouseWheelRolled(wxMouseEvent& evt) {
 }
 
 void nxGLPanel::OnMouseMoved(wxMouseEvent& evt) {
+
 	if (m_pEngine->Scene()->CameraReady()) {
+		glm::vec2 tempPoint = m_pEngine->Scene()->Camera()->Cursor();
 		m_pEngine->Scene()->Camera()->SetCursor(evt.GetPosition().x, evt.GetPosition().y);
 		m_pEngine->Scene()->Camera()->SetClicked(evt.LeftIsDown());
+
+		if (evt.MiddleIsDown()) {
+			std::cout << " Delta X : " << (m_pEngine->Scene()->Camera()->Cursor().x - tempPoint.x) << std::endl;
+			std::cout << " Delta X : " << (m_pEngine->Scene()->Camera()->Cursor().y - tempPoint.y) << std::endl;
+			m_pEngine->Scene()->Camera()->SetX(m_pEngine->Scene()->Camera()->Position().x + ((m_pEngine->Scene()->Camera()->Cursor().x - tempPoint.x)*5));
+			m_pEngine->Scene()->Camera()->SetY(m_pEngine->Scene()->Camera()->Position().y - ((m_pEngine->Scene()->Camera()->Cursor().y - tempPoint.y)*5));
+		}
 	}
 }
 
