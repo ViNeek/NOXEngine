@@ -21,13 +21,13 @@
             {
                 "Shaders": [
                     {
-                        "Fragment": "../Shaders/SimplePass.f.glsl"
+                        "Fragment": "Shaders/SimplePass.f.glsl"
                     },
                     {
-                        "Vertex": "../Shaders/SimplePass.v.glsl"
+                        "Vertex": "Shaders/SimplePass.v.glsl"
                     },
                     {
-                        "Geometry": "../Shaders/SimplePass.g.glsl"
+                        "Geometry": "Shaders/SimplePass.g.glsl"
                     }
                 ]
             }
