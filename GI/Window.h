@@ -25,6 +25,7 @@ public:
 	bool					IsSchedulerFinished();
 
 	nxEngine*				Engine() { return m_EngineState; }
+	void					EngineStart();
 
 	/*
 	const nxRenderer*		Renderer() { return m_pRenderer; };

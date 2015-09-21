@@ -48,14 +48,11 @@ void* nxScheduler::Entry()
 
 	// blocking, lock-free queue loop
 	while (m_IsActive) {
-		//std::cout << "waiting" << std::endl;
 		boost::system_time const timeout = boost::get_system_time() + boost::posix_time::milliseconds(1);
 		boost::unique_lock<boost::mutex> lock( m_SchedulerSync->Mutex() );
 		m_SchedulerSync->ConditionVariable().timed_wait(lock, timeout);
 		m_WorkersSync->ConditionVariable().notify_all();
-		//std::cout << "released" << std::endl;
-		while (m_pCommandQueue->pop(currentJob) ) {
-			//std::cout << "lock free ";
+		while ( m_pCommandQueue->pop(currentJob ) ) {
 			m_IsActive = currentJob->Execute();
 		}
 	}

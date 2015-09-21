@@ -43,7 +43,9 @@ class nxApp : public wxApp
 {
 	virtual bool OnInit();
 
+	// Pointer to main window frame
 	nxFrame*			m_pFrame;
+
 public:
 
 };
@@ -54,53 +56,15 @@ bool nxApp::OnInit()
 {
 	Utils::Debug::init_debug_console();
 
-	btVector3 vec(1.0f, 2, 3);
-	btVector3 vec2(1.0f, 2, 3);
-	btMatrix3x3 mat;
-	btTransform tra;
-	
-	
 	m_pFrame = new nxFrame(wxT("NOXEngine Viewer"), 50, 50, 400, 200);
 
-	Assimp::Importer importer;
-	aiString aS;
-	importer.GetExtensionList(aS);
-
-	boost::lockfree::queue<int> *q = new boost::lockfree::queue<int>(200);
-
-	q->push(1);
-	q->push(2);
-	q->push(3);
-	q->push(4);
-
-	//BOOST_LOG_TRIVIAL(info) << "ASSIMP " << aS.C_Str();
-	//BOOST_LOG_TRIVIAL(info) << "ASSIMP " << vec2 * vec;
-	//BOOST_LOG_TRIVIAL(info) << "ASSIMP " << vec2.dot(vec);
-	//BOOST_LOG_TRIVIAL(info) << "Develop branch " << vec2.dot(vec);
-	int k;
-	q->pop(k);
-	//BOOST_LOG_TRIVIAL(info) << "ASSIMP Supported Formats : " << k;
-	q->pop(k);
-	//BOOST_LOG_TRIVIAL(info) << "ASSIMP Supported Formats : " << k;
-	q->pop(k);
-	//BOOST_LOG_TRIVIAL(info) << "ASSIMP Supported Formats : " << k;
-	q->pop(k);
-	//BOOST_LOG_TRIVIAL(info) << "ASSIMP Supported Formats : " << k;
-	q->pop(k);
-	//BOOST_LOG_TRIVIAL(info) << "ASSIMP Supported Formats : " << k;
-
-	//wxLogError(aS.C_Str());
-
-	//BOOST_LOG_TRIVIAL(trace) << "A trace severity message";
-	//BOOST_LOG_TRIVIAL(debug) << "A debug severity message";
-	//BOOST_LOG_TRIVIAL(info) << "An informational severity message";
-	//BOOST_LOG_TRIVIAL(warning) << "A warning severity message";
-	//BOOST_LOG_TRIVIAL(error) << "An error severity message";
-	//BOOST_LOG_TRIVIAL(fatal) << "A fatal severity message";
-
-	btTransform bt = Utils::GL::getOrtho(-10, 10, -10, 10, 1, 100);
-
+	// Show frame
 	m_pFrame->Show();
+
+	// Fire the engine
+	// This needs to be after Frame->Show() inorder
+	// for the wxGLContext to be safely initialised
+	m_pFrame->EngineStart();
 
 	return true;
 }

@@ -19,7 +19,7 @@ class nxRenderer;
 
 enum nxJobID {
 	NX_JOB_DUMMY,
-	NX_JOB_EXIT,
+	NX_JOB_EXIT, 
 	NX_JOB_RENDERER_EXIT,
 	NX_JOB_SCHEDULER_EXIT,
 	NX_JOB_WORKER_EXIT,
@@ -28,6 +28,7 @@ enum nxJobID {
 	NX_JOB_LOAD_SCENE,
 	NX_JOB_LOAD_ASSET,
 	NX_JOB_LOAD_SHADER,
+	NX_GL_JOB_PROGRAM_SWAP,
 	NX_GL_JOB_EXTENSION_INIT,
 	NX_GL_JOB_FRAMEBUFFER_INIT,
 	NX_GL_JOB_VOXELIZER_INIT,
@@ -122,6 +123,19 @@ struct nxProgramLinkerBlob {
 		: m_Engine( eng ), m_Prog( prog ) {}
 
 	nxEngine*		m_Engine;
+	nxProgram*		m_Prog;
+
+};
+
+struct nxProgramSwapper {
+	bool operator()(void* data);
+};
+
+struct nxProgramSwapperBlob {
+	nxProgramSwapperBlob(nxRenderer* rend, nxProgram* prog)
+		: m_Renderer(rend), m_Prog(prog) {}
+
+	nxRenderer*		m_Renderer;
 	nxProgram*		m_Prog;
 
 };

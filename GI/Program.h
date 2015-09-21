@@ -20,6 +20,7 @@ public:
 
 	void									ProgramLog();
 	bool									ReadyForLinking() { return m_InitShaderCount == m_Shaders.size(); }
+	bool									IsDefault() { return m_InitShaderCount == 0; }
 
 	void									Attach();
 	void									Link();

@@ -44,9 +44,9 @@ nxRenderer::nxRenderer(nxEngine* eng) {
 
 void nxRenderer::UseProgram() {
 	//if ((size_t)m_ProgramIndex < m_ShaderPrograms.size() )
-	nxProgram* prog = m_ShaderPrograms[m_ProgramName];
-	if ( prog )
-		prog->Use();
+	//nxProgram* prog = m_ShaderPrograms[m_ProgramName];
+	//if ( prog )
+	m_pActiveProgram->Use();
 }
 
 void *nxRenderer::Entry()
@@ -76,6 +76,15 @@ void *nxRenderer::Entry()
 	wxQueueEvent(evtHandler, evt); // This posts to ourselves: it'll be caught and sent to a different method
 
 	return NULL;
+}
+
+void nxRenderer::SetActiveProgramByName(const std::string& name) { 
+	nxProgram* prog = m_ShaderPrograms[m_ProgramName];
+
+	nxProgramSwapperBlob* progData = new nxProgramSwapperBlob(this, prog);
+	m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_PROGRAM_SWAP, progData));
+
+	//m_ProgramName = name;
 }
 
 bool error = true;
@@ -171,11 +180,11 @@ bool nxRenderer::InitExtensions() {
 	if (GLEW_OK != err)
 	{
 		/* Problem: glewInit failed, something is seriously wrong. */
-		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+		BOOST_LOG_TRIVIAL(error) << "Extension initialization through GLEW failed with error " << glewGetErrorString(err);
 
 		return false;
 	}
-	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+	BOOST_LOG_TRIVIAL(info) << "GLEW Version : " << glewGetString(GLEW_VERSION);
 
 	m_State |= NX_RENDERER_EXTENSIONS_READY;
 

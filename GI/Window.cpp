@@ -17,10 +17,12 @@
 nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 	: wxFrame((wxFrame *)NULL, -1, title, wxPoint(xpos, ypos), wxSize(width, height) )
 {
+	// Create Engine
 	m_EngineState = new nxEngine;
 
 	wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
 
+	// OpenGL args for wxWidgets
 	int args[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, 0 };
 
 	m_pGLPanel = new nxGLPanel(this, args);
@@ -62,7 +64,6 @@ nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 	m_pHelpMenu = new wxMenu();
 	m_pMenuBar->Append(m_pHelpMenu, wxT("Help"));
 	
-	//m_pRenderer
 	this->SetMenuBar(m_pMenuBar);
 
 	m_pStatusBar = new nxStatusBar(this);
@@ -79,10 +80,23 @@ nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 	Engine()->Renderer()->SetViewportSize(width, height);
 	Engine()->Scheduler()->SetFrame(this);
 
-	Engine()->Start();
+	// Schedule the renderer' s intial jobs
 
+	// Initialize Default Shader
+	nxProgram* prog = new nxProgram(0);
+	std::string defaultName("Default");
+	prog->SetName(defaultName);
+	Engine()->Renderer()->SetProgram(prog);
+	Engine()->Renderer()->AddProgram(prog);
+
+	//nxProgramLinkerBlob* progData = new nxProgramLinkerBlob(Engine(), prog);
+	//Engine()->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LINK_PROGRAM, progData));
+
+	// Initialize Extentions
 	nxExtensionInitializerBlob* dataExt = new nxExtensionInitializerBlob(Engine(), Engine()->Renderer());
 	Engine()->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_EXTENSION_INIT, dataExt));
+	
+	// Initialize Framebuffer
 	nxFramebufferInitializerBlob* dataFBO = new nxFramebufferInitializerBlob(Engine(), Engine()->Renderer());
 	Engine()->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_FRAMEBUFFER_INIT, dataFBO));
 
@@ -92,13 +106,17 @@ nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 	Bind(wxEVT_CLOSE_WINDOW, &nxFrame::OnClose, this, wxID_ANY);
 	Bind(wxEVT_COMMAND_MENU_SELECTED, &nxFrame::OnLoadScene, this, LOAD_SCENE_ID);
 
-	// Custom
+	// Custom Event Callbacks
 	Bind(nxRENDERER_EXIT_EVENT, &nxFrame::OnRendererExit, this, wxID_ANY);
 	Bind(nxSCHEDULER_EXIT_EVENT, &nxFrame::OnSchedulerExit, this, wxID_ANY);
 	Bind(nxPROGRAM_ADDED_EVENT, &nxFrame::OnProgramAdded, this, wxID_ANY);
 
 }
  
+void nxFrame::EngineStart() {
+	Engine()->Start();
+}
+
 bool nxFrame::IsRendererFinished()
 { 
 	return Engine()->IsRendererFinished();

@@ -25,10 +25,6 @@ void nxEngine::InitRenderer() {
 void nxEngine::InitScheduler() {
 	m_pScheduler->Create();
 	m_pScheduler->Run();
-	for (int i = 0; i < 100; i++) {
-		//m_pScheduler->ScheduleOwnJob(nxJobFactory::CreateJob(NX_JOB_DUMMY));
-		//m_pScheduler->ScheduleJob(nxJobFactory::CreateJob(NX_JOB_DUMMY));
-	}
 }
 
 void nxEngine::InitScene(std::string& path) {

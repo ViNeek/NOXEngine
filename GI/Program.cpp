@@ -14,7 +14,7 @@
 
 nxProgram::nxProgram(int initCount) {
 	m_InitShaderCount = initCount;
-	m_ProgramID = -1;
+	m_ProgramID = 0;
 	m_Linked = false;
 }
 
@@ -181,6 +181,15 @@ void nxProgram::ShowActiveUniforms(){
 	}
 
 	free(name);
+}
+
+bool nxProgramSwapper::operator()(void* data) {
+	nxProgramSwapperBlob* blob = (nxProgramSwapperBlob*)data;
+
+	blob->m_Renderer->SetProgramName(blob->m_Prog->GetName());
+	blob->m_Renderer->SetProgram(blob->m_Prog);
+
+	return true;
 }
 
 static int i = 1000;

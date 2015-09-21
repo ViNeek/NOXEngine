@@ -42,7 +42,8 @@ public:
 	void									ResizeFramebuffer();
 	void									UseProgram();
 	//nxProgram*							Program() { return m_ShaderPrograms[m_ProgramIndex]; }
-	nxProgram*								Program() { return m_ShaderPrograms[m_ProgramName]; }
+	//nxProgram*								Program() { return m_ShaderPrograms[m_ProgramName]; }
+	nxProgram*								Program() { return m_pActiveProgram; }
 	nxVoxelizer*							Voxelizer() { return m_Voxelizer; }
 
 	bool									InitExtensions();
@@ -57,7 +58,9 @@ public:
 
 	void									AddProgram(nxProgram* prog) { m_ShaderPrograms[prog->GetName()] = prog; }
 
-	void									SetActiveProgram(std::string name) { m_ProgramName = name; }
+	void									SetActiveProgramByName(const std::string& name);
+	void									SetProgram(nxProgram* prog) { m_pActiveProgram = prog; }
+	void									SetProgramName(const std::string& name) { m_ProgramName = name; }
 	void									SetActiveProgram(int index) { m_ProgramIndex = 0; }
 
 private:
@@ -83,6 +86,8 @@ private:
 	int										m_VHeight;
 	int										m_ProgramIndex;
 	std::string								m_ProgramName;
+
+	nxProgram*								m_pActiveProgram;
 
 	//std::vector<nxProgram*>				m_ShaderPrograms;
 	std::map<std::string, nxProgram*>		m_ShaderPrograms;

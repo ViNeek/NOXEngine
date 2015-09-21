@@ -82,7 +82,7 @@ void nxScene::Init() {
 			//m_modules.insert(v.second.data());
 		}
 		
-		m_pEngine->Renderer()->SetActiveProgram("Simple Pass");
+		m_pEngine->Renderer()->SetActiveProgramByName("Simple Pass");
 
 		BOOST_LOG_TRIVIAL(info) << "Entities : " << tree.get_child("Scene.Entities").size();
 		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Entities")) {
@@ -181,7 +181,7 @@ void nxScene::DrawVoxelized() {
 
 	m_MState.m_VMatrix = glm::mat4();
 
-	m_pEngine->Renderer()->SetActiveProgram("Voxelize");
+	m_pEngine->Renderer()->SetActiveProgramByName("Voxelize");
 	m_pEngine->Renderer()->UseProgram();
 	if (errorGL) Utils::GL::CheckGLState("Program USE");
 
