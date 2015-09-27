@@ -50,7 +50,7 @@ void nxWorker::Init() {
 bool nxWorkerTerminator::operator()(void* data) {
 	nxScheduler* scheduler = (nxScheduler*)data;
 	std::cout << "worker ending\n";
-	scheduler->ScheduleOwnJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_WORKER_FINISHED, scheduler));
+	scheduler->ScheduleOwnJob(nxJobFactory::CreateJob(NX_JOB_WORKER_FINISHED, scheduler));
 
 	return false;
 }

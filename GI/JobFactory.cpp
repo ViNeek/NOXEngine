@@ -9,9 +9,51 @@
 
 #include <iostream>
 
+nxDummyJob				nxDummyJob_;
+nxRendererTerminator	nxRendererTerminator_;
+nxSchedulerTerminator	nxSchedulerTerminator_;
+nxWorkerTerminator		nxWorkerTerminator_;
+nxWorkerNotifier		nxWorkerNotifier_;
+nxSceneLoader			nxSceneLoader_;				
+nxAssetLoader nxAssetLoader_;
+nxShaderLoader nxShaderLoader_;
+nxProgramSwapper nxProgramSwapper_;
+nxExtensionInitializer nxExtensionInitializer_;
+nxFramebufferInitializer nxFramebufferInitializer_;
+nxVoxelizerInitializer nxVoxelizerInitializer_;
+nxFramebufferResizer nxFramebufferResizer_;
+nxShaderCompiler nxShaderCompiler_;
+nxGLAssetLoader nxGLAssetLoader_;
+nxProgramLinker nxProgramLinker_;
+
+static const nxJobCallback nxJobDispatchTable[NX_JOB_MAX]
+= {
+	nxDummyJob_,
+	nxDummyJob_,
+	nxRendererTerminator_,
+	nxSchedulerTerminator_,
+	nxWorkerTerminator_,
+	nxWorkerNotifier_,
+	nxSceneLoader_,
+	nxAssetLoader_,
+	nxShaderLoader_,
+	nxProgramSwapper_,
+	nxExtensionInitializer_,
+	nxFramebufferInitializer_,
+	nxVoxelizerInitializer_,
+	nxFramebufferResizer_,
+	nxShaderCompiler_,
+	nxGLAssetLoader_,
+	nxProgramLinker_,
+};
+
 nxJob* nxJobFactory::CreateJob(nxJobID id, void* data)
 {
 	nxJob* j = NULL;
+	
+	return new nxJob(data, nxJobDispatchTable[id]);
+
+	/*
 	switch (id) {
 	case NX_JOB_DUMMY:
 	{
@@ -106,7 +148,7 @@ nxJob* nxJobFactory::CreateJob(nxJobID id, void* data)
 	default:
 		break;
 	}
-
+	*/
 	return j;
 }
 

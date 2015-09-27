@@ -23,7 +23,6 @@ enum nxJobID {
 	NX_JOB_RENDERER_EXIT,
 	NX_JOB_SCHEDULER_EXIT,
 	NX_JOB_WORKER_EXIT,
-	NX_JOB_RENDERER_FINISHED,
 	NX_JOB_WORKER_FINISHED,
 	NX_JOB_LOAD_SCENE,
 	NX_JOB_LOAD_ASSET,
@@ -35,14 +34,17 @@ enum nxJobID {
 	NX_GL_JOB_FRAMEBUFFER_RESIZE,
 	NX_GL_JOB_COMPILE_SHADER,
 	NX_GL_JOB_LOAD_ASSET,
-	NX_GL_JOB_LINK_PROGRAM
+	NX_GL_JOB_LINK_PROGRAM,
+	NX_JOB_MAX
 };
 
 class nxJobFactory {
 
 public:
 
-	static nxJob* CreateJob(nxJobID id, void* data = 0);
+	static nxJob*	CreateJob(nxJobID id, void* data = 0);
+
+	void			Init();
 
 private:
 
@@ -172,7 +174,7 @@ struct nxAssetLoaderBlob {
 	float			m_ScaleFactor;
 };
 
-struct nxAssetLoader {
+struct nxAssetLoader  {
 	bool operator()(void* data);
 };
 
