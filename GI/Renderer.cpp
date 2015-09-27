@@ -79,7 +79,7 @@ void *nxRenderer::Entry()
 }
 
 void nxRenderer::SetActiveProgramByName(const std::string& name) { 
-	nxProgram* prog = m_ShaderPrograms[m_ProgramName];
+	nxProgram* prog = m_ShaderPrograms[name];
 
 	nxProgramSwapperBlob* progData = new nxProgramSwapperBlob(this, prog);
 	m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_PROGRAM_SWAP, progData));

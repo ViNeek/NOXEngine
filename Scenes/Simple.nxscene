@@ -2,6 +2,7 @@
     "Scene": {
         "Count": 1,
         "Name": "Simple Scene",
+        "Default Program": "Simple Pass",
         "Camera": {
             "PositionX": 0,
             "PositionY": 0,

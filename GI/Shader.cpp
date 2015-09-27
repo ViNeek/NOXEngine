@@ -96,7 +96,7 @@ bool nxShaderLoader::operator()(void* data) {
 	nxShader* newShader = new nxShader(blob->m_Source, blob->m_Type);
 
 	nxShaderCompilerBlob* newData =
-		new nxShaderCompilerBlob(blob->m_Engine, blob->m_Prog, newShader);
+		new nxShaderCompilerBlob(blob->m_Engine, blob->m_Prog, newShader, blob->m_Use);
 
 	blob->m_Engine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_COMPILE_SHADER, newData));
 	
@@ -113,7 +113,7 @@ bool nxShaderCompiler::operator()(void* data) {
 	if (blob->m_Prog->ReadyForLinking()) {
 		std::cout << "Ready for linking" << std::endl;
 		nxProgramLinkerBlob* newData =
-			new nxProgramLinkerBlob(blob->m_Engine, blob->m_Prog);
+			new nxProgramLinkerBlob(blob->m_Engine, blob->m_Prog, blob->m_Use);
 		blob->m_Engine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LINK_PROGRAM, newData));
 
 	}

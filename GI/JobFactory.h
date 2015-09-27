@@ -92,13 +92,14 @@ struct nxFramebufferInitializer {
 };
 
 struct nxShaderLoaderBlob {
-	nxShaderLoaderBlob(nxEngine* eng, nxProgram* prog, std::string source, GLenum type)
-		: m_Engine( eng ), m_Prog( prog ), m_Source( source ), m_Type( type ) {}
+	nxShaderLoaderBlob(nxEngine* eng, nxProgram* prog, std::string source, GLenum type, bool use = false)
+		: m_Engine( eng ), m_Prog( prog ), m_Source( source ), m_Type( type ), m_Use ( use ) {}
 
 	nxEngine*		m_Engine;
 	nxProgram*		m_Prog;
 	std::string		m_Source;
 	GLenum			m_Type;
+	bool			m_Use;
 };
 
 struct nxShaderLoader {
@@ -107,13 +108,13 @@ struct nxShaderLoader {
 
 
 struct nxShaderCompilerBlob {
-	nxShaderCompilerBlob(nxEngine* eng, nxProgram* prog, nxShader* shad )
-		: m_Engine( eng ), m_Prog( prog ), m_Shader( shad ) {}
+	nxShaderCompilerBlob(nxEngine* eng, nxProgram* prog, nxShader* shad, bool use = false )
+		: m_Engine( eng ), m_Prog( prog ), m_Shader( shad ), m_Use(use) {}
 
 	nxEngine*		m_Engine;
 	nxProgram*		m_Prog;
 	nxShader*		m_Shader;
-	
+	bool			m_Use;
 };
 
 struct nxShaderCompiler {
@@ -121,15 +122,16 @@ struct nxShaderCompiler {
 };
 
 struct nxProgramLinkerBlob {
-	nxProgramLinkerBlob(nxEngine* eng, nxProgram* prog)
-		: m_Engine( eng ), m_Prog( prog ) {}
+	nxProgramLinkerBlob(nxEngine* eng, nxProgram* prog, bool use = false)
+		: m_Engine( eng ), m_Prog( prog ), m_Use( use ) {}
 
 	nxEngine*		m_Engine;
 	nxProgram*		m_Prog;
+	bool			m_Use;
 
 };
 
-struct nxProgramSwapper {
+struct nxProgramLinker {
 	bool operator()(void* data);
 };
 
@@ -142,7 +144,7 @@ struct nxProgramSwapperBlob {
 
 };
 
-struct nxProgramLinker {
+struct nxProgramSwapper {
 	bool operator()(void* data);
 };
 

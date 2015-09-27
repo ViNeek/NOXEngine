@@ -61,6 +61,8 @@ void nxScene::Init() {
 		// Note that the default value is used to deduce the target type.
 		m_EntitiesCount = tree.get("Scene.Count", 0);
 		m_SceneName = tree.get<std::string>("Scene.Name", "unknown");
+		
+		std::string m_DefaultProgramName = tree.get<std::string>("Scene.Default Program", "Unknown");
 
 		BOOST_LOG_TRIVIAL(info) << "SceneCount : " << m_EntitiesCount;
 		BOOST_LOG_TRIVIAL(info) << "Scene Name : " << m_SceneName;
@@ -68,23 +70,23 @@ void nxScene::Init() {
 		// Use get_child to find the node containing the modules, and iterate over
 		// its children. If the path cannot be resolved, get_child throws.
 		// A C++11 for-range loop would also work.
-		BOOST_LOG_TRIVIAL(info) << "Program shader count : " << tree.get_child("Scene.Programs").size();
+		BOOST_LOG_TRIVIAL(info) << "Number of Program Shaders : " << tree.get_child("Scene.Programs").size();
 		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Programs")) {
 			nxProgram* prog = new nxProgram(v.second.get_child("Shaders").size());
 			prog->SetName(v.second.get<std::string>("Name"));
+			bool use = false;
+			if (std::strcmp(m_DefaultProgramName.c_str(), v.second.get<std::string>("Name").c_str()) == 0)
+				use = true;
 			BOOST_FOREACH(pt::ptree::value_type &v1, v.second.get_child("Shaders")) {
 				BOOST_FOREACH(pt::ptree::value_type &v2, v1.second) {
-					nxShaderLoaderBlob* data = new nxShaderLoaderBlob(m_pEngine, prog, v2.second.data(), gc_TypeMappings.at(v2.first.data()));
+					nxShaderLoaderBlob* data = new nxShaderLoaderBlob(m_pEngine, prog, v2.second.data(), gc_TypeMappings.at(v2.first.data()), use);
 					m_pEngine->Scheduler()->ScheduleJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_LOAD_SHADER, data));
 					BOOST_LOG_TRIVIAL(info) << "Shader : " << v2.second.data();
 				}
 			}
-			//m_modules.insert(v.second.data());
 		}
 		
-		m_pEngine->Renderer()->SetActiveProgramByName("Simple Pass");
-
-		BOOST_LOG_TRIVIAL(info) << "Entities : " << tree.get_child("Scene.Entities").size();
+		BOOST_LOG_TRIVIAL(info) << "Number of Entities : " << tree.get_child("Scene.Entities").size();
 		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Entities")) {
 			BOOST_LOG_TRIVIAL(info) << "STUFF : " << v.second.get("ModelName", "unknkown");
 			BOOST_LOG_TRIVIAL(info) << "Camera X position : " << v.second.get<float>("CenterX", 0.0f);
@@ -103,14 +105,9 @@ void nxScene::Init() {
 		}
 
 		m_Camera = new nxArcballCamera();
-		//BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Camera")) {
-			//BOOST_LOG_TRIVIAL(info) << "Camera X position : " << tree.get_child("Scene.Camera").get<float>("PositionX", 0.0f);
-			//BOOST_LOG_TRIVIAL(info) << "Camera Y position : " << tree.get_child("Scene.Camera").get<float>("PositionY", 0.0f);
-			//BOOST_LOG_TRIVIAL(info) << "Camera Z position : " << tree.get_child("Scene.Camera").get<float>("PositionZ", 0.0f);
 		m_Camera->SetPosition(tree.get_child("Scene.Camera").get<float>("PositionX", 0.0f),
 			tree.get_child("Scene.Camera").get<float>("PositionY", 0.0f),
 			tree.get_child("Scene.Camera").get<float>("PositionZ", 0.0f));
-		//}
 
 		glm::uvec3 dimensions(tree.get_child("Scene.Voxelizer").get<int>("DimX", 128),
 			tree.get_child("Scene.Voxelizer").get<int>("DimY", 128),

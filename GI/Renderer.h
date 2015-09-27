@@ -59,10 +59,12 @@ public:
 	void									AddProgram(nxProgram* prog) { m_ShaderPrograms[prog->GetName()] = prog; }
 
 	void									SetActiveProgramByName(const std::string& name);
+	nxProgram*								GetActiveProgramByName(const std::string& name) { return m_ShaderPrograms[name]; }
 	void									SetProgram(nxProgram* prog) { m_pActiveProgram = prog; }
 	void									SetProgramName(const std::string& name) { m_ProgramName = name; }
 	void									SetActiveProgram(int index) { m_ProgramIndex = 0; }
 
+	std::map<std::string, nxProgram*>		GetPrograms() { return m_ShaderPrograms; }
 private:
 
 	bool									m_IsActive;

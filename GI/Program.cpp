@@ -205,6 +205,22 @@ bool nxProgramLinker::operator()(void* data) {
 
 	blob->m_Engine->Renderer()->AddProgram(blob->m_Prog);
 
+	if ( blob->m_Use )
+		blob->m_Engine->Renderer()->SetActiveProgramByName("Simple Pass");
+
+	std::cout << " PROGRAM : " << (blob->m_Prog == NULL) << std::endl;
+	std::cout << " PROGRAM : " << (blob->m_Prog->GetName()) << std::endl;
+	std::cout << " PROGRAM : " << (blob->m_Engine->Renderer()->GetActiveProgramByName(blob->m_Prog->GetName())->GetName()) << std::endl;
+	std::cout << " PROGRAM : " << (blob->m_Prog->GetName()) << std::endl;
+	/*
+	for (auto iter = blob->m_Engine->Renderer()->GetPrograms().begin(); iter != blob->m_Engine->Renderer()->GetPrograms().end(); ++iter)
+	{
+		auto k = iter->first;
+		std::cout << "INSIDE " << k << std::endl;
+		//ignore value
+		//Value v = iter->second;
+	}
+	*/
 	blob->m_Prog->ShowActiveUniforms();
 	blob->m_Prog->ShowActiveAttributes();
 

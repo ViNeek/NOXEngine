@@ -9,22 +9,22 @@
 
 #include <iostream>
 
-nxDummyJob				nxDummyJob_;
-nxRendererTerminator	nxRendererTerminator_;
-nxSchedulerTerminator	nxSchedulerTerminator_;
-nxWorkerTerminator		nxWorkerTerminator_;
-nxWorkerNotifier		nxWorkerNotifier_;
-nxSceneLoader			nxSceneLoader_;				
-nxAssetLoader nxAssetLoader_;
-nxShaderLoader nxShaderLoader_;
-nxProgramSwapper nxProgramSwapper_;
-nxExtensionInitializer nxExtensionInitializer_;
-nxFramebufferInitializer nxFramebufferInitializer_;
-nxVoxelizerInitializer nxVoxelizerInitializer_;
-nxFramebufferResizer nxFramebufferResizer_;
-nxShaderCompiler nxShaderCompiler_;
-nxGLAssetLoader nxGLAssetLoader_;
-nxProgramLinker nxProgramLinker_;
+nxDummyJob						nxDummyJob_;
+nxRendererTerminator			nxRendererTerminator_;
+nxSchedulerTerminator			nxSchedulerTerminator_;
+nxWorkerTerminator				nxWorkerTerminator_;
+nxWorkerNotifier				nxWorkerNotifier_;
+nxSceneLoader					nxSceneLoader_;				
+nxAssetLoader					nxAssetLoader_;
+nxShaderLoader					nxShaderLoader_;
+nxProgramSwapper				nxProgramSwapper_;
+nxExtensionInitializer			nxExtensionInitializer_;
+nxFramebufferInitializer		nxFramebufferInitializer_;
+nxVoxelizerInitializer			nxVoxelizerInitializer_;
+nxFramebufferResizer			nxFramebufferResizer_;
+nxShaderCompiler				nxShaderCompiler_;
+nxGLAssetLoader					nxGLAssetLoader_;
+nxProgramLinker					nxProgramLinker_;
 
 static const nxJobCallback nxJobDispatchTable[NX_JOB_MAX]
 = {

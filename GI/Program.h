@@ -33,7 +33,6 @@ public:
 	void									AddShader(nxShader* shader) { m_Shaders.push_back(shader); }
 
 	void									UseProgram() { glUseProgram(m_ProgramID); };
-	
 	void									SetUniform(const char *name, float x, float y, float z);
 	void									SetUniform(const char *name, const glm::vec3 & v);
 	void									SetUniform(const char *name, const glm::vec4 & v);
