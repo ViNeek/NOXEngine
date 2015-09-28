@@ -115,7 +115,6 @@ bool nxShaderCompiler::operator()(void* data) {
 		nxProgramLinkerBlob* newData =
 			new nxProgramLinkerBlob(blob->m_Engine, blob->m_Prog, blob->m_Use);
 		blob->m_Engine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LINK_PROGRAM, newData));
-
 	}
 
 	return true;

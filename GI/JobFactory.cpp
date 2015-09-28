@@ -48,9 +48,7 @@ static const nxJobCallback nxJobDispatchTable[NX_JOB_MAX]
 };
 
 nxJob* nxJobFactory::CreateJob(nxJobID id, void* data)
-{
-	nxJob* j = NULL;
-	
+{	
 	return new nxJob(data, nxJobDispatchTable[id]);
 
 	/*
@@ -148,8 +146,9 @@ nxJob* nxJobFactory::CreateJob(nxJobID id, void* data)
 	default:
 		break;
 	}
-	*/
+
 	return j;
+	*/
 }
 
 bool nxDummyJob::operator()(void* data) {

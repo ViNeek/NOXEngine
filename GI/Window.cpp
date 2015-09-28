@@ -12,8 +12,6 @@
 #include "Scheduler.h"
 #include "Engine.h"
 
-#define LOAD_SCENE_ID (wxID_HIGHEST + 1)
-
 nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 	: wxFrame((wxFrame *)NULL, -1, title, wxPoint(xpos, ypos), wxSize(width, height) )
 {
@@ -33,12 +31,12 @@ nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 	m_pMenuBar->Append(m_pSceneMenu, wxT("Scene"));
 
 	wxMenuItem* m_LoadSceneMenu;
-	m_LoadSceneMenu = new wxMenuItem(m_pSceneMenu, LOAD_SCENE_ID, wxString(wxT("Load Scene...")), wxEmptyString, wxITEM_NORMAL);
-	m_pSceneMenu->Append(LOAD_SCENE_ID, wxT("LoadSceneMenu"));
+	m_LoadSceneMenu = new wxMenuItem(m_pSceneMenu, NX_LOAD_SCENE_ID, wxString(wxT("Load Scene...")), wxEmptyString, wxITEM_NORMAL);
+	m_pSceneMenu->Append(NX_LOAD_SCENE_ID, wxT("Load Scene"));
 
 	wxMenuItem* m_ExitMenu;
-	m_ExitMenu = new wxMenuItem(m_pSceneMenu, wxID_ANY, wxString(wxT("Exit.")), wxEmptyString, wxITEM_NORMAL);
-	m_pSceneMenu->Append(m_ExitMenu);
+	m_ExitMenu = new wxMenuItem(m_pSceneMenu, NX_PROGRAM_EXIT_ID, wxString(wxT("Exit.")), wxEmptyString, wxITEM_NORMAL);
+	m_pSceneMenu->Append(NX_PROGRAM_EXIT_ID, wxT("Exit..."));
 
 	m_pPrefMenu = new wxMenu();
 	wxMenuItem* m_menuItem1;
@@ -104,7 +102,8 @@ nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 	Bind(wxEVT_SIZE, &nxFrame::OnResize, this, wxID_ANY);
 	Bind(wxEVT_CLOSE_WINDOW, &nxFrame::OnClose, this, wxID_ANY);
 	Bind(wxEVT_CLOSE_WINDOW, &nxFrame::OnClose, this, wxID_ANY);
-	Bind(wxEVT_COMMAND_MENU_SELECTED, &nxFrame::OnLoadScene, this, LOAD_SCENE_ID);
+	Bind(wxEVT_COMMAND_MENU_SELECTED, &nxFrame::OnLoadScene, this, NX_LOAD_SCENE_ID);
+	Bind(wxEVT_COMMAND_MENU_SELECTED, &nxFrame::OnExit, this, NX_PROGRAM_EXIT_ID);
 
 	// Custom Event Callbacks
 	Bind(nxRENDERER_EXIT_EVENT, &nxFrame::OnRendererExit, this, wxID_ANY);
@@ -129,12 +128,13 @@ bool nxFrame::IsSchedulerFinished()
 
 void nxFrame::OnProgramAdded(wxCommandEvent& evt) {
 	std::cout << "Adding Program " << evt.GetString();
-	m_pShaderMenu->Append(wxID_HIGHEST + evt.GetInt(), evt.GetString(), "Simple Shader", true );
-	m_pShaderMenu->Check(wxID_HIGHEST + evt.GetInt(), true);
+	wxWindowID newID = wxWindow::NewControlId();
+	m_pShaderMenu->Append(newID, evt.GetString(), "Simple Shader", true);
+	m_pShaderMenu->Check(newID, true);
 	wxCommandEvent* newEvt = new wxCommandEvent();
 	newEvt->SetString("User data " + evt.GetString());
 
-	m_pShaderMenu->Bind(wxEVT_COMMAND_MENU_SELECTED, &nxFrame::OnProgramSwitch, this, wxID_HIGHEST + evt.GetInt(), wxID_HIGHEST + evt.GetInt() + 1, newEvt );
+	m_pShaderMenu->Bind(wxEVT_COMMAND_MENU_SELECTED, &nxFrame::OnProgramSwitch, this, newID, newID + 1, newEvt);
 }
 
 void nxFrame::OnProgramSwitch(wxCommandEvent& evt) {
@@ -215,6 +215,11 @@ void nxGLPanel::OnMouseMoved(wxMouseEvent& evt) {
 }
 
 void nxFrame::OnClose(wxCloseEvent& evt) {
+	Engine()->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_JOB_RENDERER_EXIT, this));
+	Engine()->Scheduler()->ScheduleOwnJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_SCHEDULER_EXIT, Engine()->Scheduler()));
+}
+
+void nxFrame::OnExit(wxCommandEvent& evt) {
 	Engine()->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_JOB_RENDERER_EXIT, this));
 	Engine()->Scheduler()->ScheduleOwnJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_SCHEDULER_EXIT, Engine()->Scheduler()));
 }

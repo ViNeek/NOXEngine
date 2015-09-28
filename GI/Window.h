@@ -13,6 +13,14 @@ class nxEngine;
 class nxStatusBar;
 class nxGLPanel;
 
+// Custom Widget IDs
+enum {
+
+	NX_LOAD_SCENE_ID = wxID_HIGHEST + 1,
+	NX_PROGRAM_EXIT_ID
+
+};
+
 /* GL Rendering Window */
 class nxFrame : public wxFrame
 {
@@ -52,6 +60,7 @@ private:
 
 	// Handlers
 	void					OnClose(wxCloseEvent& evt);
+	void					OnExit(wxCommandEvent& evt);
 	void					OnResize(wxSizeEvent& evt);
 	void					OnRendererExit(wxCommandEvent& evt);
 	void					OnSchedulerExit(wxCommandEvent& evt);
