@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\BulletMath">
-      <UniqueIdentifier>{7d781504-4f43-403f-8a13-58bc1da8b5eb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\BulletMath">
-      <UniqueIdentifier>{21d6a281-5e22-49c1-a3a1-94b0c2515193}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files\Shaders">
       <UniqueIdentifier>{865b6b65-aaa3-4727-b38b-9c6e2abfdd62}</UniqueIdentifier>
     </Filter>
@@ -32,30 +26,6 @@
     </ClCompile>
     <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="bullet\btAlignedAllocator.cpp">
-      <Filter>Source Files\BulletMath</Filter>
-    </ClCompile>
-    <ClCompile Include="bullet\btConvexHull.cpp">
-      <Filter>Source Files\BulletMath</Filter>
-    </ClCompile>
-    <ClCompile Include="bullet\btConvexHullComputer.cpp">
-      <Filter>Source Files\BulletMath</Filter>
-    </ClCompile>
-    <ClCompile Include="bullet\btGeometryUtil.cpp">
-      <Filter>Source Files\BulletMath</Filter>
-    </ClCompile>
-    <ClCompile Include="bullet\btPolarDecomposition.cpp">
-      <Filter>Source Files\BulletMath</Filter>
-    </ClCompile>
-    <ClCompile Include="bullet\btQuickprof.cpp">
-      <Filter>Source Files\BulletMath</Filter>
-    </ClCompile>
-    <ClCompile Include="bullet\btSerializer.cpp">
-      <Filter>Source Files\BulletMath</Filter>
-    </ClCompile>
-    <ClCompile Include="bullet\btVector3.cpp">
-      <Filter>Source Files\BulletMath</Filter>
     </ClCompile>
     <ClCompile Include="Window.cpp">
       <Filter>Source Files</Filter>
@@ -99,97 +69,13 @@
     <ClCompile Include="Voxelizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utils.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btAabbUtil2.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btAlignedAllocator.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btAlignedObjectArray.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btConvexHull.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btConvexHullComputer.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btCpuFeatureUtility.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btDefaultMotionState.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btGeometryUtil.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btGrahamScan2dConvexHull.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btHashMap.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btIDebugDraw.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btList.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btMatrix3x3.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btMatrixX.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btMinMax.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btMotionState.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btPolarDecomposition.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btPoolAllocator.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btQuadWord.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btQuaternion.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btQuickprof.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btRandom.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btScalar.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btSerializer.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btSpatialAlgebra.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btStackAlloc.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btTransform.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btTransformUtil.h">
-      <Filter>Header Files\BulletMath</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet\btVector3.h">
-      <Filter>Header Files\BulletMath</Filter>
     </ClInclude>
     <ClInclude Include="Window.h">
       <Filter>Header Files</Filter>
@@ -240,6 +126,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Voxelizer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Handle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

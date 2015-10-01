@@ -75,14 +75,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="bullet\btAlignedAllocator.cpp" />
-    <ClCompile Include="bullet\btConvexHull.cpp" />
-    <ClCompile Include="bullet\btConvexHullComputer.cpp" />
-    <ClCompile Include="bullet\btGeometryUtil.cpp" />
-    <ClCompile Include="bullet\btPolarDecomposition.cpp" />
-    <ClCompile Include="bullet\btQuickprof.cpp" />
-    <ClCompile Include="bullet\btSerializer.cpp" />
-    <ClCompile Include="bullet\btVector3.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CustomEvents.cpp" />
     <ClCompile Include="Engine.cpp" />
@@ -92,6 +84,7 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Program.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Scheduler.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -101,44 +94,18 @@
     <ClCompile Include="Worker.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bullet\btAabbUtil2.h" />
-    <ClInclude Include="bullet\btAlignedAllocator.h" />
-    <ClInclude Include="bullet\btAlignedObjectArray.h" />
-    <ClInclude Include="bullet\btConvexHull.h" />
-    <ClInclude Include="bullet\btConvexHullComputer.h" />
-    <ClInclude Include="bullet\btCpuFeatureUtility.h" />
-    <ClInclude Include="bullet\btDefaultMotionState.h" />
-    <ClInclude Include="bullet\btGeometryUtil.h" />
-    <ClInclude Include="bullet\btGrahamScan2dConvexHull.h" />
-    <ClInclude Include="bullet\btHashMap.h" />
-    <ClInclude Include="bullet\btIDebugDraw.h" />
-    <ClInclude Include="bullet\btList.h" />
-    <ClInclude Include="bullet\btMatrix3x3.h" />
-    <ClInclude Include="bullet\btMatrixX.h" />
-    <ClInclude Include="bullet\btMinMax.h" />
-    <ClInclude Include="bullet\btMotionState.h" />
-    <ClInclude Include="bullet\btPolarDecomposition.h" />
-    <ClInclude Include="bullet\btPoolAllocator.h" />
-    <ClInclude Include="bullet\btQuadWord.h" />
-    <ClInclude Include="bullet\btQuaternion.h" />
-    <ClInclude Include="bullet\btQuickprof.h" />
-    <ClInclude Include="bullet\btRandom.h" />
-    <ClInclude Include="bullet\btScalar.h" />
-    <ClInclude Include="bullet\btSerializer.h" />
-    <ClInclude Include="bullet\btSpatialAlgebra.h" />
-    <ClInclude Include="bullet\btStackAlloc.h" />
-    <ClInclude Include="bullet\btTransform.h" />
-    <ClInclude Include="bullet\btTransformUtil.h" />
-    <ClInclude Include="bullet\btVector3.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CustomEvents.h" />
     <ClInclude Include="CustomTypes.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="GLUtils.h" />
+    <ClInclude Include="Handle.h" />
     <ClInclude Include="Job.h" />
     <ClInclude Include="JobFactory.h" />
     <ClInclude Include="Program.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Scheduler.h" />
     <ClInclude Include="Shader.h" />

@@ -54,6 +54,23 @@ public:
 
 private:
 
+	// Resource Interface
+	void Load() {
+		std::cout << "load" << std::endl;
+	}
+
+	void Save() {
+		std::cout << "save" << std::endl;
+	}
+
+	void Get() {
+		std::cout << "get" << std::endl;
+	}
+
+	void Reload() {
+		std::cout << "reload" << std::endl;
+	}
+
 	GLuint									m_ProgramID;
 
 	bool									m_Linked;

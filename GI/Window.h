@@ -8,6 +8,8 @@
 
 #include <wx/glcanvas.h>
 
+#include "Handle.h"
+
 // Forward declares
 class nxEngine;
 class nxStatusBar;
