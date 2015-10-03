@@ -1,5 +1,9 @@
 #pragma once
 
+// STD print
+#include <iostream>
+
+// STD Vector and String
 #include <string>
 #include <vector>
 
@@ -52,8 +56,6 @@ public:
 	void									SetName(std::string& name) { m_ProgramName = name; };
 	const std::string&						GetName() { return m_ProgramName; };
 
-private:
-
 	// Resource Interface
 	void Load() {
 		std::cout << "load" << std::endl;
@@ -70,6 +72,8 @@ private:
 	void Reload() {
 		std::cout << "reload" << std::endl;
 	}
+
+private:
 
 	GLuint									m_ProgramID;
 

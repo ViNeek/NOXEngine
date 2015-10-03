@@ -78,6 +78,7 @@ private:
 	GLuint									m_FBO;
 	GLuint									m_RBO;
 	GLuint									m_DepthTexture;
+	GLuint									m_ssbo;
 
 	bool									m_FBOInited;
 	bool									m_IsVoxelizerReady;

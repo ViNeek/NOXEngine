@@ -90,6 +90,7 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Voxelizer.cpp" />
+    <ClCompile Include="VoxelizerBase.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="Worker.cpp" />
   </ItemGroup>
@@ -113,6 +114,7 @@
     <ClInclude Include="Synchronizer.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Voxelizer.h" />
+    <ClInclude Include="VoxelizerBase.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="Worker.h" />
   </ItemGroup>

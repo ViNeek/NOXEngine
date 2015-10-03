@@ -10,17 +10,23 @@
 
 #include "GLUtils.h"
 
-nxVoxelizer::nxVoxelizer(nxEngine* eng, unsigned int dim) {
+nxVoxelizer::nxVoxelizer(nxEngine* eng, unsigned int dim) : nxVoxelizerBase("dumyy") {
 	m_pEngine = eng;
 	m_dimensions = glm::uvec3(dim);
 	m_initialized = false;
 	m_resolution = dim;
+	m_ssbo = 0;
 }
 
-void nxVoxelizer::Init() {
+bool nxVoxelizer::Init() {
 
 	glGenFramebuffers(1, &m_fbo_3_axis);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_3_axis);
+
+	glGenBuffers(1, &m_ssbo);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, m_resolution * m_resolution / 8, NULL, GL_DYNAMIC_COPY);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	glGenTextures(1, &m_texture_3_axis_id);
 	glBindTexture(GL_TEXTURE_2D_ARRAY, m_texture_3_axis_id);
@@ -47,6 +53,8 @@ void nxVoxelizer::Init() {
 		BOOST_LOG_TRIVIAL(error) << "Voxel Layered FBO Incomplete ";
 		break;
 	}
+
+	return true;
 }
 
 void nxVoxelizer::PrintGrid() {
@@ -57,8 +65,8 @@ void nxVoxelizer::PrintGrid() {
 
 	GLuint count = width * height * 3;
 	int f = sizeof(glm::uvec4);
-	//glm::uvec4 * data = (glm::uvec4 *)boost::alignment::aligned_alloc(16, count * sizeof(glm::uvec4));
-	glm::uvec4 * data = new glm::uvec4[count];
+	glm::uvec4 * data = (glm::uvec4 *)boost::alignment::aligned_alloc(16, count * sizeof(glm::uvec4));
+	//glm::uvec4 * data = new glm::uvec4[count];
 	GLuint channels = 4;
 	GLuint byteSizePerChannel = 4;
 	memset(data, 0, width * height * channels * byteSizePerChannel * 3);
@@ -105,8 +113,8 @@ void nxVoxelizer::PrintGrid() {
 		}
 		printf("Occupied Voxels %d : %d\n", g, occupied_voxels);
 	}
-	//boost::alignment::aligned_free(data);
-	delete[] data;
+	boost::alignment::aligned_free(data);
+	//delete[] data;
 }
 
 void nxVoxelizer::GeneratePreviewGrid() {

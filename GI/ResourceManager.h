@@ -7,23 +7,25 @@
 #include "Resource.h"
 #include "Program.h"
 
-typedef boost::variant< std::enable_if<nox::IsResource<nxProgram>::value>::type > SupportedTypes;
+//typedef boost::variant< std::enable_if<nox::IsResource<nxProgram>::value>::type > SupportedTypes;
+typedef boost::variant< nxProgram > SupportedTypes;
 
 class nxResourceManager {
 
 private:
 
-	template <typename T>	
 	std::vector< SupportedTypes >		m_ResourceContainers;
 
 public:
 
-	int CountContainers() { //return m_ResourceContainers.size(); }
+								nxResourceManager();
+
+	int							CountContainers() { return m_ResourceContainers.size(); }
 	
 	template <typename T>
-	nxHandle AddResource(const T& resource);
+	nxResourceHandle<T>					AddResource(const T& resource);
 
 	template <typename T>
-	nxHandle AddResource(const T* resource);
+	nxResourceHandle<T>					AddResource(const T* resource);
 
 };

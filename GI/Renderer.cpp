@@ -64,6 +64,8 @@ void *nxRenderer::Entry()
 
 		UseProgram();
 
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_ssbo);
+
 		//RenderFrameDemo();
 		RenderFrame();
 
@@ -193,6 +195,12 @@ bool nxRenderer::InitExtensions() {
 
 void nxRenderer::InitFramebuffer() {
 	
+	/* TEMPORARY init a a test Shader Storage Buffer object */
+	glGenBuffers(1, &m_ssbo);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, 128 * 128 * 128 / 8, NULL, GL_DYNAMIC_COPY);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
 	glGenRenderbuffers(1, &m_RBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, m_RBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, m_VWidth, m_VHeight);

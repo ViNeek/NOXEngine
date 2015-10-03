@@ -63,10 +63,10 @@ namespace nox {
 
 	};
 
-	template<typename T>
-	typedef Handle< typename std::enable_if<IsResource<T>::value>::type > ResourceHandle;
-
 } // namespace NOX
+
+template<typename T>
+using nxResourceHandle = nxHandle< typename std::enable_if<nox::IsResource<T>::value>::type >;
 
 class nxResource {
 

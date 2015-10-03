@@ -7,6 +7,7 @@ layout(triangle_strip, max_vertices = 3) out;
 
 uniform mat3 NormalMatrix;
 uniform mat4 MVP;
+uniform uvec3 uniform_size;
 //uniform mat4 depthMVP;
 
 in VertexData {

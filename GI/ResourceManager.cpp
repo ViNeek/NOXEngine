@@ -1,3 +1,5 @@
 #include "ResourceManager.h"
 
-int nxResourceManager::
+nxResourceManager::nxResourceManager() {
+
+}
