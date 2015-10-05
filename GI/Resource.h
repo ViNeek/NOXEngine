@@ -5,18 +5,21 @@
 
 #include "Handle.h"
 
+// Each Resource has its equivalent resource container class
+// used by the resource manager
 template <typename T>
 class ResourceContainer {
 
 public:
 
-	typedef T resource_type;
-
-	std::vector<T>		m_Resources;
+	std::vector<typename T::resource_type>		m_Resources;
 
 };
 
+// A general NOX namespace
 namespace nox {
+	// A namespace for Interfaces
+	namespace interfaces {
 
 	template <class ResourceType>
 	class IsResource
@@ -27,7 +30,7 @@ namespace nox {
 		template <typename T, T> struct TypeCheck;
 
 		typedef char Yes;
-		typedef long No;
+		typedef char No ;
 
 		// Helper structs to hold declarations of function pointers.
 		template <typename T> struct _Load { typedef void (T::*fptr)(); };
@@ -47,7 +50,7 @@ namespace nox {
 		template <typename T> static Yes HasGet(TypeCheck< typename _Get<T>::fptr, &T::Get >*);
 		template <typename T> static No  HasGet(...);
 
-		// Resource Manager needs access to the private storafe class
+		// Resource Manager needs access to the private ResourceContainer class
 		friend class ResourceManager;
 
 		// Static member holding storage for the resources
@@ -61,13 +64,19 @@ namespace nox {
 			&& (sizeof(HasLoad<ResourceType>(0)) == sizeof(Yes))
 			&& (sizeof(HasSave<ResourceType>(0)) == sizeof(Yes));
 
+		typedef std::enable_if_t<value> resource_type;
+
 	};
 
-} // namespace NOX
+	} // namespace nox
+} // namespace interfaces
 
+// Every nxHandle refering toa a resource can be called an nxResourceHandle
 template<typename T>
-using nxResourceHandle = nxHandle< typename std::enable_if<nox::IsResource<T>::value>::type >;
+using nxResourceHandle = nxHandle< typename std::enable_if_t<nox::interfaces::IsResource<T>::value> >;
 
+// A typical nxResource
+// Could be considered a base class
 class nxResource {
 
 	void Load() {

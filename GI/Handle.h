@@ -10,6 +10,15 @@ private:
 	T*					m_Ptr;
 	std::atomic<int>	m_RefCount;
 
+
+	void AddRef() {
+		m_RefCount.fetch_add(1, std::memory_order_relaxed);
+	}
+
+	void DecRef() {
+		m_RefCount.fetch_sub(1, std::memory_order_relaxed);
+	}
+
 public:
 
 	T* operator->() {
@@ -17,7 +26,7 @@ public:
 	}
 
 	int RefCount() {
-		return m_RefCount.load();
+		return m_RefCount;
 	}
 
 };
