@@ -2,10 +2,12 @@
 
 #include <string>
 
+// Forward declares
 class nxRenderer;
 class nxScheduler;
 class nxScene;
 class nxSynchronizer;
+class nxResourceManager;
 
 class nxEngine {
 public:
@@ -29,13 +31,18 @@ public:
 
 private:
 
+	// Renderer State
 	nxRenderer*				m_pRenderer;
 	bool					m_RendererFinished;
 
+	// Scheduler state
 	nxSynchronizer*			m_SchedulerSync;
 	nxScheduler*			m_pScheduler;
 	bool					m_SchedulerFinished;
 
+	// Scene State
 	nxScene*				m_Scene;
 
+	// Resource Manager
+	nxResourceManager*		m_ResourceMgr;
 };

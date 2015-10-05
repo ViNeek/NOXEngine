@@ -3,13 +3,13 @@
 #include <vector>
 #include <map>
 
+#include <boost/lockfree/queue.hpp>
+
 #include <GL/glew.h>
 
 #include "Program.h"
 #include "wx/wx.h"
 #include "wx/glcanvas.h"
-
-#include <boost/lockfree/queue.hpp>
 
 enum nxRendererState {
 	NX_RENDERER_OFF = (1 << 0),

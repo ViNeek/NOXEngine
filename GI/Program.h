@@ -57,7 +57,7 @@ public:
 	const std::string&						GetName() { return m_ProgramName; };
 
 	// Resource Interface
-	void Load() {
+	void Load(const std::string& path) {
 		std::cout << "load" << std::endl;
 	}
 

@@ -18,14 +18,16 @@ private:
 
 public:
 
-								nxResourceManager();
+										nxResourceManager();
 
-	int							CountContainers() { return m_ResourceContainers.size(); }
+	int									CountContainers() { return m_ResourceContainers.size(); }
 	
 	template <typename T>
 	nxResourceHandle<T>					AddResource(const T& resource);
 
 	template <typename T>
 	nxResourceHandle<T>					AddResource(const T* resource);
+	//template <typename T>
+	//nxResourceHandle<T>					AddResource(const std::string& file_path);
 
 };

@@ -1,24 +1,26 @@
 #include "Scene.h"
 
+#include <unordered_map>
+#include <string>
+#include <set>
+#include <exception>
+#include <iostream>
+
+#include <boost/property_tree/ptree.hpp>
+
 #include "GLUtils.h"
 #include "Engine.h"
+
 #include "Renderer.h"
+#include <boost/property_tree/json_parser.hpp>
 #include "Entity.h"
 #include "Job.h"
 #include "Program.h"
 #include "JobFactory.h"
 
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
 #include <boost/foreach.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/assign/list_of.hpp> // for 'map_list_of()'
-
-#include <map>
-#include <string>
-#include <set>
-#include <exception>
-#include <iostream>
 
 #include "Scheduler.h"
 #include "Camera.h"
@@ -40,7 +42,7 @@ nxScene::nxScene(std::string& path) {
 	m_Camera = NULL;
 }
 
-std::map<std::string, GLenum> gc_TypeMappings =
+std::unordered_map<std::string, GLenum> gc_TypeMappings =
 boost::assign::map_list_of("Compute", GL_COMPUTE_SHADER)
 ("Vertex", GL_VERTEX_SHADER)
 ("Tess_control", GL_TESS_CONTROL_SHADER)

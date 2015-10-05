@@ -33,7 +33,7 @@ namespace nox {
 		typedef char No ;
 
 		// Helper structs to hold declarations of function pointers.
-		template <typename T> struct _Load { typedef void (T::*fptr)(); };
+		template <typename T> struct _Load { typedef void (T::*fptr)(const std::string& path); };
 		template <typename T> struct _Save { typedef void (T::*fptr)(); };
 		template <typename T> struct _Reload { typedef void (T::*fptr)(); };
 		template <typename T> struct _Get { typedef void (T::*fptr)(); };
@@ -79,7 +79,7 @@ using nxResourceHandle = nxHandle< typename std::enable_if_t<nox::interfaces::Is
 // Could be considered a base class
 class nxResource {
 
-	void Load() {
+	void Load(const std::string& path) {
 		std::cout << "load" << std::endl;
 	}
 
