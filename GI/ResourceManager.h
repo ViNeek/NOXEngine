@@ -2,32 +2,43 @@
 
 #include <vector>
 
-#include <boost/variant.hpp>
+#include <type_traits>
 
 #include "Resource.h"
 #include "Program.h"
 
+#include <boost/variant.hpp>
+
 //typedef boost::variant< std::enable_if<nox::IsResource<nxProgram>::value>::type > SupportedTypes;
-typedef boost::variant< nxProgram > SupportedTypes;
+typedef boost::variant< int, nxProgram > SupportedTypes;
 
 class nxResourceManager {
 
 private:
 
-	std::vector< SupportedTypes >		m_ResourceContainers;
+	//std::vector< std::pair< std::atomic<int>, SupportedTypes > >		m_ResourceContainers;
+	//std::vector< int, SupportedTypes >		m_ResourceContainers;
 
 public:
 
 										nxResourceManager();
 
-	int									CountContainers() { return m_ResourceContainers.size(); }
+	//int									CountContainers() { return m_ResourceContainers.size(); }
 	
 	template <typename T>
-	nxResourceHandle<T>					AddResource(const T& resource);
+	void					AddResource(T* resource) {
+		//(nox::interfaces::IsResource<T>::value, "resource is required");
+		SupportedTypes prog(1);
+		//std::pair< int, SupportedTypes > mypair = std::make_pair(1, prog);
+		//m_ResourceContainers.push_back(mypair);
+		nox::interfaces::IsResource<T>::m_Storage.m_Resources.push_back(*resource);
+		nox::interfaces::IsResource<T>::m_Storage.m_Resources.size();
+		std::cout << "Vector Size : " << nox::interfaces::IsResource<T>::m_Storage.m_Resources.size() << std::endl;
 
-	template <typename T>
-	nxResourceHandle<T>					AddResource(const T* resource);
+		nxResourceHandle<typename T> hnd(resource);
+	}
+
 	//template <typename T>
-	//nxResourceHandle<T>					AddResource(const std::string& file_path);
+	//nxResourceHandle<T>				AddResource(const std::string& file_path);
 
 };

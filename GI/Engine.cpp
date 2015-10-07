@@ -4,7 +4,7 @@
 #include "Renderer.h"
 #include "Scene.h"
 #include "Scheduler.h"
-//#include "ResourceManager.h"
+#include "ResourceManager.h"
 
 nxEngine::nxEngine() {
 	m_RendererFinished = false;
@@ -15,7 +15,7 @@ nxEngine::nxEngine() {
 	assert(m_Scene);
 	m_pScheduler = new nxScheduler(this);
 	m_pRenderer = new nxRenderer(this);
-	//m_ResourceMgr = new nxResourceManager;
+	m_ResourceMgr = new nxResourceManager;
 }
 
 void nxEngine::InitRenderer() {

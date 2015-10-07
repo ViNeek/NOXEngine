@@ -21,6 +21,16 @@ private:
 
 public:
 
+	nxHandle(T* ref) {
+
+		std::cout << "ctor" << std::endl;
+	}
+
+	nxHandle(nxHandle<T>&& hnd) {
+	
+		std::cout << "move" << std::endl;
+	}
+
 	T* operator->() {
 		return m_Ptr;
 	}

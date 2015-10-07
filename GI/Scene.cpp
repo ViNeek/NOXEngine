@@ -1,23 +1,21 @@
-#include "Scene.h"
-
 #include <unordered_map>
 #include <string>
 #include <set>
 #include <exception>
 #include <iostream>
 
-#include <boost/property_tree/ptree.hpp>
+#include "Scene.h"
 
 #include "GLUtils.h"
 #include "Engine.h"
 
 #include "Renderer.h"
-#include <boost/property_tree/json_parser.hpp>
 #include "Entity.h"
 #include "Job.h"
 #include "Program.h"
 #include "JobFactory.h"
 
+#include <boost/property_tree/json_parser.hpp>
 #include <boost/foreach.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/assign/list_of.hpp> // for 'map_list_of()'
@@ -25,6 +23,9 @@
 #include "Scheduler.h"
 #include "Camera.h"
 #include "Voxelizer.h"
+#include "ResourceManager.h"
+
+#include <type_traits>
 
 namespace pt = boost::property_tree;
 
@@ -75,6 +76,10 @@ void nxScene::Init() {
 		BOOST_LOG_TRIVIAL(info) << "Number of Program Shaders : " << tree.get_child("Scene.Programs").size();
 		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Programs")) {
 			nxProgram* prog = new nxProgram(v.second.get_child("Shaders").size());
+			//static_assert(nox::interfaces::IsResource<int>::value);
+			m_pEngine->ResourceManager()->AddResource(prog);
+			//m_pEngine->ResourceManager()->AddResource(new std::string("s"));
+
 			prog->SetName(v.second.get<std::string>("Name"));
 			bool use = false;
 			if (std::strcmp(m_DefaultProgramName.c_str(), v.second.get<std::string>("Name").c_str()) == 0)

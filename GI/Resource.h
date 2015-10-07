@@ -5,14 +5,16 @@
 
 #include "Handle.h"
 
-// Each Resource has its equivalent resource container class
-// used by the resource manager
+#include "Program.h"
+
 template <typename T>
 class ResourceContainer {
 
 public:
 
-	std::vector<typename T::resource_type>		m_Resources;
+	typedef T resource_type;
+
+	std::vector<resource_type>		m_Resources;
 
 };
 
@@ -21,7 +23,7 @@ namespace nox {
 	// A namespace for Interfaces
 	namespace interfaces {
 
-	template <class ResourceType>
+	template <typename ResourceType>
 	class IsResource
 	{
 		// This type won't compile if the second template parameter isn't of type T,
@@ -29,17 +31,18 @@ namespace nox {
 		// itself in the second thus checking that the function has a specific signature.
 		template <typename T, T> struct TypeCheck;
 
-		typedef char Yes;
+		typedef long Yes;
 		typedef char No ;
 
 		// Helper structs to hold declarations of function pointers.
-		template <typename T> struct _Load { typedef void (T::*fptr)(const std::string& path); };
+		template <typename T> struct _Manage { typedef void (T::*fptr)(T resource); };
 		template <typename T> struct _Save { typedef void (T::*fptr)(); };
 		template <typename T> struct _Reload { typedef void (T::*fptr)(); };
+		template <typename T> struct _Changed { typedef bool (T::*fptr)(); };
 		template <typename T> struct _Get { typedef void (T::*fptr)(); };
 
-		template <typename T> static Yes HasLoad(TypeCheck< typename _Load<T>::fptr, &T::Load >*);
-		template <typename T> static No  HasLoad(...);
+		template <typename T> static Yes HasManage(TypeCheck< typename _Manage<T>::fptr, &T::Manage >*);
+		template <typename T> static No  HasManage(...);
 
 		template <typename T> static Yes HasSave(TypeCheck< typename _Save<T>::fptr, &T::Save >*);
 		template <typename T> static No  HasSave(...);
@@ -47,29 +50,39 @@ namespace nox {
 		template <typename T> static Yes HasReload(TypeCheck< typename _Reload<T>::fptr, &T::Reload >*);
 		template <typename T> static No  HasReload(...);
 
+		template <typename T> static Yes HasChanged(TypeCheck< typename _Changed<T>::fptr, &T::Changed >*);
+		template <typename T> static No  HasChanged(...);
+
 		template <typename T> static Yes HasGet(TypeCheck< typename _Get<T>::fptr, &T::Get >*);
 		template <typename T> static No  HasGet(...);
 
 		// Resource Manager needs access to the private ResourceContainer class
 		friend class ResourceManager;
 
-		// Static member holding storage for the resources
-		static ResourceContainer<ResourceType> GetContainer() { return m_Storage; }
-		static ResourceContainer<ResourceType> m_Storage;
-
 	public:
 
+		//static bool const value = (sizeof(HasManage<ResourceType>(0)) == sizeof(Yes));
 		static bool const value = (sizeof(HasGet<ResourceType>(0)) == sizeof(Yes))
 			&& (sizeof(HasReload<ResourceType>(0)) == sizeof(Yes))
-			&& (sizeof(HasLoad<ResourceType>(0)) == sizeof(Yes))
+			&& (sizeof(HasManage<ResourceType>(0)) == sizeof(Yes))
+			&& (sizeof(HasChanged<ResourceType>(0)) == sizeof(Yes))
 			&& (sizeof(HasSave<ResourceType>(0)) == sizeof(Yes));
-
+		
 		typedef std::enable_if_t<value> resource_type;
+
+		// Static member holding storage for the resources
+		//static ResourceContainer<resource_type>& GetContainer() { return m_Storage; }
+		static ResourceContainer< typename ResourceType > m_Storage;
 
 	};
 
+	template <typename ResourceType>
+	ResourceContainer< typename ResourceType > IsResource<ResourceType>::m_Storage = { };
+
 	} // namespace nox
 } // namespace interfaces
+
+
 
 // Every nxHandle refering toa a resource can be called an nxResourceHandle
 template<typename T>
@@ -79,7 +92,7 @@ using nxResourceHandle = nxHandle< typename std::enable_if_t<nox::interfaces::Is
 // Could be considered a base class
 class nxResource {
 
-	void Load(const std::string& path) {
+	void Manage(nxResource resource) {
 		std::cout << "load" << std::endl;
 	}
 
@@ -93,6 +106,10 @@ class nxResource {
 
 	void Reload() {
 		std::cout << "reload" << std::endl;
+	}
+
+	bool Changed() {
+		std::cout << "changed" << std::endl;
 	}
 
 };

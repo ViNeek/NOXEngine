@@ -20,7 +20,10 @@ class nxProgram {
 
 public:
 
-	nxProgram(int initCount);
+											nxProgram(int initCount);
+											nxProgram(nxProgram&& prog) {
+												std::cout << "Move it Program" << std::endl;
+											}
 
 	void									ProgramLog();
 	bool									ReadyForLinking() { return m_InitShaderCount == m_Shaders.size(); }
@@ -57,8 +60,8 @@ public:
 	const std::string&						GetName() { return m_ProgramName; };
 
 	// Resource Interface
-	void Load(const std::string& path) {
-		std::cout << "load" << std::endl;
+	void Manage(nxProgram program) {
+		std::cout << "manage" << std::endl;
 	}
 
 	void Save() {
@@ -71,6 +74,10 @@ public:
 
 	void Reload() {
 		std::cout << "reload" << std::endl;
+	}
+
+	bool Changed() {
+		std::cout << "changed" << std::endl;
 	}
 
 private:

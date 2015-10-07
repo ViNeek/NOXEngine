@@ -34,6 +34,9 @@ public:
 								nxScene(nxEngine* eng);
 								nxScene(std::string& path);
 
+		/*
+		aligned new for use with GLM
+		*/
 	void*						operator new(size_t i)
 	{
 		//void *p = _mm_malloc(i, 16);
@@ -42,7 +45,10 @@ public:
 		return p;
 	}
 
-	void operator delete(void* p)
+		/*
+		aligned new for use with GLM
+		*/
+	void						operator delete(void* p)
 	{
 		boost::alignment::aligned_free(p);
 		//_mm_free(p);

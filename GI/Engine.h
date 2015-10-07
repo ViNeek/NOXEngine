@@ -17,7 +17,8 @@ public:
 	nxRenderer*				Renderer() { return m_pRenderer; };
 	nxScheduler*			Scheduler() { return m_pScheduler; };
 	nxScene*				Scene() { return m_Scene; }
-	
+	nxResourceManager*		ResourceManager() { return m_ResourceMgr; }
+
 	void					InitRenderer();
 	void					InitScheduler();
 	void					InitScene(std::string& path);
