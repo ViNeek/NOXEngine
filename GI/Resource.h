@@ -8,7 +8,7 @@
 #include "Program.h"
 
 template <typename T>
-class ResourceContainer {
+class nxResourceContainer {
 
 public:
 
@@ -72,12 +72,12 @@ namespace nox {
 
 		// Static member holding storage for the resources
 		//static ResourceContainer<resource_type>& GetContainer() { return m_Storage; }
-		static ResourceContainer< typename ResourceType > m_Storage;
+		static nxResourceContainer< typename ResourceType > m_Storage;
 
 	};
 
 	template <typename ResourceType>
-	ResourceContainer< typename ResourceType > IsResource<ResourceType>::m_Storage = { };
+	nxResourceContainer< typename ResourceType > IsResource<ResourceType>::m_Storage = { };
 
 	} // namespace nox
 } // namespace interfaces

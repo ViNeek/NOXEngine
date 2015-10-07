@@ -32,6 +32,8 @@ public:
 		//std::pair< int, SupportedTypes > mypair = std::make_pair(1, prog);
 		//m_ResourceContainers.push_back(mypair);
 		nox::interfaces::IsResource<T>::m_Storage.m_Resources.push_back(*resource);
+		nox::interfaces::IsResource<T>::m_Storage.m_Resources.push_back(*resource);
+		nox::interfaces::IsResource<T>::m_Storage.m_Resources.push_back(*resource);
 		nox::interfaces::IsResource<T>::m_Storage.m_Resources.size();
 		std::cout << "Vector Size : " << nox::interfaces::IsResource<T>::m_Storage.m_Resources.size() << std::endl;
 
