@@ -17,6 +17,7 @@ nxShader::nxShader() {
 nxShader::nxShader(std::string& path, GLenum shaderType) {
 	m_ShaderID = -1;
 	m_Type = shaderType;
+	m_FileName = path;
 
 	LoadSourceFromFile(path);
 }
@@ -37,7 +38,7 @@ void nxShader::Create() {
 	glGetShaderiv(m_ShaderID, GL_COMPILE_STATUS, &shaderCompiled);
 	if (shaderCompiled != GL_TRUE)
 	{
-		BOOST_LOG_TRIVIAL(error) << "Uncompilable shader: ";
+		BOOST_LOG_TRIVIAL(error) << "Uncompilable shader : " << m_FileName;
 		ShaderLog();
 		glDeleteShader(m_ShaderID);
 		m_ShaderID = -1;
@@ -51,7 +52,7 @@ void nxShader::LoadSourceFromFile(std::string& path) {
 	{
 		//Get shader source
 		m_SourceData.assign((std::istreambuf_iterator< char >(sourceFile)), std::istreambuf_iterator< char >());
-		BOOST_LOG_TRIVIAL(info) << "Shader source: " << m_SourceData ;
+		//BOOST_LOG_TRIVIAL(info) << "Shader source: " << m_SourceData ;
 	}
 	else
 	{

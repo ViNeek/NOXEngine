@@ -7,7 +7,7 @@ in VertexData {
     //vec2 uv;
 } VertexIn;
 
-layout (std430, binding=2) buffer
+layout (std430, binding=2) buffer VoxelData
 {
 	uint voxel_data[];
 };
@@ -24,8 +24,12 @@ void main()
 	if ( modifier > (128 * 128 * 128) ) 
 		modifier = (128 * 128 * 128);
 
-	voxel_data[modifier / 8] = 1;
+	//voxel_data[0] = 2;
 
+	// Do we need atomicity???
+	//atomicOr(voxel_data[0], 3);
+	voxel_data[0] |= 256;
+	voxel_data[0] |= 255;
 	out_color = vec4(VertexIn.normal,0.0f);
 
 }

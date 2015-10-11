@@ -37,34 +37,6 @@
                         "Geometry": "../Shaders/SimplePass.g.glsl"
                     }
                 ]
-            },
-            {
-                "Name":  "Voxelize",
-                "Shaders": [
-                    {
-                        "Fragment": "../Shaders/ThreeWayBinary.f.glsl"
-                    },
-                    {
-                        "Vertex": "../Shaders/ThreeWayBinary.v.glsl"
-                    },
-                    {
-                        "Geometry": "../Shaders/ThreeWayBinary.g.glsl"
-                    }
-                ]
-            },
-            {
-                "Name":  "Voxelize Preview",
-                "Shaders": [
-                    {
-                        "Fragment": "../Shaders/VoxelPreview.f.glsl"
-                    },
-                    {
-                        "Vertex": "../Shaders/VoxelPreview.v.glsl"
-                    },
-                    {
-                        "Geometry": "../Shaders/VoxelPreview.g.glsl"
-                    }
-                ]
             }
         ]
     }

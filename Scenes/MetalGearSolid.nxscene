@@ -2,32 +2,67 @@
     "Scene": {
         "Count": 1,
         "Name": "Simple Scene",
+        "Default Program": "Simple Pass",
         "Camera": {
             "PositionX": 0,
             "PositionY": 0,
-            "PositionZ": 500
+            "PositionZ": 1000
+        },
+        "Voxelizer": {
+            "DimX": 128,
+            "DimY": 128,
+            "DimZ": 128
         },
         "Entities": [
             {
-                "ModelName": "Models/REX",
+                "ModelName": "Models/REX2",
                 "ModelType": ".obj",
                 "CenterX": 0,
                 "CenterY": 0,
                 "CenterZ": 0,
-                "Scale": 1
+                "Scale": 2
             }
         ],
         "Programs": [
             {
+                "Name":  "Simple Pass",
                 "Shaders": [
                     {
-                        "Fragment": "Shaders/SimplePass.f.glsl"
+                        "Fragment": "../Shaders/SimplePass.f.glsl"
                     },
                     {
-                        "Vertex": "Shaders/SimplePass.v.glsl"
+                        "Vertex": "../Shaders/SimplePass.v.glsl"
                     },
                     {
-                        "Geometry": "Shaders/SimplePass.g.glsl"
+                        "Geometry": "../Shaders/SimplePass.g.glsl"
+                    }
+                ]
+            },
+            {
+                "Name":  "Voxelize",
+                "Shaders": [
+                    {
+                        "Fragment": "../Shaders/ThreeWayBinary.f.glsl"
+                    },
+                    {
+                        "Vertex": "../Shaders/ThreeWayBinary.v.glsl"
+                    },
+                    {
+                        "Geometry": "../Shaders/ThreeWayBinary.g.glsl"
+                    }
+                ]
+            },
+            {
+                "Name":  "Voxelize Preview",
+                "Shaders": [
+                    {
+                        "Fragment": "../Shaders/VoxelPreview.f.glsl"
+                    },
+                    {
+                        "Vertex": "../Shaders/VoxelPreview.v.glsl"
+                    },
+                    {
+                        "Geometry": "../Shaders/VoxelPreview.g.glsl"
                     }
                 ]
             }

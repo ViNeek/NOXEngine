@@ -16,6 +16,8 @@ public:
 	void				LoadSourceFromFile(std::string& path);
 	void				ShaderLog();
 	void				Create();
+	const std::string&	Filename(){ return m_FileName; }
+	void				Filename(const std::string& str){ m_FileName = str; }
 	GLuint				ShaderID(){ return m_ShaderID; }
 
 	// Resource Interface
@@ -43,5 +45,7 @@ private:
 
 	GLuint				m_ShaderID;
 	std::string			m_SourceData;
+	std::string			m_FileName;
 	GLenum				m_Type;
+
 };

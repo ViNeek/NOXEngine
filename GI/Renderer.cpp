@@ -49,6 +49,8 @@ void nxRenderer::UseProgram() {
 	m_pActiveProgram->Use();
 }
 
+bool error = true;
+
 void *nxRenderer::Entry()
 {
 	Init();
@@ -68,6 +70,27 @@ void *nxRenderer::Entry()
 
 		//RenderFrameDemo();
 		RenderFrame();
+
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
+		if (error) Utils::GL::CheckGLState("Frame");
+		GLvoid* p = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
+		if (error) Utils::GL::CheckGLState("Frame");
+		if (p) {
+			GLubyte* ip = (GLubyte*)p;
+			BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT : " << ( (int)ip[0] );
+			if (error) Utils::GL::CheckGLState("Frame");
+			BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT : " << ((int)ip[1]);
+			if (error) Utils::GL::CheckGLState("Frame");
+			BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT : " << ((int)ip[2]);
+			if (error) Utils::GL::CheckGLState("Frame");
+			BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT : " << ((int)ip[3]);
+			BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT : " << "done";
+			if (error) Utils::GL::CheckGLState("Frame");
+		}
+		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+		if (error) Utils::GL::CheckGLState("Frame");
+		error = false;
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 		SwapBuffers();
 		
@@ -89,7 +112,6 @@ void nxRenderer::SetActiveProgramByName(const std::string& name) {
 	//m_ProgramName = name;
 }
 
-bool error = true;
 void nxRenderer::RenderFrame() {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -200,7 +222,7 @@ void nxRenderer::InitFramebuffer() {
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, 128 * 128 * 128 / 8, NULL, GL_DYNAMIC_COPY);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
+	Utils::GL::CheckGLState("SSBO");
 	glGenRenderbuffers(1, &m_RBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, m_RBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, m_VWidth, m_VHeight);
