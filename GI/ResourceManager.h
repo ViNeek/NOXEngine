@@ -10,13 +10,13 @@
 #include <boost/variant.hpp>
 
 //typedef boost::variant< std::enable_if<nox::IsResource<nxProgram>::value>::type > SupportedTypes;
-typedef boost::variant< int, nxProgram > SupportedTypes;
+typedef boost::variant< int, nxResourceContainer<nxProgram> > SupportedTypes;
 
 class nxResourceManager {
 
 private:
 
-	//std::vector< std::pair< std::atomic<int>, SupportedTypes > >		m_ResourceContainers;
+	std::vector< SupportedTypes >				m_ResourceContainers;
 	//std::vector< int, SupportedTypes >		m_ResourceContainers;
 
 public:
@@ -35,8 +35,12 @@ public:
 		nox::interfaces::IsResource<T>::m_Storage.m_Resources.push_back(*resource);
 		nox::interfaces::IsResource<T>::m_Storage.m_Resources.push_back(*resource);
 		nox::interfaces::IsResource<T>::m_Storage.m_Resources.size();
-		std::cout << "Vector Size : " << nox::interfaces::IsResource<T>::m_Storage.m_Resources.size() << std::endl;
 
+		SupportedTypes rsc(nox::interfaces::IsResource<T>::m_Storage);
+
+		m_ResourceContainers.push_back(rsc);
+		std::cout << "Vector Size : " << nox::interfaces::IsResource<T>::m_Storage.m_Resources.size() << std::endl;
+		
 		nxResourceHandle<typename T> hnd(resource);
 	}
 

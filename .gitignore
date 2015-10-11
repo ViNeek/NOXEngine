@@ -6,6 +6,10 @@
 *.user
 *.sln.docstates
 
+# Latex aux files
+Report/*
+!Report/Document.tex
+
 # Build results
 
 [Dd]ebug/
