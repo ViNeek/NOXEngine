@@ -41,7 +41,7 @@ public:
 		m_ResourceContainers.push_back(rsc);
 		std::cout << "Vector Size : " << nox::interfaces::IsResource<T>::m_Storage.m_Resources.size() << std::endl;
 		
-		nxResourceHandle<typename T> hnd(resource);
+		//nxResourceHandle<typename T> hnd(resource);
 	}
 
 	//template <typename T>
