@@ -15,6 +15,7 @@ public:
 							nxEntity();
 							nxEntity(const std::string filename);
 	void					InitFromFile(const std::string& filename);
+	void					InitFromBuffer(glm::vec3* buffer, nxInt32 size);
 	void					ClearData();
 
 	void					UploadData();

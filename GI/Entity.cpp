@@ -8,6 +8,8 @@
 
 #include "GLUtils.h"
 
+#include "CustomTypes.h"
+
 #include <iostream>
 
 #include <assimp/Importer.hpp>      // C++ importer interface
@@ -24,8 +26,8 @@ nxEntity::nxEntity() {
 	m_SceneIndex = -1;
 	m_NumMeshes = -1;
 
-	m_MaxX = m_MaxY = m_MaxZ = -100000.0f;
-	m_MinX = m_MinY = m_MinZ = 100000.0f;
+	m_MaxX = m_MaxY = m_MaxZ = 300.0f;
+	m_MinX = m_MinY = m_MinZ = -300.0f;
 
 	m_DataCurrentSize = 0;
 	m_VertexDataSize = 0;
@@ -59,6 +61,33 @@ nxEntity::nxEntity(const std::string filename) {
 	}
 
 	InitFromFile(filename);
+}
+
+
+void nxEntity::InitFromBuffer(glm::vec3* buffer, nxInt32 size) {
+	glGenBuffers(1, &m_VBO);
+
+	glGenVertexArrays(1, &m_VAO);
+	glBindVertexArray(m_VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	glBufferData(GL_ARRAY_BUFFER, size * sizeof(glm::vec3), buffer, GL_STATIC_DRAW);
+
+	m_NumMeshes = 1;
+	m_MeshStartIndices.push_back(0);
+	m_MeshSizes.push_back(size);
+
+	// Vertex positions
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(aiVector3D), 0);
+	// Texture coordinates
+	//glEnableVertexAttribArray(1);
+	//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(aiVector3D) + sizeof(aiVector2D), (void*)sizeof(aiVector3D));
+	// Normal vectors
+	//glEnableVertexAttribArray(2);
+	//glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 2 * sizeof(aiVector3D) + sizeof(aiVector2D), (void*)(sizeof(aiVector3D) + sizeof(aiVector2D)));
+
+	Utils::GL::CheckGLState("VAOs");
 }
 
 void nxEntity::InitFromFile(const std::string& path) {
@@ -180,6 +209,18 @@ bool nxAssetLoader::operator()(void* data) {
 
 	nxGLAssetLoaderBlob* newData = new nxGLAssetLoaderBlob(blob->m_Engine, ent);
 	blob->m_Engine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_ASSET, newData));
+
+	return true;
+}
+
+bool nxGLBufferedAssetLoader::operator()(void* data) {
+	nxGLBufferedAssetLoaderBlob* blob = (nxGLBufferedAssetLoaderBlob*)data;
+
+	nxEntity* newEnt = new nxEntity();
+	newEnt->InitFromBuffer(blob->m_Buffer, blob->m_BSize);
+
+	blob->m_Engine->Scene()->AddEntity(newEnt);
+	blob->m_Engine->Renderer()->Voxelizer()->SetMatrices();
 
 	return true;
 }

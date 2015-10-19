@@ -25,7 +25,7 @@ bool nxVoxelizer::Init() {
 
 	glGenBuffers(1, &m_ssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, m_resolution * m_resolution / 8, NULL, GL_DYNAMIC_COPY);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, m_resolution * m_resolution * m_resolution / 8, NULL, GL_DYNAMIC_COPY);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	glGenTextures(1, &m_texture_3_axis_id);

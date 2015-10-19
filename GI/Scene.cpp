@@ -51,6 +51,8 @@ boost::assign::map_list_of("Compute", GL_COMPUTE_SHADER)
 ("Geometry", GL_GEOMETRY_SHADER)
 ("Fragment", GL_FRAGMENT_SHADER);
 
+static const float gridSpan = 300.0f;
+
 void nxScene::Init() {
 	try {
 		// Create empty property tree object
@@ -93,6 +95,28 @@ void nxScene::Init() {
 			}
 		}
 		
+		glm::uvec3 dimensions(tree.get_child("Scene.Voxelizer").get<int>("DimX", 128),
+			tree.get_child("Scene.Voxelizer").get<int>("DimY", 128),
+			tree.get_child("Scene.Voxelizer").get<int>("DimZ", 128));
+
+		nxVoxelizer* voxel = new nxVoxelizer(m_pEngine, dimensions.x);
+		m_pEngine->Renderer()->SetVoxelizer(voxel);
+
+		nxVoxelizerInitializerBlob* voxelData = new nxVoxelizerInitializerBlob(m_pEngine, dimensions);
+		m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_VOXELIZER_INIT, voxelData));
+
+		// Memory backed models
+		glm::vec3* buffer = new glm::vec3[6];
+		buffer[0] = glm::vec3(-gridSpan, -gridSpan, -gridSpan);
+		buffer[1] = glm::vec3(-gridSpan, gridSpan, gridSpan);
+		buffer[2] = glm::vec3(gridSpan, gridSpan, gridSpan);
+		buffer[3] = glm::vec3(gridSpan, gridSpan, gridSpan);
+		buffer[4] = glm::vec3(gridSpan, -gridSpan, -gridSpan);
+		buffer[5] = glm::vec3(-gridSpan, -gridSpan, -gridSpan);
+
+		nxGLBufferedAssetLoaderBlob* bufferData = new nxGLBufferedAssetLoaderBlob(m_pEngine, buffer, 6);
+		m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_BUFF_ASSET, bufferData));
+
 		BOOST_LOG_TRIVIAL(info) << "Number of Entities : " << tree.get_child("Scene.Entities").size();
 		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Entities")) {
 			BOOST_LOG_TRIVIAL(info) << "STUFF : " << v.second.get("ModelName", "unknkown");
@@ -108,23 +132,13 @@ void nxScene::Init() {
 						  v.second.get<float>("CenterZ", 0.0f)),
 						  v.second.get<float>("Scale", 1.0f));
 			
-			m_pEngine->Scheduler()->ScheduleJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_LOAD_ASSET, data));
+			//m_pEngine->Scheduler()->ScheduleJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_LOAD_ASSET, data));
 		}
 
 		m_Camera = new nxArcballCamera();
 		m_Camera->SetPosition(tree.get_child("Scene.Camera").get<float>("PositionX", 0.0f),
 			tree.get_child("Scene.Camera").get<float>("PositionY", 0.0f),
 			tree.get_child("Scene.Camera").get<float>("PositionZ", 0.0f));
-
-		glm::uvec3 dimensions(tree.get_child("Scene.Voxelizer").get<int>("DimX", 128),
-			tree.get_child("Scene.Voxelizer").get<int>("DimY", 128),
-			tree.get_child("Scene.Voxelizer").get<int>("DimZ", 128));
-
-		nxVoxelizer* voxel = new nxVoxelizer(m_pEngine, dimensions.x);
-		m_pEngine->Renderer()->SetVoxelizer(voxel);
-
-		nxVoxelizerInitializerBlob* voxelData = new nxVoxelizerInitializerBlob(m_pEngine, dimensions);
-		m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_VOXELIZER_INIT, voxelData));
 
 		SetProjection(45.0f, (float)m_pEngine->Renderer()->Width() / m_pEngine->Renderer()->Height(), 1.0f, 1000.0f);
 	

@@ -15,8 +15,8 @@
         },
         "Entities": [
             {
-                "ModelName": "Models/REX2",
-                "ModelType": ".obj",
+                "ModelName": "Models/Cube",
+                "ModelType": ".3ds",
                 "CenterX": 0,
                 "CenterY": 0,
                 "CenterZ": 0,

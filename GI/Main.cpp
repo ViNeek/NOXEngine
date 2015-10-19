@@ -2,6 +2,7 @@
 #define _glpane_
 
 #include "Window.h"
+#include "Array.h"
 
 // Assimp
 #include <assimp/Importer.hpp>      // C++ importer interface
@@ -57,6 +58,18 @@ bool nxApp::OnInit()
 	Utils::Debug::init_debug_console();
 
 	m_pFrame = new nxFrame(wxT("NOXEngine Viewer"), 50, 50, 400, 200);
+
+	int i = m_pFrame->GetMinWidth();
+
+
+	nxArray<float, 3> floats;
+	nxArray<float, i, 4> floats2;
+
+	floats[0] = 1.5f;
+	floats2[0][0] = 2.5f;
+	printf("%g\n", floats[0]);
+	printf("%g\n", floats2[0][0]);
+	//printf("%d\n", nxArray<float, 3, i, 5, 6 ,7>);
 
 	// Show frame
 	m_pFrame->Show();

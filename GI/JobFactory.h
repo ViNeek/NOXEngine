@@ -1,5 +1,7 @@
 #pragma once
 
+#include "CustomTypes.h"
+
 #include <GL/glew.h>
 #include <string>
 
@@ -34,6 +36,7 @@ enum nxJobID {
 	NX_GL_JOB_FRAMEBUFFER_RESIZE,
 	NX_GL_JOB_COMPILE_SHADER,
 	NX_GL_JOB_LOAD_ASSET,
+	NX_GL_JOB_LOAD_BUFF_ASSET,
 	NX_GL_JOB_LINK_PROGRAM,
 	NX_JOB_MAX
 };
@@ -161,7 +164,21 @@ struct nxGLAssetLoaderBlob {
 
 };
 
+struct nxGLBufferedAssetLoaderBlob {
+	nxGLBufferedAssetLoaderBlob(nxEngine* eng, glm::vec3* buff, nxInt32 size)
+		: m_Engine(eng), m_Buffer(buff), m_BSize(size) {}
+
+	nxEngine*		m_Engine;
+	glm::vec3*		m_Buffer;
+	nxInt32			m_BSize;
+
+};
+
 struct nxGLAssetLoader {
+	bool operator()(void* data);
+};
+
+struct nxGLBufferedAssetLoader {
 	bool operator()(void* data);
 };
 
@@ -169,16 +186,18 @@ struct nxAssetLoaderBlob {
 	nxAssetLoaderBlob(nxEngine* eng, std::string path, std::string type, glm::vec3 cent, float scale)
 		: m_Engine( eng ), m_ResourcePath( path ), m_ResourceType( type ), m_Center( cent ), m_ScaleFactor( scale ) {}
 
-	nxEngine*		m_Engine;
-	std::string		m_ResourcePath;
-	std::string		m_ResourceType;
-	glm::vec3		m_Center;
-	float			m_ScaleFactor;
+	nxEngine*					m_Engine;
+	std::string					m_ResourcePath;
+	std::string					m_ResourceType;
+	glm::vec3					m_Center;
+	float						m_ScaleFactor;
+
 };
 
 struct nxAssetLoader  {
 	bool operator()(void* data);
 };
+
 
 struct nxVoxelizerInitializerBlob {
 	nxVoxelizerInitializerBlob(nxEngine* eng, glm::uvec3 dims)

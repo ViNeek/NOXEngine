@@ -9,7 +9,7 @@ in VertexData {
 
 layout (std430, binding=2) buffer VoxelData
 {
-	uint voxel_data[];
+	uint voxel_data[][][];
 };
 
 void main()
@@ -28,8 +28,8 @@ void main()
 
 	// Do we need atomicity???
 	//atomicOr(voxel_data[0], 3);
-	voxel_data[0] |= 256;
-	voxel_data[0] |= 255;
+	voxel_data[0][0][0] |= 3;
+	voxel_data[0][0][1] |= 2;
 	out_color = vec4(VertexIn.normal,0.0f);
 
 }

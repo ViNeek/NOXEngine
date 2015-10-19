@@ -10,7 +10,9 @@
 #include <boost/align/aligned_alloc.hpp>
 #include <boost/align/is_aligned.hpp>
 
-#define EPSILON 10e-5
+#include "CustomTypes.h"
+
+static const nxFloat64 EPSILON = 10e-5;
 
 class nxArcballCamera
 {
