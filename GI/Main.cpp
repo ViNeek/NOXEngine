@@ -61,7 +61,7 @@ bool nxApp::OnInit()
 
 	int i = m_pFrame->GetMinWidth();
 
-
+	/*
 	nxArray<float, 3> floats;
 	nxArray<float, i, 4> floats2;
 
@@ -70,6 +70,7 @@ bool nxApp::OnInit()
 	printf("%g\n", floats[0]);
 	printf("%g\n", floats2[0][0]);
 	//printf("%d\n", nxArray<float, 3, i, 5, 6 ,7>);
+	*/
 
 	// Show frame
 	m_pFrame->Show();

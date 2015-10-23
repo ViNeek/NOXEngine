@@ -13,6 +13,8 @@
 #include "Engine.h"
 #include "Scene.h"
 
+#include <boost/multi_array.hpp>
+
 nxRenderer::nxRenderer(wxGLCanvas* frame)
 {
 	m_pParent = frame;
@@ -43,10 +45,11 @@ nxRenderer::nxRenderer(nxEngine* eng) {
 }
 
 void nxRenderer::UseProgram() {
-	//if ((size_t)m_ProgramIndex < m_ShaderPrograms.size() )
-	//nxProgram* prog = m_ShaderPrograms[m_ProgramName];
-	//if ( prog )
+	
 	m_pActiveProgram->Use();
+	glm::uvec3 vec(128, 128, 128);
+	m_pActiveProgram->SetUniform("dim", vec);
+
 }
 
 bool error = true;
@@ -73,17 +76,20 @@ void *nxRenderer::Entry()
 		
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
 		if (error) Utils::GL::CheckGLState("Frame");
-		GLvoid* p = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
+		nxUInt32* p = (nxUInt32*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
 		if (error) Utils::GL::CheckGLState("Frame");
 		if (p) {
-			GLubyte*** ip = (GLubyte***)p;
-			BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT : " << ( (int)ip[0][0][0] );
+			typedef boost::multi_array_ref<nxUInt32, 3> array_type;
+			typedef array_type::index index;
+			array_type ip(p, boost::extents[128][128][128]);
+
+			BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 1 : " << ( ip[0][0][1] );
 			if (error) Utils::GL::CheckGLState("Frame");
-			BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT : " << ((int)ip[0][0][1]);
+			BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 2 : " << ( ip[1][1][1]);
 			if (error) Utils::GL::CheckGLState("Frame");
-			//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT : " << ((int)ip[2]);
+			BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 3 : " << ( ip[1][0][0]);
 			if (error) Utils::GL::CheckGLState("Frame");
-			//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT : " << ((int)ip[3]);
+			BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 4 : " << ( ip[0][0][0]);
 			//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT : " << "done";
 			if (error) Utils::GL::CheckGLState("Frame");
 		}
@@ -221,7 +227,7 @@ void nxRenderer::InitFramebuffer() {
 	/* TEMPORARY init a a test Shader Storage Buffer object */
 	glGenBuffers(1, &m_ssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, 128 * 128 * 128 / 8, NULL, GL_DYNAMIC_COPY);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, 128 * 128 * 128, NULL, GL_DYNAMIC_COPY);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	Utils::GL::CheckGLState("SSBO");
 	glGenRenderbuffers(1, &m_RBO);

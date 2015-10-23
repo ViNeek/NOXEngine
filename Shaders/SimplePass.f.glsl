@@ -7,13 +7,19 @@ in VertexData {
     //vec2 uv;
 } VertexIn;
 
+uniform uvec3 dim;
+
 layout (std430, binding=2) buffer VoxelData
 {
-	uint voxel_data[][][];
+	uint voxel_data[];
 };
 
 void main()
 {
+	uint dimX = dim.x;
+	uint dimY = dim.y;
+	uint dimZ = dim.z;
+
     //vec4 in_color = texture(tex, gl_FragCoord.xy / tex_size);
     //out_color = vec4(1.0f,1.0f,1.0f,1.0f);
 
@@ -28,8 +34,10 @@ void main()
 
 	// Do we need atomicity???
 	//atomicOr(voxel_data[0], 3);
-	voxel_data[0][0][0] |= 3;
-	voxel_data[0][0][1] |= 2;
+
+	voxel_data[1] = 4;
+	voxel_data[0] = 3;
+	voxel_data[dimX*dimY*1 + dimY*1 + 1] = 5;
 	out_color = vec4(VertexIn.normal,0.0f);
 
 }

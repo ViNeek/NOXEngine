@@ -14,6 +14,8 @@
 #include <glm/mat4x4.hpp>
 #include <glm/mat3x3.hpp>
 
+#include "CustomTypes.h"
+
 class nxShader;
 
 class nxProgram {
@@ -52,6 +54,7 @@ public:
 	void									SetUniform(const char *name, const glm::mat3 & m);
 	void									SetUniform(const char *name, float val);
 	void									SetUniform(const char *name, int val);
+	void									SetUniform(const char *name, nxUInt32 val);
 	void									SetUniform(const char *name, bool val);
 	void									ShowActiveUniforms();
 	void									ShowActiveAttributes();
