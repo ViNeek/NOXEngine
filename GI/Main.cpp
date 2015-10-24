@@ -79,7 +79,7 @@ bool nxApp::OnInit()
 	// This needs to be after Frame->Show() inorder
 	// for the wxGLContext to be safely initialised
 	m_pFrame->EngineStart();
-
+	
 	return true;
 }
 

@@ -9,24 +9,55 @@
 #include "Renderer.h"
 
 #include "GLUtils.h"
+#include "CustomTypes.h"
 
-nxVoxelizer::nxVoxelizer(nxEngine* eng, unsigned int dim) : nxVoxelizerBase("dumyy") {
+nxVoxelizer::nxVoxelizer(nxEngine* eng, nxUInt32 dim) : nxVoxelizerBase("dumyy") {
 	m_pEngine = eng;
 	m_dimensions = glm::uvec3(dim);
 	m_initialized = false;
 	m_resolution = dim;
 	m_ssbo = 0;
+	m_DummyLayeredBuffer = -1;
 }
 
 bool nxVoxelizer::Init() {
+	Utils::GL::CheckGLState("Width Framebuffer Creation");
+	glGenFramebuffers(1, &m_DummyLayeredBuffer);
+	Utils::GL::CheckGLState("Width Framebuffer Creation");
+	glBindFramebuffer(GL_FRAMEBUFFER, m_DummyLayeredBuffer);
+	Utils::GL::CheckGLState("Width Framebuffer Creation");
+	glFramebufferParameteri(GL_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_WIDTH, m_resolution);
+	Utils::GL::CheckGLState("Width Framebuffer Creation");
+
+	glFramebufferParameteri(GL_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_HEIGHT, m_resolution);
+	Utils::GL::CheckGLState("Height Framebuffer Creation");
+
+	glFramebufferParameteri(GL_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_LAYERS, 3);
+	Utils::GL::CheckGLState("Layers Framebuffer Creation");
+
+
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	Utils::GL::CheckGLState("Dummy Framebuffer Creation");
+	switch (status)
+	{
+	case GL_FRAMEBUFFER_COMPLETE:
+		BOOST_LOG_TRIVIAL(info) << "Voxel(Dummy) Layered FBO Complete ";
+		break;
+	default:
+		BOOST_LOG_TRIVIAL(error) << "Voxel(Dummy) Layered FBO Incomplete ";
+		break;
+	}
 
 	glGenFramebuffers(1, &m_fbo_3_axis);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo_3_axis);
+
+	Utils::GL::CheckGLState("SSBO Attach");
 
 	glGenBuffers(1, &m_ssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, m_resolution * m_resolution * m_resolution / 8, NULL, GL_DYNAMIC_COPY);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
 
 	glGenTextures(1, &m_texture_3_axis_id);
 	glBindTexture(GL_TEXTURE_2D_ARRAY, m_texture_3_axis_id);
@@ -41,7 +72,7 @@ bool nxVoxelizer::Init() {
 
 	Utils::GL::CheckGLState("Voxel Buffer Attach");
 
-	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	//Utils::GL::CheckGLState("Framebuffer Creation");
 	switch (status)
 	{

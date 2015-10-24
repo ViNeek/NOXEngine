@@ -83,13 +83,13 @@ void *nxRenderer::Entry()
 			typedef array_type::index index;
 			array_type ip(p, boost::extents[128][128][128]);
 
-			BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 1 : " << ( ip[0][0][1] );
+			//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 1 : " << ( ip[9][100][1] );
 			if (error) Utils::GL::CheckGLState("Frame");
-			BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 2 : " << ( ip[1][1][1]);
+			//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 2 : " << ( ip[2][4][6]);
 			if (error) Utils::GL::CheckGLState("Frame");
-			BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 3 : " << ( ip[1][0][0]);
+			//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 3 : " << ( ip[1][0][0]);
 			if (error) Utils::GL::CheckGLState("Frame");
-			BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 4 : " << ( ip[0][0][0]);
+			//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 4 : " << ( ip[0][0][0]);
 			//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT : " << "done";
 			if (error) Utils::GL::CheckGLState("Frame");
 		}

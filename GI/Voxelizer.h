@@ -19,7 +19,7 @@ class nxVoxelizer : public nxVoxelizerBase {
 
 public:
 
-										nxVoxelizer(nxEngine* eng, unsigned int dim);
+										nxVoxelizer(nxEngine* eng, nxUInt32 dim);
 
 										void*						operator new(size_t i)
 										{
@@ -63,6 +63,7 @@ private:
 	GLuint								m_texture_3_axis_id;
 	GLuint								m_fbo_3_axis;
 	GLuint								m_ssbo;
+	GLuint								m_DummyLayeredBuffer;
 
 	glm::vec4							m_viewport[3];
 	glm::mat4							m_view_proj_axis[3];
