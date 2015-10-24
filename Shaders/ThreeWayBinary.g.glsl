@@ -13,7 +13,7 @@
 #version 330 core
 #extension GL_ARB_viewport_array : enable
 layout(triangles) in;
-layout (triangle_strip, max_vertices=9) out;
+layout (point, max_vertices=9) out;
 
 uniform mat4 uniform_view_proj[3];
 uniform uvec3 uniform_size;
@@ -97,7 +97,8 @@ flat out uint depth;
 	if (absnormal.y >= absnormal.x && absnormal.y >= absnormal.z) index = Y_AXIS_LAYER;
 	else if (absnormal.z >= absnormal.x && absnormal.z >= absnormal.y) index = Z_AXIS_LAYER;
 
-	gl_Layer = index;
+	// No more layered
+	//gl_Layer = index;
 	gl_ViewportIndex = index;
 	depth = uniform_size[index];
 	gl_Position = uniform_view_proj[index] * gl_in[0].gl_Position;
@@ -108,4 +109,5 @@ flat out uint depth;
 	EmitVertex();
 	EndPrimitive();
 #endif // DOMINANTAXISVOXELIZATION
+
 }

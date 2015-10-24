@@ -14,12 +14,12 @@ layout (std430, binding=2) buffer VoxelData
 	uint voxel_data[];
 };
 
+void setVoxelAt(int i, int j, int w) {
+	voxel_data[dim.x*dim.y*i + dim.y*j + w] = 1;
+}
+
 void main()
 {
-	uint dimX = dim.x;
-	uint dimY = dim.y;
-	uint dimZ = dim.z;
-
     //vec4 in_color = texture(tex, gl_FragCoord.xy / tex_size);
     //out_color = vec4(1.0f,1.0f,1.0f,1.0f);
 
@@ -30,14 +30,12 @@ void main()
 	if ( modifier > (128 * 128 * 128) ) 
 		modifier = (128 * 128 * 128);
 
-	//voxel_data[0] = 2;
-
 	// Do we need atomicity???
 	//atomicOr(voxel_data[0], 3);
 
-	voxel_data[1] = 4;
-	voxel_data[0] = 3;
-	voxel_data[dimX*dimY*1 + dimY*1 + 1] = 5;
+	setVoxelAt(2,4,6);
+	setVoxelAt(9,100,1);
+	
 	out_color = vec4(VertexIn.normal,0.0f);
 
 }

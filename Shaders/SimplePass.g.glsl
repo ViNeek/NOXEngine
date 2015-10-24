@@ -3,7 +3,7 @@
 
 layout(triangles) in;
 
-layout(triangle_strip, max_vertices = 3) out;
+layout(points, max_vertices = 7) out;
 
 uniform mat3 NormalMatrix;
 uniform mat4 MVP;
@@ -34,6 +34,23 @@ void main()
 
 		EmitVertex();
 	}
+
+	gl_Position = vec4(300,300,300,0);
+	VertexOut.normal = VertexIn[0].normal;
+	EmitVertex();
+	gl_Position = vec4(0,0,0,0);
+	VertexOut.normal = VertexIn[0].normal;
+	
+	EmitVertex();
+	gl_Position = vec4(-300,300,-300,0);
+	VertexOut.normal = VertexIn[0].normal;
+	
+	EmitVertex();
+	gl_Position = vec4(-300,300,300,0);
+	VertexOut.normal = VertexIn[0].normal;
+	
+	EmitVertex();
+
 
 	EndPrimitive();
 }
