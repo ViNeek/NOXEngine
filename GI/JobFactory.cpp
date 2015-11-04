@@ -9,6 +9,12 @@
 
 #include <iostream>
 
+#include <boost/timer/timer.hpp>
+
+using boost::timer::cpu_timer;
+using boost::timer::cpu_times;
+using boost::timer::nanosecond_type;
+
 // Callback Objects
 static const nxDummyJob						nxDummyJob_;
 static const nxRendererTerminator			nxRendererTerminator_;
@@ -54,104 +60,6 @@ nxJob* nxJobFactory::CreateJob(nxJobID id, void* data)
 {	
 	return new nxJob(data, nxJobDispatchTable[id]);
 
-	/*
-	switch (id) {
-	case NX_JOB_DUMMY:
-	{
-		nxDummyJob cb;
-		j = new nxJob(data, cb);
-	}
-		break;
-	case NX_JOB_WORKER_FINISHED:
-	{
-		nxWorkerNotifier cb;
-		j = new nxJob(data, cb);
-	}
-		break;
-	case NX_JOB_RENDERER_EXIT:
-	{
-		nxRendererTerminator cb;
-		j = new nxJob(data, cb);
-	}
-		break;
-	case NX_JOB_WORKER_EXIT:
-	{
-		nxWorkerTerminator cb;
-		j = new nxJob(data, cb);
-	}
-		break;
-	case NX_JOB_SCHEDULER_EXIT:
-	{
-		nxSchedulerTerminator cb;
-		j = new nxJob(data, cb);
-	}
-		break;
-	case NX_JOB_LOAD_SCENE:
-	{
-		nxSceneLoader cb;
-		j = new nxJob(data, cb);
-	}
-		break;
-	case NX_JOB_LOAD_ASSET:
-	{
-		nxAssetLoader cb;
-		j = new nxJob(data, cb);
-	}
-		break;
-	case NX_JOB_LOAD_SHADER:
-	{
-		nxShaderLoader cb;
-		j = new nxJob(data, cb);
-	}
-		break;
-	case NX_GL_JOB_EXTENSION_INIT:
-	{
-		nxExtensionInitializer cb;
-		j = new nxGLJob(data, cb);
-	}
-		break;
-	case NX_GL_JOB_COMPILE_SHADER:
-	{
-		nxShaderCompiler cb;
-		j = new nxGLJob(data, cb);
-	}
-		break;
-	case NX_GL_JOB_VOXELIZER_INIT:
-	{
-		nxVoxelizerInitializer cb;
-		j = new nxGLJob(data, cb);
-	}
-		break;
-	case NX_GL_JOB_LINK_PROGRAM:
-	{
-		nxProgramLinker cb;
-		j = new nxGLJob(data, cb);
-	}
-		break;
-	case NX_GL_JOB_LOAD_ASSET:
-	{
-		nxGLAssetLoader cb;
-		j = new nxGLJob(data, cb);
-	}
-		break;
-	case NX_GL_JOB_FRAMEBUFFER_INIT:
-	{
-		nxFramebufferInitializer cb;
-		j = new nxGLJob(data, cb);
-	}
-		break;
-	case NX_GL_JOB_FRAMEBUFFER_RESIZE:
-	{
-		nxFramebufferResizer cb;
-		j = new nxGLJob(data, cb);
-	}
-		break;
-	default:
-		break;
-	}
-
-	return j;
-	*/
 }
 
 bool nxDummyJob::operator()(void* data) {
@@ -161,10 +69,11 @@ bool nxDummyJob::operator()(void* data) {
 	return true;
 }
 
-nxJob::nxJob(void* data, nxJobCallback cb)
+nxJob::nxJob(void* data, nxJobCallback cb, bool timed = false)
 {
 	m_pData = data;
 	m_Callback = cb;
+	m_Timer = new nxTimer();
 }
 
 nxGLJob::nxGLJob(void* data, nxJobCallback cb)

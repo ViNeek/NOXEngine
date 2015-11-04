@@ -39,7 +39,6 @@
 #include <GL/gl.h>
 #endif
 
-
 class nxApp : public wxApp
 {
 	virtual bool OnInit();
@@ -56,6 +55,31 @@ IMPLEMENT_APP(nxApp)
 bool nxApp::OnInit()
 {
 	Utils::Debug::init_debug_console();
+	/*
+	using boost::timer::cpu_timer;
+	using boost::timer::cpu_times;
+	using boost::timer::nanosecond_type;
+	
+	nanosecond_type const twenty_seconds(5 * 1000000000LL);
+	nanosecond_type last(0);
+	cpu_timer* timer = new cpu_timer();
+	timer->start();
+	while (1)
+	{
+		if (timer->is_stopped())
+			timer->start();
+		auto elapsed_times(timer->elapsed());
+		auto elapsed(elapsed_times.system
+			+ elapsed_times.user);
+		if (elapsed >= twenty_seconds)
+		{
+			std::cout << "twenty passed" << std::endl;
+			last = elapsed;
+			timer->stop();
+		}
+		
+	}
+	*/
 
 	m_pFrame = new nxFrame(wxT("NOXEngine Viewer"), 50, 50, 400, 200);
 

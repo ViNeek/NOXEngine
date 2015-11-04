@@ -4,6 +4,10 @@
 
 typedef boost::function<bool(void* data)> nxJobCallback;
 
+class cpu_timer;
+
+typedef cpu_timer nxTimer;
+
 class nxJob {
 public:
 
@@ -14,13 +18,15 @@ private:
 
 	void*				m_pData;
 	nxJobCallback		m_Callback;
+	nxTimer*			m_Timer;
 
 };
 
 class nxGLJob : public nxJob {
 
 public:
-	nxGLJob(void* data, nxJobCallback cb);
+
+	nxGLJob(void* data, nxJobCallback cb, bool timed = false);
 
 private:
 

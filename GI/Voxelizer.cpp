@@ -16,7 +16,7 @@ nxVoxelizer::nxVoxelizer(nxEngine* eng, nxUInt32 dim) : nxVoxelizerBase("dumyy")
 	m_dimensions = glm::uvec3(dim);
 	m_initialized = false;
 	m_resolution = dim;
-	m_ssbo = 0;
+	m_ssbo = -1;
 	m_DummyLayeredBuffer = -1;
 }
 
