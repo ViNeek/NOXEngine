@@ -10,3 +10,4 @@ typedef unsigned short			nxUInt16;
 typedef short					nxInt16;
 typedef double					nxFloat64; 
 typedef float					nxFloat32;
+typedef size_t					nxSizeType;

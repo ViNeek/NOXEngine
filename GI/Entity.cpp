@@ -73,7 +73,7 @@ void nxEntity::InitFromBuffer(glm::vec3* buffer, nxInt32 size) {
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glBufferData(GL_ARRAY_BUFFER, size * sizeof(glm::vec3), buffer, GL_STATIC_DRAW);
 
-	for (int i = 0; i < size; i++) {
+	for (nxSizeType i = 0; i < size; i++) {
 		if (buffer[i].x < m_MinX) m_MinX = buffer[i].x;
 		if (buffer[i].y < m_MinY) m_MinY = buffer[i].y;
 		if (buffer[i].z < m_MinZ) m_MinZ = buffer[i].z;
@@ -81,7 +81,7 @@ void nxEntity::InitFromBuffer(glm::vec3* buffer, nxInt32 size) {
 		if (buffer[i].y > m_MaxY) m_MaxY = buffer[i].y;
 		if (buffer[i].z > m_MaxZ) m_MaxZ = buffer[i].z;
 	}
-
+	
 	m_NumMeshes = 1;
 	m_MeshStartIndices.push_back(0);
 	m_MeshSizes.push_back(size);

@@ -5,6 +5,11 @@
 #include <iostream>
 #include <fstream>
 
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_int_distribution.hpp>
+
+#include <ctime>
+
 #include "Utils.h"
 
 void Utils::Debug::init_debug_console(){
@@ -41,4 +46,12 @@ void Utils::Debug::init_debug_console(){
 	*stderr = *fptr;
 	setvbuf(stderr, NULL, _IONBF, 0);
 
+}
+
+// Random Generator Engine
+static boost::random::mt19937 gc_RandomGen(std::time(0));
+
+nxInt32 Utils::RandomInRange(nxInt32 min, nxInt32 max) {
+	boost::random::uniform_int_distribution<> dist(min, max);
+	return dist(gc_RandomGen);
 }
