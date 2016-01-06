@@ -98,6 +98,7 @@ private:
 	void									Init();
 	void									RenderFrame();
 	void									RenderFrameDemo();
+	void									RenderDebugFrame();
 	void									SwapBuffers() { m_pParent->SwapBuffers(); }
 
 };

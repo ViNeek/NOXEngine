@@ -120,6 +120,39 @@ void nxRenderer::SetActiveProgramByName(const std::string& name) {
 	//m_ProgramName = name;
 }
 
+void nxRenderer::RenderDebugFrame() {
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glViewport(0, 0, m_VWidth, m_VHeight);
+	//if (error) Utils::GL::CheckGLState("Frame");
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
+	//if (error) Utils::GL::CheckGLState("Draw");
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glViewport(0, 0, m_VWidth, m_VHeight);
+
+	m_pEngine->Scene()->Draw();
+	//m_pEngine->Scene()->DrawVoxelized();
+
+	//if (error) Utils::GL::CheckGLState("Draw");
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
+
+	//if (error) Utils::GL::CheckGLState("Swap");
+
+	glBlitFramebuffer(0, 0, m_VWidth - 1, m_VHeight - 1,
+		0, 0, m_VWidth - 1, m_VHeight - 1,
+		GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+	//error = false;
+}
+
 void nxRenderer::RenderFrame() {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

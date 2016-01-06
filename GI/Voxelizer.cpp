@@ -265,6 +265,11 @@ void nxVoxelizer::SetMatrices() {
 	const glm::vec3& bmax = GridMax();
 	const glm::vec3& bmin = GridMin();
 
+	BOOST_LOG_TRIVIAL(info) << "\n\n Max " << bmax.x << " " << bmax.y << " " << bmax.z << " " << "\n\n ";
+	BOOST_LOG_TRIVIAL(info) << "\n\n Min " << bmin.x << " " << bmin.y << " " << bmin.z << " " << "\n\n ";
+	BOOST_LOG_TRIVIAL(info) << "\n\n Center " << center.x << " " << center.y << " " << center.z << " " << "\n\n ";
+	BOOST_LOG_TRIVIAL(info) << "Initializing Voxelizer ";
+
 	glm::vec3 eye;
 	glm::vec3 up;
 

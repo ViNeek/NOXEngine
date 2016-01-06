@@ -20,7 +20,8 @@ class nxVoxelizer : public nxVoxelizerBase {
 public:
 
 										nxVoxelizer(nxEngine* eng, nxUInt32 dim);
-
+										nxVoxelizer(nxEngine* eng, nxUInt32 dimX, nxUInt32 dimY, nxUInt32 dimZ);
+		
 										void*						operator new(size_t i)
 										{
 											//void *p = _mm_malloc(i, 16);

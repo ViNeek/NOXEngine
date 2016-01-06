@@ -258,7 +258,7 @@ void nxFrame::OnLoadScene(wxCommandEvent& WXUNUSED(evt))
 
 	wxFileDialog
 		openFileDialog(this, _("Load Scene"), "", "",
-		"NXSCENE files (*.nxscene)|*.nxscene", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+		"NXSCENE files (*.json)|*.json", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
 
 	if (openFileDialog.ShowModal() == wxID_CANCEL)
 		return;     // the user changed idea...

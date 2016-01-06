@@ -26,8 +26,8 @@ nxEntity::nxEntity() {
 	m_SceneIndex = -1;
 	m_NumMeshes = -1;
 
-	m_MaxX = m_MaxY = m_MaxZ = 300.0f;
-	m_MinX = m_MinY = m_MinZ = -300.0f;
+	m_MaxX = m_MaxY = m_MaxZ = -300000.0f;
+	m_MinX = m_MinY = m_MinZ = +300000.0f;
 
 	m_DataCurrentSize = 0;
 	m_VertexDataSize = 0;
@@ -72,6 +72,15 @@ void nxEntity::InitFromBuffer(glm::vec3* buffer, nxInt32 size) {
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glBufferData(GL_ARRAY_BUFFER, size * sizeof(glm::vec3), buffer, GL_STATIC_DRAW);
+
+	for (int i = 0; i < size; i++) {
+		if (buffer[i].x < m_MinX) m_MinX = buffer[i].x;
+		if (buffer[i].y < m_MinY) m_MinY = buffer[i].y;
+		if (buffer[i].z < m_MinZ) m_MinZ = buffer[i].z;
+		if (buffer[i].x > m_MaxX) m_MaxX = buffer[i].x;
+		if (buffer[i].y > m_MaxY) m_MaxY = buffer[i].y;
+		if (buffer[i].z > m_MaxZ) m_MaxZ = buffer[i].z;
+	}
 
 	m_NumMeshes = 1;
 	m_MeshStartIndices.push_back(0);
@@ -188,8 +197,6 @@ bool nxAssetLoader::operator()(void* data) {
 
 	nxEntity* ent = new nxEntity(blob->m_ResourcePath + blob->m_ResourceType);
 
-	blob->m_Engine->Scene()->UpdateBounds(ent);
-
 	glm::vec3 center;
 	center.x = ((ent->MaxX() + ent->MinX())) / 2.0f;
 	center.y = ((ent->MaxY() + ent->MinY())) / 2.0f;
@@ -231,6 +238,7 @@ bool nxGLAssetLoader::operator()(void* data) {
 	blob->m_Entity->UploadData();
 
 	blob->m_Engine->Scene()->AddEntity(blob->m_Entity);
+	blob->m_Engine->Scene()->UpdateBounds(blob->m_Entity);
 	blob->m_Engine->Renderer()->Voxelizer()->SetMatrices();
 
 	return true;

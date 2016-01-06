@@ -168,12 +168,6 @@
     <None Include="..\Shaders\SimplePass.v.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="..\Scenes\MetalGearSolid.nxscene">
-      <Filter>Resource Files\Scenes</Filter>
-    </None>
-    <None Include="..\Scenes\Simple.nxscene">
-      <Filter>Resource Files\Scenes</Filter>
-    </None>
     <None Include="..\Shaders\ThreeWayBinary.f.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
@@ -191,6 +185,12 @@
     </None>
     <None Include="..\Shaders\VoxelPreview.v.glsl">
       <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="..\Scenes\Simple.json">
+      <Filter>Resource Files\Scenes</Filter>
+    </None>
+    <None Include="..\Scenes\MetalGearSolid.json">
+      <Filter>Resource Files\Scenes</Filter>
     </None>
   </ItemGroup>
 </Project>
