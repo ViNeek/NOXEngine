@@ -61,12 +61,13 @@ void *nxRenderer::Entry()
 	float f = 0.0;
 	nxGLJob* currentJob;
 	m_pParent->SetCurrent(*m_pGLCtx);
-
+	
 	while ( m_IsActive ) {
 
 		while ( m_pGLCommandQueue->pop(currentJob) )
 			m_IsActive = currentJob->Execute();
 
+		
 		UseProgram();
 
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_ssbo);

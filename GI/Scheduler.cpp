@@ -40,10 +40,15 @@ void* nxScheduler::Entry()
 
 	// First time no CV to avoid missed notify
 	while (m_IsActive) {
-		if (m_pCommandQueue->pop(currentJob))
-			m_IsActive = currentJob->Execute();
-		else
+		if (m_pCommandQueue->pop(currentJob)) {
+			if (currentJob->AboutTime()) {
+				m_IsActive = currentJob->Execute();
+			} else {
+				ScheduleOwnJob(currentJob);
+			}
+		} else {
 			break;
+		}
 	}
 
 	// blocking, lock-free queue loop
@@ -53,7 +58,11 @@ void* nxScheduler::Entry()
 		m_SchedulerSync->ConditionVariable().timed_wait(lock, timeout);
 		m_WorkersSync->ConditionVariable().notify_all();
 		while ( m_pCommandQueue->pop(currentJob ) ) {
-			m_IsActive = currentJob->Execute();
+			if (currentJob->AboutTime()) {
+				m_IsActive = currentJob->Execute();
+			} else {
+				ScheduleOwnJob(currentJob);
+			}
 		}
 	}
 
@@ -122,6 +131,15 @@ bool nxSchedulerTerminator::operator()(void* data) {
 		std::cout << " firing ";
 		scheduler->ScheduleJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_WORKER_EXIT, scheduler));
 	}
+
+	return true;
+}
+
+bool nxResourceLooper::operator()(void* data) {
+	BOOST_LOG_TRIVIAL(info) << "Resource Loop Execute ";
+	nxScheduler* scheduler = (nxScheduler*)data;
+
+	scheduler->ScheduleJob(nxJobFactory::CreateJob(NX_JOB_RESOURCE_LOOP, data, true, 4 * NOXConstants::NANOS_IN_SECONDS));
 
 	return true;
 }

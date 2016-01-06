@@ -3,7 +3,7 @@
 
 layout(triangles) in;
 
-layout(points, max_vertices = 7) out;
+layout(triangle_strip, max_vertices = 7) out;
 
 uniform mat3 NormalMatrix;
 uniform mat4 MVP;

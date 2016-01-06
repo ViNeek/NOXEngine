@@ -98,6 +98,9 @@ nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 	nxFramebufferInitializerBlob* dataFBO = new nxFramebufferInitializerBlob(Engine(), Engine()->Renderer());
 	Engine()->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_FRAMEBUFFER_INIT, dataFBO));
 
+	// Start Resource reload loop
+	//Engine()->Scheduler()->ScheduleJob(nxJobFactory::CreateJob(NX_JOB_RESOURCE_LOOP, Engine()->Scheduler(), true, 4 * NOXConstants::NANOS_IN_SECONDS));
+
 	// Setup callbacks
 	Bind(wxEVT_SIZE, &nxFrame::OnResize, this, wxID_ANY);
 	Bind(wxEVT_CLOSE_WINDOW, &nxFrame::OnClose, this, wxID_ANY);

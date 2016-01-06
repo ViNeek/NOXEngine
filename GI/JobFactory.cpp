@@ -1,7 +1,7 @@
 #include "JobFactory.h"
 
+#include "Constants.h"
 #include "Job.h"
-#include "CustomEvents.h"
 #include "Scheduler.h"
 #include "Worker.h"
 
@@ -9,14 +9,9 @@
 
 #include <iostream>
 
-#include <boost/timer/timer.hpp>
-
-using boost::timer::cpu_timer;
-using boost::timer::cpu_times;
-using boost::timer::nanosecond_type;
-
 // Callback Objects
 static const nxDummyJob						nxDummyJob_;
+static const nxResourceLooper				nxResourceLooper_;
 static const nxRendererTerminator			nxRendererTerminator_;
 static const nxSchedulerTerminator			nxSchedulerTerminator_;
 static const nxWorkerTerminator				nxWorkerTerminator_;
@@ -38,6 +33,7 @@ static const nxJobCallback nxJobDispatchTable[NX_JOB_MAX]
 = {
 	nxDummyJob_,
 	nxDummyJob_,
+	nxResourceLooper_,
 	nxRendererTerminator_,
 	nxSchedulerTerminator_,
 	nxWorkerTerminator_,
@@ -56,9 +52,10 @@ static const nxJobCallback nxJobDispatchTable[NX_JOB_MAX]
 	nxProgramLinker_
 };
 
-nxJob* nxJobFactory::CreateJob(nxJobID id, void* data)
+nxJob* nxJobFactory::CreateJob(nxJobID id, void* data, bool later, nxUInt64 after)
 {	
-	return new nxJob(data, nxJobDispatchTable[id]);
+
+	return new nxJob(data, nxJobDispatchTable[id], later, after);
 
 }
 
@@ -69,14 +66,22 @@ bool nxDummyJob::operator()(void* data) {
 	return true;
 }
 
-nxJob::nxJob(void* data, nxJobCallback cb, bool timed = false)
+nxJob::nxJob(void* data, nxJobCallback cb, bool later, nxUInt64 after)
 {
+
 	m_pData = data;
 	m_Callback = cb;
-	m_Timer = new nxTimer();
+	m_Timer = nullptr;
+	m_Delay = 0;
+	if (later) {
+		m_Timer = new nxTimer();
+		m_Delay = after;
+		m_Timer->start();
+	}
+
 }
 
-nxGLJob::nxGLJob(void* data, nxJobCallback cb)
-	: nxJob(data, cb) {
+nxGLJob::nxGLJob(void* data, nxJobCallback cb, bool later, nxUInt64 after)
+	: nxJob(data, cb, later, after) {
 
 }

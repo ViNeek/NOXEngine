@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CustomTypes.h"
+#include "Constants.h"
 
 #include <GL/glew.h>
 #include <string>
@@ -15,13 +15,15 @@ class nxEngine;
 class nxEntity;
 class nxScene;
 class nxRenderer;
+class nxScheduler;
 
 // Request from glbal NOX Engine State
 #define NOX_ENGINE_GET(Object) ((nxEngine*)data)->Object()
 
 enum nxJobID {
 	NX_JOB_DUMMY,
-	NX_JOB_EXIT, 
+	NX_JOB_EXIT,
+	NX_JOB_RESOURCE_LOOP,
 	NX_JOB_RENDERER_EXIT,
 	NX_JOB_SCHEDULER_EXIT,
 	NX_JOB_WORKER_EXIT,
@@ -45,7 +47,7 @@ class nxJobFactory {
 
 public:
 
-	static nxJob*	CreateJob(nxJobID id, void* data = 0);
+	static nxJob*	CreateJob(nxJobID id, void* data = 0, bool later = false, nxUInt64 after = NOXConstants::nxTimeNow);
 
 	void			Init();
 
@@ -78,6 +80,10 @@ struct nxExtensionInitializerBlob {
 };
 
 struct nxExtensionInitializer {
+	bool operator()(void* data);
+};
+
+struct nxResourceLooper {
 	bool operator()(void* data);
 };
 
