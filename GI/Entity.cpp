@@ -227,6 +227,7 @@ bool nxGLBufferedAssetLoader::operator()(void* data) {
 	newEnt->InitFromBuffer(blob->m_Buffer, blob->m_BSize);
 
 	blob->m_Engine->Scene()->AddEntity(newEnt);
+	blob->m_Engine->Scene()->UpdateBounds(newEnt);
 	blob->m_Engine->Renderer()->Voxelizer()->SetMatrices();
 
 	return true;
