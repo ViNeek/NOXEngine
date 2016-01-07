@@ -12,11 +12,14 @@
 //----------------------------------------------------//
 #version 330 core
 #extension GL_ARB_viewport_array : enable
+
 layout(triangles) in;
 layout (point, max_vertices=9) out;
 
 uniform mat4 uniform_view_proj[3];
 uniform uvec3 uniform_size;
+
+flat out uvec3 factors;
 flat out uint depth;
 
 #define X_AXIS_LAYER 0
@@ -26,7 +29,7 @@ flat out uint depth;
 //#define THREEAXISVOXELIZATION
 #define DOMINANTAXISVOXELIZATION
 
- void main()
+void main()
 {
 #ifdef THREEAXISVOXELIZATION
 	// Three axis voxelization
@@ -94,8 +97,15 @@ flat out uint depth;
 
 	vec3 absnormal = abs(normal0);
 	int index = X_AXIS_LAYER;
-	if (absnormal.y >= absnormal.x && absnormal.y >= absnormal.z) index = Y_AXIS_LAYER;
-	else if (absnormal.z >= absnormal.x && absnormal.z >= absnormal.y) index = Z_AXIS_LAYER;
+	uvec3 facts = uvec3(dim.x*dim.y, dim.y, 1);
+	if (absnormal.y >= absnormal.x && absnormal.y >= absnormal.z) {
+		index = Y_AXIS_LAYER;
+		facts = uvec3(dim.y, 1, dim.x*dim.y);
+	}
+	else if (absnormal.z >= absnormal.x && absnormal.z >= absnormal.y) {
+		index = Z_AXIS_LAYER;
+		facts = uvec3(1, dim.x*dim.y, dim.y);
+	}
 
 	// No more layered
 	//gl_Layer = index;
@@ -108,6 +118,7 @@ flat out uint depth;
 	gl_Position = uniform_view_proj[index] * gl_in[2].gl_Position;
 	EmitVertex();
 	EndPrimitive();
+
 #endif // DOMINANTAXISVOXELIZATION
 
 }

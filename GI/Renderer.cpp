@@ -75,6 +75,7 @@ void *nxRenderer::Entry()
 		//RenderFrameDemo();
 		RenderFrame();
 		
+		
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
 		if (error) Utils::GL::CheckGLState("Frame");
 		nxUInt32* p = (nxUInt32*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
@@ -97,7 +98,7 @@ void *nxRenderer::Entry()
 		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 		if (error) Utils::GL::CheckGLState("Frame");
 		error = false;
-		
+
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 		SwapBuffers();

@@ -199,20 +199,20 @@ void nxScene::DrawVoxelized() {
 
 	m_MState.m_VMatrix = glm::mat4();
 
-	m_pEngine->Renderer()->SetActiveProgramByName("Voxelize");
+	//m_pEngine->Renderer()->SetActiveProgramByName("Voxelize");
 	m_pEngine->Renderer()->UseProgram();
 	if (errorGL) Utils::GL::CheckGLState("Program USE");
 
 	if (m_pEngine->Renderer()->VoxelizerReady()) {
-		//m_MState.m_PMatrix = m_pEngine->Renderer()->Voxelizer()->Projections()[0];
+		//m_MState.m_PMatrix = m_pEngine->Renderer()->Voxelizer()->Projections()[2];
 		//m_pEngine->Renderer()->Voxelizer()->CalculateViewProjection();
-		glViewportArrayv(0, 3, &m_pEngine->Renderer()->Voxelizer()->Viewports()[0][0]);
+		//glViewportArrayv(0, 3, &m_pEngine->Renderer()->Voxelizer()->Viewports()[0][0]);
 	}
 
 	for (size_t i = 0; i < m_Entities.size(); i++) {
 		if (!m_pEngine->Renderer()->VoxelizerReady())
-			//m_MState.m_VMatrix = m_pEngine->Renderer()->Voxelizer()->Views()[0];
-		//else
+			m_MState.m_VMatrix = m_pEngine->Renderer()->Voxelizer()->Views()[0];
+		else
 			m_MState.m_VMatrix = glm::translate(View(),
 				m_Camera->Position());
 
@@ -225,7 +225,7 @@ void nxScene::DrawVoxelized() {
 		m_pEngine->Renderer()->Program()->SetUniform("uniform_size", m_pEngine->Renderer()->Voxelizer()->Dimesions());
 		if (errorGL) Utils::GL::CheckGLState("Set Normal");
 
-		m_pEngine->Renderer()->Program()->SetUniform("uniform_view_proj", 3, m_pEngine->Renderer()->Voxelizer()->ViewProjections());
+		m_pEngine->Renderer()->Program()->SetUniform("uniform_vew_proj", 3, m_pEngine->Renderer()->Voxelizer()->ViewProjections());
 		//m_pEngine->Renderer()->Program()->SetUniform("MVP", View());
 		if (errorGL) Utils::GL::CheckGLState("Set MVP");
 
@@ -234,8 +234,8 @@ void nxScene::DrawVoxelized() {
 
 	}
 
-	if (m_pEngine->Renderer()->VoxelizerReady()) 
-		m_pEngine->Renderer()->Voxelizer()->PrintGrid();
+	//if (m_pEngine->Renderer()->VoxelizerReady()) 
+	//	m_pEngine->Renderer()->Voxelizer()->PrintGrid();
 
 	errorGL = false;
 }

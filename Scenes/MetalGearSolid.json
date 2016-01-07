@@ -6,7 +6,7 @@
         "Camera": {
             "PositionX": 0,
             "PositionY": 0,
-            "PositionZ": 1000
+            "PositionZ": 800
         },
         "Voxelizer": {
             "DimX": 128,

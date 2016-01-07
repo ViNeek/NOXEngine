@@ -133,7 +133,12 @@ void nxFrame::OnProgramAdded(wxCommandEvent& evt) {
 	std::cout << "Adding Program " << evt.GetString();
 	wxWindowID newID = wxWindow::NewControlId();
 	m_pShaderMenu->Append(newID, evt.GetString(), "Simple Shader", true);
-	m_pShaderMenu->Check(newID, true);
+	m_pShaderMenu->Check(newID, false);
+	std::cout << "\n\nProgram Name  " << m_EngineState->Renderer()->Program()->GetName() << " " << evt.GetString() << "\n\n";
+	std::cout << "\n\nProgram Names Equal  " << (evt.GetString() == m_EngineState->Renderer()->Program()->GetName()) << "\n\n";
+	if (evt.GetString() == m_EngineState->Renderer()->Program()->GetName() ) {
+		m_pShaderMenu->Check(newID, true);
+	}
 	wxCommandEvent* newEvt = new wxCommandEvent();
 	newEvt->SetString("User data " + evt.GetString());
 
