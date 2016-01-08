@@ -201,21 +201,21 @@ bool nxProgramLinker::operator()(void* data) {
 	nxProgramLinkerBlob* blob = (nxProgramLinkerBlob*)data;
 	
 	blob->m_Prog->Create();
-	Utils::GL::CheckGLState("Creating");
+	//Utils::GL::CheckGLState("Creating");
 	blob->m_Prog->Attach();
-	Utils::GL::CheckGLState("Attaching");
+	//Utils::GL::CheckGLState("Attaching");
 	blob->m_Prog->Link();
-	Utils::GL::CheckGLState("Linking");
+	//Utils::GL::CheckGLState("Linking");
 
 	blob->m_Engine->Renderer()->AddProgram(blob->m_Prog);
 
 	if ( blob->m_Use )
 		blob->m_Engine->Renderer()->SetActiveProgramByName("Simple Pass");
 
-	std::cout << " PROGRAM : " << (blob->m_Prog == NULL) << std::endl;
-	std::cout << " PROGRAM : " << (blob->m_Prog->GetName()) << std::endl;
-	std::cout << " PROGRAM : " << (blob->m_Engine->Renderer()->GetActiveProgramByName(blob->m_Prog->GetName())->GetName()) << std::endl;
-	std::cout << " PROGRAM : " << (blob->m_Prog->GetName()) << std::endl;
+	//std::cout << " PROGRAM : " << (blob->m_Prog == NULL) << std::endl;
+	//std::cout << " PROGRAM : " << (blob->m_Prog->GetName()) << std::endl;
+	//std::cout << " PROGRAM : " << (blob->m_Engine->Renderer()->GetActiveProgramByName(blob->m_Prog->GetName())->GetName()) << std::endl;
+	//std::cout << " PROGRAM : " << (blob->m_Prog->GetName()) << std::endl;
 	/*
 	for (auto iter = blob->m_Engine->Renderer()->GetPrograms().begin(); iter != blob->m_Engine->Renderer()->GetPrograms().end(); ++iter)
 	{
@@ -228,11 +228,13 @@ bool nxProgramLinker::operator()(void* data) {
 	blob->m_Prog->ShowActiveUniforms();
 	blob->m_Prog->ShowActiveAttributes();
 
-	std::cout << "Program Linked " << blob->m_Prog->IsLinked();
+	//std::cout << "Program Linked " << blob->m_Prog->IsLinked();
 
 	wxFrame* evtHandler = blob->m_Engine->Scheduler()->EventHandler();
 	wxCommandEvent* evt = new wxCommandEvent(nxPROGRAM_ADDED_EVENT); // Still keeping it simple, don't give a specific event ID
-	evt->SetInt(i++);
+	evt->SetInt(0);
+	if (blob->m_Use)
+		evt->SetInt(1);
 	evt->SetString( blob->m_Prog->GetName() );
 	wxQueueEvent(evtHandler, evt); // This posts to ourselves: it'll be caught and sent to a different method
 

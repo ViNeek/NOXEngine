@@ -49,6 +49,8 @@ public:
 	bool									InitExtensions();
 	bool									VoxelizerReady() { return m_IsVoxelizerReady; };
 	void									SetVoxelizerReady(bool val) { m_IsVoxelizerReady = val; };
+	bool									IsVoxelizing() { return m_Voxelizing; };
+	void									SetVoxelizing(bool val) { m_Voxelizing = val; };
 
 	void									SetViewportSize(int w, int h) { m_VWidth = w; m_VHeight = h; };
 	void									SetVoxelizer(nxVoxelizer* voxel) { m_Voxelizer = voxel; };
@@ -65,9 +67,10 @@ public:
 	void									SetActiveProgram(int index) { m_ProgramIndex = 0; }
 
 	std::map<std::string, nxProgram*>		GetPrograms() { return m_ShaderPrograms; }
+
+	GLuint									m_ssbo;
 private:
 
-	bool									m_IsActive;
 	wxGLCanvas*								m_pParent;
 	wxGLContext*							m_pGLCtx;
 	nxGLJobQueue*							m_pGLCommandQueue;
@@ -78,11 +81,11 @@ private:
 	GLuint									m_FBO;
 	GLuint									m_RBO;
 	GLuint									m_DepthTexture;
-	GLuint									m_ssbo;
 
 	bool									m_FBOInited;
 	bool									m_IsVoxelizerReady;
-
+	bool									m_IsActive;
+	bool									m_Voxelizing;
 	unsigned int							m_State;
 
 	int										m_VWidth;

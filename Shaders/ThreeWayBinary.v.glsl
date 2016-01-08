@@ -1,28 +1,19 @@
-//----------------------------------------------------//
-//                                                    //
-// This is a free rendering engine. The library and   //
-// the source code are free. If you use this code as  //
-// is or any part of it in any kind of project or     //
-// product, please acknowledge the source and its	  //
-// author.											  //
-//                                                    //
-// For manuals, help and instructions, please visit:  //
-// http://graphics.cs.aueb.gr/graphics/               //
-//                                                    //
-//----------------------------------------------------//
-#version 330 core
-#extension GL_EXT_gpu_shader4 : enable
+#version 400
 
-layout(location = 0) in vec3 position;
-layout(location = 2) in vec3 normal;
-layout(location = 3) in vec2 texcoord0;
-layout(location = 4) in vec2 texcoord1;
-layout(location = 5) in vec3 tangent;
+layout (location = 0) in vec4 VertexPosition;
+layout (location = 1) in vec2 VertexTexCoord;
+layout (location = 2) in vec3 VertexNormal;
 
-uniform mat4 uniform_model;
-uniform mat4 uniform_view_proj;
+out VertexData {
+    vec3 normal;
+    //vec2 uv;
+} VertexOut;
 
-void main(void)
+uniform mat3 NormalMatrix;
+
+void main()
 {
-	gl_Position = uniform_model * /*uniform_view_proj * */ vec4(position,1);
+    VertexOut.normal = normalize(NormalMatrix * VertexNormal);
+    //VertexOut.uv = VertexTexCoord;
+    gl_Position = vec4(VertexPosition)/VertexPosition.w;
 }

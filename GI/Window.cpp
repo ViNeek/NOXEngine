@@ -134,19 +134,30 @@ void nxFrame::OnProgramAdded(wxCommandEvent& evt) {
 	wxWindowID newID = wxWindow::NewControlId();
 	m_pShaderMenu->Append(newID, evt.GetString(), "Simple Shader", true);
 	m_pShaderMenu->Check(newID, false);
-	std::cout << "\n\nProgram Name  " << m_EngineState->Renderer()->Program()->GetName() << " " << evt.GetString() << "\n\n";
-	std::cout << "\n\nProgram Names Equal  " << (evt.GetString() == m_EngineState->Renderer()->Program()->GetName()) << "\n\n";
-	if (evt.GetString() == m_EngineState->Renderer()->Program()->GetName() ) {
+	std::cout << "\n\nProgram Name  " << evt.GetInt() << " " << evt.GetString() << "\n\n";
+	//std::cout << "\n\nProgram Names Equal  " << (evt.GetString() == m_EngineState->Renderer()->Program()->GetName()) << "\n\n";
+	if ( evt.GetInt() == 1 ) {
 		m_pShaderMenu->Check(newID, true);
 	}
+
 	wxCommandEvent* newEvt = new wxCommandEvent();
-	newEvt->SetString("User data " + evt.GetString());
+	newEvt->SetString(evt.GetString());
 
 	m_pShaderMenu->Bind(wxEVT_COMMAND_MENU_SELECTED, &nxFrame::OnProgramSwitch, this, newID, newID + 1, newEvt);
 }
 
 void nxFrame::OnProgramSwitch(wxCommandEvent& evt) {
-	wxMessageBox(((wxCommandEvent*)evt.GetEventUserData())->GetString());
+	wxString& progName = ((wxCommandEvent*)evt.GetEventUserData())->GetString();
+	for (int i = 0; i < m_pShaderMenu->GetMenuItems().size(); i++) {
+		m_pShaderMenu->GetMenuItems()[i]->Check(false);
+		if ( std::strcmp(progName.c_str(), m_pShaderMenu->GetMenuItems()[i]->GetText().c_str() ) == 0 ) {
+			m_pShaderMenu->GetMenuItems()[i]->Check(true);
+			m_EngineState->Renderer()->SetActiveProgramByName(progName.c_str().AsChar() );
+			m_EngineState->Renderer()->SetVoxelizing(true);
+		}
+		//std::cout << "\n\n" << m_pShaderMenu->GetMenuItems()[i]->GetText() << " " << progName << "\n\n" << std::endl;
+	}
+
 }
 
 void nxFrame::OnResize(wxSizeEvent& evt) {

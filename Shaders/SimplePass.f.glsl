@@ -62,8 +62,8 @@ void main()
 	// Do we need atomicity???
 	//atomicOr(voxel_data[0], 3);
 
-	setVoxelAt(2,4,6);
-	setVoxelAt(9,100,1);
+	setVoxelAt(0,0,0);
+	//setVoxelAt(9,100,1);
 	
 	out_color = vec4(VertexIn.normal,0.0f);
 }

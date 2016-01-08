@@ -22,6 +22,7 @@ nxRenderer::nxRenderer(wxGLCanvas* frame)
 	m_IsActive = true;
 	m_FBOInited = false;
 	m_IsVoxelizerReady = false;
+	m_Voxelizing = false;
 	m_pGLCommandQueue = new nxGLJobQueue(0);
 	m_VWidth = 0;
 	m_VHeight = 0;
@@ -36,6 +37,7 @@ nxRenderer::nxRenderer(nxEngine* eng) {
 	m_IsActive = true;
 	m_FBOInited = false;
 	m_IsVoxelizerReady = false;
+	m_Voxelizing = false;
 	m_pGLCommandQueue = new nxGLJobQueue(0);
 	m_VWidth = 0;
 	m_VHeight = 0;
@@ -47,9 +49,8 @@ nxRenderer::nxRenderer(nxEngine* eng) {
 void nxRenderer::UseProgram() {
 	
 	m_pActiveProgram->Use();
-	glm::uvec3 vec(128, 128, 128);
-	m_pActiveProgram->SetUniform("dim", vec);
-
+	
+	//printf("Active Program %s\n", m_pActiveProgram->GetName().c_str());
 }
 
 bool error = true;
@@ -75,7 +76,6 @@ void *nxRenderer::Entry()
 		//RenderFrameDemo();
 		RenderFrame();
 		
-		
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
 		if (error) Utils::GL::CheckGLState("Frame");
 		nxUInt32* p = (nxUInt32*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
@@ -85,9 +85,9 @@ void *nxRenderer::Entry()
 			typedef array_type::index index;
 			array_type ip(p, boost::extents[128][128][128]);
 
-			//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 1 : " << ( ip[9][100][1] );
+			BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 1 : " << ( ip[0][0][0] );
 			if (error) Utils::GL::CheckGLState("Frame");
-			//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 2 : " << ( ip[2][4][6]);
+			BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 2 : " << ( ip[0][0][1]);
 			if (error) Utils::GL::CheckGLState("Frame");
 			//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 3 : " << ( ip[1][0][0]);
 			if (error) Utils::GL::CheckGLState("Frame");
@@ -168,8 +168,10 @@ void nxRenderer::RenderFrame() {
 
 	glViewport(0, 0, m_VWidth, m_VHeight);
 
-	m_pEngine->Scene()->Draw();
-	//m_pEngine->Scene()->DrawVoxelized();
+	if ( !IsVoxelizing() ) 
+		m_pEngine->Scene()->Draw();
+	else
+		m_pEngine->Scene()->DrawVoxelized();
 
 	//if (error) Utils::GL::CheckGLState("Draw");
 
@@ -184,7 +186,7 @@ void nxRenderer::RenderFrame() {
 	
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
-	//error = false;
+	error = false;
 }
 
 void nxRenderer::RenderFrameDemo() {
@@ -230,7 +232,7 @@ void nxRenderer::RenderFrameDemo() {
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
-	//error = false;
+	error = false;
 }
 
 void nxRenderer::Init() {
