@@ -81,7 +81,7 @@ bool nxApp::OnInit()
 	}
 	*/
 
-	m_pFrame = new nxFrame(wxT("NOXEngine Viewer"), 50, 50, 400, 200);
+	m_pFrame = new nxFrame(wxT("NOXEngine Viewer"), 50, 50, wxSystemSettings::GetMetric(wxSYS_SCREEN_X)-100, wxSystemSettings::GetMetric(wxSYS_SCREEN_Y)-100);
 
 	int i = m_pFrame->GetMinWidth();
 
