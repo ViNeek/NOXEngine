@@ -69,6 +69,7 @@ private:
 	void					OnLoadScene(wxCommandEvent& evt);
 	void					OnProgramAdded(wxCommandEvent& evt);
 	void					OnProgramSwitch(wxCommandEvent& evt);
+	void					OnKeyDown(wxKeyEvent& evt);
 
 	// StatusBar
 	virtual void			PositionStatusBar();

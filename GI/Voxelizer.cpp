@@ -1,4 +1,5 @@
 #include <boost/log/trivial.hpp>
+#include <boost/multi_array.hpp>
 
 #include "JobFactory.h"
 
@@ -15,6 +16,7 @@ nxVoxelizer::nxVoxelizer(nxEngine* eng, nxUInt32 dim) : nxVoxelizerBase("dumyy")
 	m_pEngine = eng;
 	m_dimensions = glm::uvec3(dim);
 	m_initialized = false;
+	m_CaptureGrid = false;
 	m_resolution = dim;
 	m_ssbo = -1;
 	m_DummyLayeredBuffer = -1;
@@ -254,6 +256,63 @@ glm::vec3 nxVoxelizer::GridMax() {
 		m_pEngine->Scene()->GMaxY(),
 		m_pEngine->Scene()->GMaxZ()
 	);
+}
+
+void nxVoxelizer::PrintGridMesh(GLuint ssbo) {
+	FILE* fp = fopen("voxels.asc", "w");
+	glm::vec3 size = GridSize();
+	glm::vec3 half_size = size * 0.5f;
+	glm::vec3 voxel = size /glm::vec3( m_dimensions );
+
+	printf("Grid Size %f %f %f\n", size.x, size.y, size.z);
+	printf("Voxel Size %f %f %f\n", voxel.x, voxel.y, voxel.z);
+	printf("Dims %f %f %f\n", m_dimensions.x, m_dimensions.y, m_dimensions.z);
+
+	nxUInt32* p = (nxUInt32*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
+	//if (error) Utils::GL::CheckGLState("Frame");
+	int countVoxels = 0;
+	int xCount = 0;
+	int yCount = 0;
+	int zCount = 0;
+	if (p) {
+		typedef boost::multi_array_ref<nxUInt32, 3> array_type;
+		typedef array_type::index index;
+		array_type ip(p, boost::extents[m_dimensions.x][m_dimensions.y][m_dimensions.z]);
+
+		for (int i = 0; i < m_dimensions.x; i++) {
+			for (int j = 0; j < m_dimensions.y; j++) {
+				for (int k = 0; k < m_dimensions.z; k++) {
+					if (ip[i][j][k] > 1) {
+						countVoxels++;
+						xCount++;
+						yCount++;
+						zCount++;
+						fprintf(fp, "%g ", i * voxel.x);
+						fprintf(fp, "%g ", j * voxel.y);
+						fprintf(fp, "%g\n", k * voxel.z);
+					}
+				}
+			}
+		}
+
+		printf("Voxel Count %d\n", countVoxels);
+		printf("X Count %d\n", xCount);
+		printf("Y Count %d\n", yCount);
+		printf("Z Count %d\n", zCount);
+
+		fclose(fp);
+
+		//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 1 : " << ( ip[0][0][0] );
+		//if (error) Utils::GL::CheckGLState("Frame");
+		//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 2 : " << ( ip[127][127][127]);
+		//if (error) Utils::GL::CheckGLState("Frame");
+		//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 3 : " << ( ip[1][0][0]);
+		//if (error) Utils::GL::CheckGLState("Frame");
+		//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 4 : " << ( ip[0][0][0]);
+		//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT : " << "done";
+		//if (error) Utils::GL::CheckGLState("Frame");
+	}
+	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 }
 
 void nxVoxelizer::SetMatrices() {

@@ -11,6 +11,7 @@
 #include "Renderer.h"
 #include "Scheduler.h"
 #include "Engine.h"
+#include "Voxelizer.h"
 
 nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 	: wxFrame((wxFrame *)NULL, -1, title, wxPoint(xpos, ypos), wxSize(width, height) )
@@ -107,12 +108,13 @@ nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 	Bind(wxEVT_CLOSE_WINDOW, &nxFrame::OnClose, this, wxID_ANY);
 	Bind(wxEVT_COMMAND_MENU_SELECTED, &nxFrame::OnLoadScene, this, NX_LOAD_SCENE_ID);
 	Bind(wxEVT_COMMAND_MENU_SELECTED, &nxFrame::OnExit, this, NX_PROGRAM_EXIT_ID);
+	Bind(wxEVT_CHAR_HOOK, &nxFrame::OnKeyDown, this);
+
 
 	// Custom Event Callbacks
 	Bind(nxRENDERER_EXIT_EVENT, &nxFrame::OnRendererExit, this, wxID_ANY);
 	Bind(nxSCHEDULER_EXIT_EVENT, &nxFrame::OnSchedulerExit, this, wxID_ANY);
 	Bind(nxPROGRAM_ADDED_EVENT, &nxFrame::OnProgramAdded, this, wxID_ANY);
-
 }
  
 void nxFrame::EngineStart() {
@@ -127,6 +129,43 @@ bool nxFrame::IsRendererFinished()
 bool nxFrame::IsSchedulerFinished() 
 { 
 	return Engine()->IsRendererFinished();
+}
+
+void nxFrame::OnKeyDown(wxKeyEvent& evt) {
+	wxChar uc = evt.GetUnicodeKey();
+	if (uc != WXK_NONE)
+	{
+		// It's a "normal" character. Notice that this includes
+		// control characters in 1..31 range, e.g. WXK_RETURN or
+		// WXK_BACK, so check for them explicitly.
+		if (uc >= 32)
+		{
+			//wxLogMessage("You pressed '%c'", uc);
+			switch (uc)
+			{
+			case 'C':
+				if (m_EngineState->Renderer()->VoxelizerReady()) {
+					m_EngineState->Renderer()->Voxelizer()->SetCaptureGrid(true);
+				}
+			}
+		}
+		else
+		{
+		}
+	}
+	else // No Unicode equivalent.
+	{
+		//wxLogMessage("You pressed other");
+		// It's a special key, deal with all the known ones:
+		switch (evt.GetKeyCode())
+		{
+		case WXK_LEFT:
+		case WXK_RIGHT:
+				break;
+		case WXK_F1:
+				break;
+		}
+	}
 }
 
 void nxFrame::OnProgramAdded(wxCommandEvent& evt) {

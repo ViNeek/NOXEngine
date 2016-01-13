@@ -2,6 +2,8 @@
 
 layout(location = 0) out vec4 out_color;
 
+uniform uvec3 GridSize;
+
 in VertexData {
     vec3 normal;
 	//flat in uint depth;
@@ -9,16 +11,21 @@ in VertexData {
     //vec2 uv;
 } VertexIn;
 
-uniform uvec3 dim;
+flat in uint depth;
+flat in uint dX;
+flat in uint dY;
+flat in uint dZ;
 
 layout (std430, binding=2) buffer VoxelData
 {
 	uint voxel_data[];
 };
 
-void setVoxelAt(int i, int j, int w) {
-	voxel_data[dim.x*dim.y*i + dim.y*j + w] = 1;
+void setVoxelAt(unsigned int i,unsigned int j,unsigned int w) {
+	//voxel_data[GridSize.x*GridSize.y*i + GridSize.y*j + w] = 10;
 	//voxel_data[VertexIn.factors.x*i + VertexIn.factors.y*j + VertexIn.factors.z*w] = 1;
+	voxel_data[ dX + dY + dZ ] = 1;
+	//voxel_data[factors.x*factors.y*i + factors.y*j + w] = 1;
 }
 
 void main()
@@ -60,7 +67,9 @@ void main()
 	// Do we need atomicity???
 	//atomicOr(voxel_data[0], 3);
 
-	setVoxelAt(0,0,1);
+	setVoxelAt(x, y, z);
+	//setVoxelAt(GridSize.x-1,127,127);
+	//setVoxelAt(GridSize.x-1,126,127);
 	//setVoxelAt(9,100,1);
 	
 	out_color = vec4(zf,zf,zf,0.0f);

@@ -77,6 +77,9 @@ void *nxRenderer::Entry()
 		RenderFrame();
 		
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
+		
+		if (error) Utils::GL::CheckGLState("Clear Voxel Buffer");
+
 		if (error) Utils::GL::CheckGLState("Frame");
 		nxUInt32* p = (nxUInt32*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
 		if (error) Utils::GL::CheckGLState("Frame");
@@ -85,9 +88,9 @@ void *nxRenderer::Entry()
 			typedef array_type::index index;
 			array_type ip(p, boost::extents[128][128][128]);
 
-			BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 1 : " << ( ip[0][0][0] );
+		    //BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 1 : " << ( ip[0][0][0] );
 			if (error) Utils::GL::CheckGLState("Frame");
-			BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 2 : " << ( ip[0][0][1]);
+			//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 2 : " << ( ip[127][127][127]);
 			if (error) Utils::GL::CheckGLState("Frame");
 			//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 3 : " << ( ip[1][0][0]);
 			if (error) Utils::GL::CheckGLState("Frame");
@@ -98,6 +101,16 @@ void *nxRenderer::Entry()
 		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 		if (error) Utils::GL::CheckGLState("Frame");
 		error = false;
+
+		if (VoxelizerReady()) {
+			if (Voxelizer()->CaptureGrid()) {
+				printf("Capture \n");
+				Voxelizer()->SetCaptureGrid(false);
+				Voxelizer()->PrintGridMesh(m_ssbo);
+			}
+		}
+
+		glClearBufferData(GL_SHADER_STORAGE_BUFFER, GL_RGBA32I, GL_RGBA, GL_UNSIGNED_INT, NULL);
 
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
@@ -264,8 +277,9 @@ void nxRenderer::InitFramebuffer() {
 	/* TEMPORARY init a a test Shader Storage Buffer object */
 	glGenBuffers(1, &m_ssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, 128 * 128 * 128, NULL, GL_DYNAMIC_COPY);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, 128 * 128 * 128 * 4, NULL, GL_DYNAMIC_COPY);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
 	Utils::GL::CheckGLState("SSBO");
 	glGenRenderbuffers(1, &m_RBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, m_RBO);

@@ -38,7 +38,9 @@ public:
 
 	bool								Init();
 	bool								IsInitialized() { return m_initialized; };
-	
+	bool								CaptureGrid() { return m_CaptureGrid; };
+	void								SetCaptureGrid(bool capture) { m_CaptureGrid = capture; };
+
 	glm::uvec3							Dimesions() { return m_dimensions; }
 	void								SetMatrices();
 	glm::mat4*							Views() { return m_view_axis; };
@@ -56,6 +58,7 @@ public:
 	GLuint								VoxelizerFramebuffer() { return m_fbo_3_axis; };
 
 	void								PrintGrid();
+	void								PrintGridMesh(GLuint ssbo);
 
 private:
 
@@ -71,4 +74,5 @@ private:
 	glm::mat4							m_view_axis[3];
 	glm::mat4							m_proj_axis[3];
 
+	bool								m_CaptureGrid;
 };

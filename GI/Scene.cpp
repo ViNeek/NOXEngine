@@ -214,14 +214,20 @@ void nxScene::DrawVoxelized() {
 			m_Camera->Position());
 
 		m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
-		m_MState.m_VMatrix *= m_MState.m_RMatrix;
+		//m_MState.m_VMatrix *= m_MState.m_RMatrix;
 
 		//m_MState.m_MMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
-		m_pEngine->Renderer()->Program()->SetUniform("NormalMatrix", Normal());
+		//m_pEngine->Renderer()->Program()->SetUniform("NormalMatrix", Normal());
 
 		if (errorGL) Utils::GL::CheckGLState("Set Normal");
+		
+		//m_pEngine->Renderer()->Program()->SetUniform("ModelMatrix", glm::mat4());
+		m_pEngine->Renderer()->Program()->SetUniform("ModelMatrix", glm::translate(glm::mat4(), m_Entities[i]->ModelTransform()));
+		//m_pEngine->Renderer()->Program()->SetUniform("MVP", m_MState.m_PMatrix*m_MState.m_VMatrix);
+		m_pEngine->Renderer()->Program()->SetUniform("GridSize", m_pEngine->Renderer()->Voxelizer()->Dimesions());
 
-		m_pEngine->Renderer()->Program()->SetUniform("MVP", m_MState.m_PMatrix*m_MState.m_VMatrix);
+		m_pEngine->Renderer()->Program()->SetUniform("ViewProjMatrix", 3, m_pEngine->Renderer()->Voxelizer()->ViewProjections());
+
 		//m_pEngine->Renderer()->Program()->SetUniform("MVP", View());
 		if (errorGL) Utils::GL::CheckGLState("Set MVP");
 

@@ -10,10 +10,13 @@ out VertexData {
 } VertexOut;
 
 uniform mat3 NormalMatrix;
+uniform mat4 ModelMatrix;
 
 void main()
 {
     VertexOut.normal = normalize(NormalMatrix * VertexNormal);
     //VertexOut.uv = VertexTexCoord;
-    gl_Position = vec4(VertexPosition)/VertexPosition.w;
+    //gl_Position = vec4(VertexPosition)/VertexPosition.w;
+	//gl_Position = ModelMatrix * /*uniform_view_proj * */ vec4(VertexPosition)/VertexPosition.w;
+	gl_Position = ModelMatrix * /*uniform_view_proj * */ vec4(VertexPosition.xyz, 1);
 }
