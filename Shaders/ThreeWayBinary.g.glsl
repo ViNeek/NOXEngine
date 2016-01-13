@@ -79,40 +79,56 @@ void main()
 	int index = X_AXIS_LAYER;
 	//uvec3 facts = uvec3(GridSize.x*GridSize.y, GridSize.y, 1);
 	//uvec3 facts = uvec3(GridSize.y, 1, GridSize.x*GridSize.y);
-	uvec3 facts = uvec3(1, GridSize.x*GridSize.y, GridSize.y);
-	if (absnormal.y >= absnormal.x && absnormal.y >= absnormal.z) {
+	//uvec3 facts = uvec3(1, GridSize.x*GridSize.y, GridSize.y);
+	/*dX = GridSize.y;;
+	dY = 1;
+	dZ = GridSize.x * GridSize.z;
+	index = X_AXIS_LAYER;*/
+	index = Z_AXIS_LAYER;
+		dX = GridSize.y * GridSize.x;
+		dY = GridSize.y;
+		dZ = 1;
+	/*
+	index = Y_AXIS_LAYER;
+		dX = 1;
+		dY = GridSize.y*GridSize.z;
+		dZ = GridSize.y;*/
+	/*if (absnormal.y >= absnormal.x && absnormal.y >= absnormal.z) {
 		index = Y_AXIS_LAYER;
+		dX = 1;
+		dY = GridSize.y*GridSize.z;
+		dZ = GridSize.y;
 		//facts = uvec3(GridSize.y, 1, GridSize.x*GridSize.y);
 	}
 	else if (absnormal.z >= absnormal.x && absnormal.z >= absnormal.y) {
 		index = Z_AXIS_LAYER;
+		dX = GridSize.y;
+		dY = 1;
+		dZ = GridSize.y * GridSize.x;
 		//facts = uvec3(1, GridSize.x*GridSize.y, GridSize.y);
-	}
+	}*/
 
 	// No more layered
 	//gl_Layer = index;
 	gl_ViewportIndex = index;
 	depth = GridSize[index];
 	//factors = facts;
-	dX = GridSize.x*GridSize.y;
-	dY = GridSize.z;
-	dZ = GridSize.x;
 	gl_Position = ViewProjMatrix[index] * gl_in[0].gl_Position;
 	EmitVertex();
 	gl_ViewportIndex = index;
 	depth = GridSize[index];
 	//factors = facts;
-	dX = GridSize.x*GridSize.y;
-	dY = GridSize.z;
-	dZ = GridSize.x;
+	//dX = GridSize.x;
+	//dY = GridSize.y;
+	//dZ = GridSize.z;
 	gl_Position = ViewProjMatrix[index] * gl_in[1].gl_Position;
 	EmitVertex();
 	gl_ViewportIndex = index;
 	depth = GridSize[index];
 	//factors = facts;
-	dX = GridSize.x*GridSize.y;
-	dY = GridSize.z;
-	dZ = GridSize.x;
+	//dX = GridSize.x;
+	//dY = GridSize.y;
+	//dZ = GridSize.z;
 	gl_Position = ViewProjMatrix[index] * gl_in[2].gl_Position;
 	EmitVertex();
 

@@ -132,7 +132,7 @@ void nxScene::Init() {
 						  v.second.get<float>("CenterZ", 0.0f)),
 						  v.second.get<float>("Scale", 1.0f));
 			
-			//m_pEngine->Scheduler()->ScheduleJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_LOAD_ASSET, data));
+			m_pEngine->Scheduler()->ScheduleJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_LOAD_ASSET, data));
 		}
 
 		m_Camera = new nxArcballCamera();
