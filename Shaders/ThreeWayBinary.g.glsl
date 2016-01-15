@@ -80,14 +80,14 @@ void main()
 	//uvec3 facts = uvec3(GridSize.x*GridSize.y, GridSize.y, 1);
 	//uvec3 facts = uvec3(GridSize.y, 1, GridSize.x*GridSize.y);
 	//uvec3 facts = uvec3(1, GridSize.x*GridSize.y, GridSize.y);
-	/*dX = GridSize.y;;
-	dY = 1;
-	dZ = GridSize.x * GridSize.z;
-	index = X_AXIS_LAYER;*/
-	index = Z_AXIS_LAYER;
-		dX = GridSize.y * GridSize.x;
+	dX = GridSize.x * GridSize.z;
+	dY = GridSize.x;
+	dZ = 1;
+	//index = X_AXIS_LAYER;
+	/*index = Z_AXIS_LAYER;
+		dX = 1;
 		dY = GridSize.y;
-		dZ = 1;
+		dZ = GridSize.y * GridSize.x;*/
 	/*
 	index = Y_AXIS_LAYER;
 		dX = 1;

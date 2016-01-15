@@ -22,7 +22,7 @@ layout (std430, binding=2) buffer VoxelData
 };
 
 void setVoxelAt(unsigned int i,unsigned int j,unsigned int w) {
-	voxel_data[dX * i + dY * j + dZ * w] = 10;
+	voxel_data[dX * i + dY * j + dZ * w] = 1;
 	//voxel_data[VertexIn.factors.x*i + VertexIn.factors.y*j + VertexIn.factors.z*w] = 1;
 	//voxel_data[ 0 ] = 1;
 	//voxel_data[factors.x*factors.y*i + factors.y*j + w] = 1;
