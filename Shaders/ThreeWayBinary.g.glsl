@@ -14,9 +14,12 @@ uniform uvec3 GridSize;
 
 //flat out uvec3 factors;
 flat out uint depth;
-flat out uint dX;
-flat out uint dY;
-flat out uint dZ;
+flat out int dX;
+flat out int dY;
+flat out int dZ;
+flat out int offX;
+flat out int offY;
+flat out int offZ;
 
 #define X_AXIS_LAYER 0
 #define Y_AXIS_LAYER 1
@@ -76,13 +79,16 @@ void main()
 
 	vec3 absnormal = abs(normal0);
 
-	int index = X_AXIS_LAYER;
 	//uvec3 facts = uvec3(GridSize.x*GridSize.y, GridSize.y, 1);
 	//uvec3 facts = uvec3(GridSize.y, 1, GridSize.x*GridSize.y);
 	//uvec3 facts = uvec3(1, GridSize.x*GridSize.y, GridSize.y);
-	dX = GridSize.x * GridSize.z;
-	dY = GridSize.x;
-	dZ = 1;
+	//int index = X_AXIS_LAYER;
+	//dX = 1;
+	//dY = GridSize.x;
+	//dZ = GridSize.x * GridSize.z;
+	//offX = 0;
+	//offY = 0;
+	//offZ = 0;
 	//index = X_AXIS_LAYER;
 	/*index = Z_AXIS_LAYER;
 		dX = 1;
@@ -93,20 +99,33 @@ void main()
 		dX = 1;
 		dY = GridSize.y*GridSize.z;
 		dZ = GridSize.y;*/
-	/*if (absnormal.y >= absnormal.x && absnormal.y >= absnormal.z) {
+	int index = X_AXIS_LAYER;
+	dX = 1;
+	dY = int(GridSize.x);
+	dZ = int(GridSize.x) * int(GridSize.y);
+	offX = 0;
+	offY = 0;
+	offZ = 0;
+	if (absnormal.y >= absnormal.x && absnormal.y >= absnormal.z) {
 		index = Y_AXIS_LAYER;
-		dX = 1;
-		dY = GridSize.y*GridSize.z;
-		dZ = GridSize.y;
+		dX = -1;
+		dY = -int(GridSize.x) * int(GridSize.z);
+		dZ = -int(GridSize.x);
+		offX = int(GridSize.x-1);
+		offY = int(GridSize.y-1);
+		offZ = int(GridSize.z-1);
 		//facts = uvec3(GridSize.y, 1, GridSize.x*GridSize.y);
 	}
 	else if (absnormal.z >= absnormal.x && absnormal.z >= absnormal.y) {
 		index = Z_AXIS_LAYER;
-		dX = GridSize.y;
-		dY = 1;
-		dZ = GridSize.y * GridSize.x;
+		dX = int(GridSize.x) * int(GridSize.z);
+		dY = int(GridSize.x);
+		dZ = -1;
+		offX = 0;
+		offY = 0;
+		offZ = int(GridSize.z-1);
 		//facts = uvec3(1, GridSize.x*GridSize.y, GridSize.y);
-	}*/
+	}
 
 	// No more layered
 	//gl_Layer = index;

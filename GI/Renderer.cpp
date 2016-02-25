@@ -86,7 +86,7 @@ void *nxRenderer::Entry()
 		if (p) {
 			typedef boost::multi_array_ref<nxUInt32, 3> array_type;
 			typedef array_type::index index;
-			array_type ip(p, boost::extents[128][128][128]);
+			array_type ip(p, boost::extents[512][512][512]);
 
 		    //BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 1 : " << ( ip[0][0][0] );
 			if (error) Utils::GL::CheckGLState("Frame");
@@ -277,7 +277,7 @@ void nxRenderer::InitFramebuffer() {
 	/* TEMPORARY init a a test Shader Storage Buffer object */
 	glGenBuffers(1, &m_ssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, 128 * 128 * 128 * 4, NULL, GL_DYNAMIC_COPY);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, 512 * 512 * 512 * 4, NULL, GL_DYNAMIC_COPY);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	Utils::GL::CheckGLState("SSBO");

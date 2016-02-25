@@ -69,6 +69,7 @@ public:
 	std::map<std::string, nxProgram*>		GetPrograms() { return m_ShaderPrograms; }
 
 	GLuint									m_ssbo;
+
 private:
 
 	wxGLCanvas*								m_pParent;

@@ -12,9 +12,12 @@ in VertexData {
 } VertexIn;
 
 flat in uint depth;
-flat in uint dX;
-flat in uint dY;
-flat in uint dZ;
+flat in int dX;
+flat in int dY;
+flat in int dZ;
+flat in int offX;
+flat in int offY;
+flat in int offZ;
 
 layout (std430, binding=2) buffer VoxelData
 {
@@ -22,7 +25,8 @@ layout (std430, binding=2) buffer VoxelData
 };
 
 void setVoxelAt(unsigned int i,unsigned int j,unsigned int w) {
-	voxel_data[dX * i + dY * j + dZ * w] = 1;
+	voxel_data[dX * ( i - offX ) + dY * ( j - offY ) + dZ * ( w - offZ )] = 1;
+	//voxel_data[dX * ( i ) + dY * ( j ) + dZ * ( w )] = 1;
 	//voxel_data[VertexIn.factors.x*i + VertexIn.factors.y*j + VertexIn.factors.z*w] = 1;
 	//voxel_data[ 0 ] = 1;
 	//voxel_data[factors.x*factors.y*i + factors.y*j + w] = 1;
@@ -62,7 +66,7 @@ void main()
 	float zf = clamp(gl_FragCoord.z,0,1); 
 	int x = int(floor(gl_FragCoord.x));
 	int y = int(floor(gl_FragCoord.y));
-	int z = int(floor(zf*depth + 0.5));
+	int z = int(floor(zf*depth));
 
 	// Do we need atomicity???
 	//atomicOr(voxel_data[0], 3);

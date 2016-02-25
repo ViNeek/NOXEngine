@@ -22,6 +22,16 @@ nxVoxelizer::nxVoxelizer(nxEngine* eng, nxUInt32 dim) : nxVoxelizerBase("dumyy")
 	m_DummyLayeredBuffer = -1;
 }
 
+nxVoxelizer::nxVoxelizer(nxEngine* eng, nxUInt32 dimX, nxUInt32 dimY, nxUInt32 dimZ) : nxVoxelizerBase("dumyy") {
+	m_pEngine = eng;
+	m_dimensions = glm::uvec3(dimX, dimY, dimZ);
+	m_initialized = false;
+	m_CaptureGrid = false;
+	m_resolution = dimX;
+	m_ssbo = -1;
+	m_DummyLayeredBuffer = -1;
+}
+
 bool nxVoxelizer::Init() {
 	Utils::GL::CheckGLState("Width Framebuffer Creation");
 	glGenFramebuffers(1, &m_DummyLayeredBuffer);
@@ -345,7 +355,7 @@ void nxVoxelizer::SetMatrices() {
 	m_view_axis[0] = glm::lookAt(eye, center, up);
 
 	// Set the projection matrix
-	m_proj_axis[0] = glm::ortho(-half_size.z, half_size.z, -half_size.y, half_size.y, 0.0f, size.x);
+	m_proj_axis[0] = glm::ortho(-half_size.z, half_size.z, -half_size.y, half_size.y, 0.0f, size.x + 1.0f);
 
 	// Set the viewport for this axis view (with the appropriate width and height)
 	m_viewport[0] = glm::vec4(0.0f, 0.0f, m_dimensions.z, m_dimensions.y);
@@ -360,7 +370,7 @@ void nxVoxelizer::SetMatrices() {
 	m_view_axis[1] = glm::lookAt(eye, center, up);
 
 	// Set the projection matrix
-	m_proj_axis[1] = glm::ortho(-half_size.z, half_size.z, -half_size.x, half_size.x, 0.0f, size.y);
+	m_proj_axis[1] = glm::ortho(-half_size.z, half_size.z, -half_size.x, half_size.x, 0.0f, size.y + 1.0f);
 
 	// Set the viewport for this axis view (with the appropriate width and height)
 	m_viewport[1] = glm::vec4(0.0f, 0.0f, m_dimensions.z, m_dimensions.x);
@@ -375,7 +385,7 @@ void nxVoxelizer::SetMatrices() {
 	m_view_axis[2] = glm::lookAt(eye, center, up);
 
 	// Set the projection matrix
-	m_proj_axis[2] = glm::ortho(-half_size.x, half_size.x, -half_size.y, half_size.y, 0.0f, size.z);
+	m_proj_axis[2] = glm::ortho(-half_size.x, half_size.x, -half_size.y, half_size.y, 0.0f, size.z+1.0f);
 
 	// Set the viewport for this axis view (with the appropriate width and height)
 	m_viewport[2] = glm::vec4(0.0f, 0.0f, m_dimensions.x, m_dimensions.y);
