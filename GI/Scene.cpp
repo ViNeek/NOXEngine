@@ -115,7 +115,7 @@ void nxScene::Init() {
 		buffer[5] = glm::vec3(-gridSpan, -gridSpan, -gridSpan);
 
 		nxGLBufferedAssetLoaderBlob* bufferData = new nxGLBufferedAssetLoaderBlob(m_pEngine, buffer, 6);
-		m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_BUFF_ASSET, bufferData));
+		//m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_BUFF_ASSET, bufferData));
 
 		BOOST_LOG_TRIVIAL(info) << "Number of Entities : " << tree.get_child("Scene.Entities").size();
 		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Entities")) {
@@ -202,6 +202,8 @@ void nxScene::DrawVoxelized() {
 
 	m_pEngine->Renderer()->UseProgram();
 	if (errorGL) Utils::GL::CheckGLState("Program USE");
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
 
 	if (m_pEngine->Renderer()->VoxelizerReady()) {
 		m_MState.m_PMatrix = m_pEngine->Renderer()->Voxelizer()->Projections()[2];

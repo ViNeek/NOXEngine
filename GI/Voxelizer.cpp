@@ -32,6 +32,7 @@ nxVoxelizer::nxVoxelizer(nxEngine* eng, nxUInt32 dimX, nxUInt32 dimY, nxUInt32 d
 	m_DummyLayeredBuffer = -1;
 }
 
+static const int g_WorkGroupSize = 4;
 bool nxVoxelizer::Init() {
 	Utils::GL::CheckGLState("Width Framebuffer Creation");
 	glGenFramebuffers(1, &m_DummyLayeredBuffer);
@@ -65,11 +66,37 @@ bool nxVoxelizer::Init() {
 
 	Utils::GL::CheckGLState("SSBO Attach");
 
-	//glGenBuffers(1, &m_ssbo);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
+	glGenBuffers(1, &m_ssbo);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, m_resolution * m_resolution * m_resolution * 4, NULL, GL_DYNAMIC_COPY);
 	//glBufferData(GL_SHADER_STORAGE_BUFFER, m_resolution * m_resolution * m_resolution / 8, NULL, GL_DYNAMIC_COPY);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
+	int l_InvocationCount = m_resolution * m_resolution * m_resolution;
+	glm::uvec3 l_GroupSize(
+		(m_resolution - 1) / g_WorkGroupSize + 1,
+		(m_resolution - 1) / g_WorkGroupSize + 1,
+		(m_resolution - 1) / g_WorkGroupSize + 1
+	);
+	glm::uvec3 l_OldGroupSize(
+		m_resolution / g_WorkGroupSize,
+		m_resolution / g_WorkGroupSize,
+		m_resolution / g_WorkGroupSize
+	);
+
+	BOOST_LOG_TRIVIAL(info) << "\n\n\n\n\nDims : " << l_GroupSize.x << "\n\n\n\n";
+	BOOST_LOG_TRIVIAL(info) << "\n\n\n\n\nDims : " << l_OldGroupSize.x << "\n\n\n\n";
+
+	//glDispatchComputeGroupSize( NUMGROUPS, 1, 1, 
+	//							WORK_GROUP_SIZE, 1, 1);
+	//glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+
+	//int l_GroupSize = g_WorkGroupSize * g_WorkGroupSize * g_WorkGroupSize;
+	int l_GroupCount = (l_InvocationCount - 1) / ( l_GroupSize.x * l_GroupSize.y * l_GroupSize.z ) + 1;
+
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_ssbo);
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	BOOST_LOG_TRIVIAL(info) << "\n\n\n\n\nDims : " << m_resolution << "\n\n\n\n";
 
 	glGenTextures(1, &m_texture_3_axis_id);
 	glBindTexture(GL_TEXTURE_2D_ARRAY, m_texture_3_axis_id);

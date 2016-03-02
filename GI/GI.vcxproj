@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CustomEvents.cpp" />
+    <ClCompile Include="DistanceField.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="GLUtils.cpp" />
     <ClCompile Include="JobFactory.cpp" />
@@ -167,11 +168,14 @@
     <ClInclude Include="Constants.h" />
     <ClInclude Include="CustomEvents.h" />
     <ClInclude Include="CustomTypes.h" />
+    <ClInclude Include="DistanceField.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="GLObject.h" />
     <ClInclude Include="GLUtils.h" />
     <ClInclude Include="Handle.h" />
     <ClInclude Include="Job.h" />
     <ClInclude Include="JobFactory.h" />
+    <ClInclude Include="Log.h" />
     <ClInclude Include="Program.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Resource.h" />
@@ -193,7 +197,7 @@
   <ItemGroup>
     <None Include="..\Scenes\MetalGearSolid.json" />
     <None Include="..\Scenes\Simple.json" />
-    <None Include="..\Shaders\SimplePass.c.glsl" />
+    <None Include="..\Shaders\DistanceField.c.glsl" />
     <None Include="..\Shaders\SimplePass.f.glsl" />
     <None Include="..\Shaders\SimplePass.g.glsl" />
     <None Include="..\Shaders\SimplePass.v.glsl" />

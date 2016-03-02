@@ -71,19 +71,17 @@ void *nxRenderer::Entry()
 		
 		UseProgram();
 
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_ssbo);
-
 		//RenderFrameDemo();
 		RenderFrame();
 		
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
+		//glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
 		
 		if (error) Utils::GL::CheckGLState("Clear Voxel Buffer");
 
 		if (error) Utils::GL::CheckGLState("Frame");
-		nxUInt32* p = (nxUInt32*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
+		//nxUInt32* p = (nxUInt32*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
 		if (error) Utils::GL::CheckGLState("Frame");
-		if (p) {
+		/*if (p) {
 			typedef boost::multi_array_ref<nxUInt32, 3> array_type;
 			typedef array_type::index index;
 			array_type ip(p, boost::extents[512][512][512]);
@@ -101,12 +99,13 @@ void *nxRenderer::Entry()
 		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 		if (error) Utils::GL::CheckGLState("Frame");
 		error = false;
-
+		*/
 		if (VoxelizerReady()) {
 			if (Voxelizer()->CaptureGrid()) {
 				printf("Capture \n");
 				Voxelizer()->SetCaptureGrid(false);
-				Voxelizer()->PrintGridMesh(m_ssbo);
+				//Voxelizer()->PrintGridMesh(m_ssbo);
+				Voxelizer()->PrintGridMesh(Voxelizer()->VoxelBuffer());
 			}
 		}
 

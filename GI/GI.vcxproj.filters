@@ -75,6 +75,9 @@
     <ClCompile Include="Voxelizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DistanceField.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utils.h">
@@ -149,6 +152,15 @@
     <ClInclude Include="Constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DistanceField.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GLObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Shaders\Shaders.txt">
@@ -156,9 +168,6 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Shaders\SimplePass.c.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
     <None Include="..\Shaders\SimplePass.f.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
@@ -191,6 +200,9 @@
     </None>
     <None Include="..\Scenes\MetalGearSolid.json">
       <Filter>Resource Files\Scenes</Filter>
+    </None>
+    <None Include="..\Shaders\DistanceField.c.glsl">
+      <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

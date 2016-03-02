@@ -52,6 +52,14 @@
                     }
                 ]
             },
+			{
+                "Name":  "DistanceField",
+                "Shaders": [
+					{
+                        "Compute": "../Shaders/DistanceField.c.glsl"
+					}
+                ]
+            },
             {
                 "Name":  "Voxelize Preview",
                 "Shaders": [

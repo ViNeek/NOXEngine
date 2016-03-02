@@ -19,7 +19,7 @@ flat in int offX;
 flat in int offY;
 flat in int offZ;
 
-layout (std430, binding=2) buffer VoxelData
+layout (std430, binding=2) writeonly buffer VoxelData
 {
 	uint voxel_data[];
 };

@@ -43,6 +43,10 @@ public:
 
 	glm::uvec3							Dimesions() { return m_dimensions; }
 	void								SetMatrices();
+
+	GLuint								VoxelBuffer() { return m_ssbo; }
+	GLuint								DistanceFieldBuffer() { return m_DistanceFieldBuffer; }
+
 	glm::mat4*							Views() { return m_view_axis; };
 	glm::vec4*							Viewports() { return m_viewport; };
 	glm::mat4*							Projections() { return m_proj_axis; };
@@ -67,6 +71,7 @@ private:
 	GLuint								m_texture_3_axis_id;
 	GLuint								m_fbo_3_axis;
 	GLuint								m_ssbo;
+	GLuint								m_DistanceFieldBuffer;
 	GLuint								m_DummyLayeredBuffer;
 
 	glm::vec4							m_viewport[3];
