@@ -9,9 +9,9 @@
             "PositionZ": 800
         },
         "Voxelizer": {
-            "DimX": 512,
-            "DimY": 512,
-            "DimZ": 512
+            "DimX": 64,
+            "DimY": 64,
+            "DimZ": 64
         },
         "Entities": [
             {

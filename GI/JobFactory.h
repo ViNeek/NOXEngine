@@ -35,6 +35,7 @@ enum nxJobID {
 	NX_GL_JOB_EXTENSION_INIT,
 	NX_GL_JOB_FRAMEBUFFER_INIT,
 	NX_GL_JOB_VOXELIZER_INIT,
+	NX_GL_JOB_DISTANCE_FIELD_INIT,
 	NX_GL_JOB_FRAMEBUFFER_RESIZE,
 	NX_GL_JOB_COMPILE_SHADER,
 	NX_GL_JOB_LOAD_ASSET,
@@ -216,6 +217,20 @@ struct nxVoxelizerInitializerBlob {
 struct nxVoxelizerInitializer {
 	bool operator()(void* data);
 };
+
+struct nxDistanceFieldInitializerBlob {
+	nxDistanceFieldInitializerBlob(nxEngine* eng, glm::uvec3 dims)
+		: m_Engine(eng), m_Dimensions(dims) {}
+
+	nxEngine*		m_Engine;
+	glm::uvec3		m_Dimensions;
+
+};
+
+struct nxDistanceFieldInitializer {
+	bool operator()(void* data);
+};
+
 
 struct nxRendererTerminator {
 	bool operator()(void* data);

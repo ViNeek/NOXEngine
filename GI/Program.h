@@ -61,6 +61,7 @@ public:
 
 	void									SetName(std::string& name) { m_ProgramName = name; };
 	const std::string&						GetName() { return m_ProgramName; };
+	GLuint									GetID() { return m_ProgramID; };
 
 	// Resource Interface
 	void Manage(nxProgram program) {

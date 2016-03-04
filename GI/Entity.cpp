@@ -132,6 +132,8 @@ void nxEntity::InitFromFile(const std::string& path) {
 			{
 				aiVector3D pos = mesh->mVertices[face.mIndices[k]];
 
+				//pos.z -= 11.2918f;
+
 				if (pos.x < m_MinX) m_MinX = pos.x;
 				if (pos.y < m_MinY) m_MinY = pos.y;
 				if (pos.z < m_MinZ) m_MinZ = pos.z;
@@ -191,9 +193,9 @@ void nxEntity::Draw() {
 bool nxAssetLoader::operator()(void* data) {
 	nxAssetLoaderBlob* blob = (nxAssetLoaderBlob*)data;
 	
-	std::cout << "Asset Loading " << blob->m_ResourcePath << std::endl;
-	std::cout << "Asset Loading " << blob->m_ResourceType << std::endl;
-	std::cout << "Asset Loading " << blob->m_Center.z << std::endl;
+	//std::cout << "Asset Loading " << blob->m_ResourcePath << std::endl;
+	//std::cout << "Asset Loading " << blob->m_ResourceType << std::endl;
+	//std::cout << "Asset Loading " << blob->m_Center.z << std::endl;
 
 	nxEntity* ent = new nxEntity(blob->m_ResourcePath + blob->m_ResourceType);
 
@@ -211,8 +213,10 @@ bool nxAssetLoader::operator()(void* data) {
 	BOOST_LOG_TRIVIAL(info) << "Asset MaxX " << ent->MinX();
 	BOOST_LOG_TRIVIAL(info) << "Asset MaxY " << ent->MinY();
 	BOOST_LOG_TRIVIAL(info) << "Asset MaxZ " << ent->MinZ();
+	BOOST_LOG_TRIVIAL(info) << "Asset CenterX " << center.x;
+	BOOST_LOG_TRIVIAL(info) << "Asset CenterY " << center.y;
+	BOOST_LOG_TRIVIAL(info) << "Asset CenterZ " << center.z;
 
-	std::cout << "Asset MaxX " << blob->m_Center.z << std::endl;
 
 	nxGLAssetLoaderBlob* newData = new nxGLAssetLoaderBlob(blob->m_Engine, ent);
 	blob->m_Engine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_ASSET, newData));

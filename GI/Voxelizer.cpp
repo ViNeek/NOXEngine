@@ -299,11 +299,11 @@ void nxVoxelizer::PrintGridMesh(GLuint ssbo) {
 	FILE* fp = fopen("voxels.asc", "w");
 	glm::vec3 size = GridSize();
 	glm::vec3 half_size = size * 0.5f;
-	glm::vec3 voxel = size /glm::vec3( m_dimensions );
+	glm::vec3 voxel = size / glm::vec3( m_dimensions );
 
 	printf("Grid Size %f %f %f\n", size.x, size.y, size.z);
 	printf("Voxel Size %f %f %f\n", voxel.x, voxel.y, voxel.z);
-	printf("Dims %f %f %f\n", m_dimensions.x, m_dimensions.y, m_dimensions.z);
+	printf("Dims %d %d %d\n", m_dimensions.x, m_dimensions.y, m_dimensions.z);
 
 	nxUInt32* p = (nxUInt32*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
 	//if (error) Utils::GL::CheckGLState("Frame");
@@ -358,12 +358,14 @@ void nxVoxelizer::SetMatrices() {
 	glm::vec3 half_size = size * 0.5f;
 
 	const glm::vec3& center = GridCenter();
-	const glm::vec3& bmax = GridMax();
-	const glm::vec3& bmin = GridMin();
+	const glm::vec3 bmax = GridMax();
+	const glm::vec3 bmin = GridMin();
 
 	BOOST_LOG_TRIVIAL(info) << "\n\n Max " << bmax.x << " " << bmax.y << " " << bmax.z << " " << "\n\n ";
 	BOOST_LOG_TRIVIAL(info) << "\n\n Min " << bmin.x << " " << bmin.y << " " << bmin.z << " " << "\n\n ";
 	BOOST_LOG_TRIVIAL(info) << "\n\n Center " << center.x << " " << center.y << " " << center.z << " " << "\n\n ";
+	BOOST_LOG_TRIVIAL(info) << "\n\n Half " << half_size.x << " " << half_size.y << " " << half_size.z << " " << "\n\n ";
+	BOOST_LOG_TRIVIAL(info) << "\n\n Size " << size.x << " " << size.y << " " << size.z << " " << "\n\n ";
 	BOOST_LOG_TRIVIAL(info) << "Initializing Voxelizer ";
 
 	glm::vec3 eye;
@@ -382,7 +384,7 @@ void nxVoxelizer::SetMatrices() {
 	m_view_axis[0] = glm::lookAt(eye, center, up);
 
 	// Set the projection matrix
-	m_proj_axis[0] = glm::ortho(-half_size.z, half_size.z, -half_size.y, half_size.y, 0.0f, size.x + 1.0f);
+	m_proj_axis[0] = glm::ortho(-half_size.z, half_size.z, -half_size.y, half_size.y, 0.0f, size.x);
 
 	// Set the viewport for this axis view (with the appropriate width and height)
 	m_viewport[0] = glm::vec4(0.0f, 0.0f, m_dimensions.z, m_dimensions.y);
@@ -397,7 +399,7 @@ void nxVoxelizer::SetMatrices() {
 	m_view_axis[1] = glm::lookAt(eye, center, up);
 
 	// Set the projection matrix
-	m_proj_axis[1] = glm::ortho(-half_size.z, half_size.z, -half_size.x, half_size.x, 0.0f, size.y + 1.0f);
+	m_proj_axis[1] = glm::ortho(-half_size.z, half_size.z, -half_size.x, half_size.x, 0.0f, size.y);
 
 	// Set the viewport for this axis view (with the appropriate width and height)
 	m_viewport[1] = glm::vec4(0.0f, 0.0f, m_dimensions.z, m_dimensions.x);
@@ -412,7 +414,7 @@ void nxVoxelizer::SetMatrices() {
 	m_view_axis[2] = glm::lookAt(eye, center, up);
 
 	// Set the projection matrix
-	m_proj_axis[2] = glm::ortho(-half_size.x, half_size.x, -half_size.y, half_size.y, 0.0f, size.z+1.0f);
+	m_proj_axis[2] = glm::ortho(-half_size.x, half_size.x, -half_size.y, half_size.y, 0.0f, size.z);
 
 	// Set the viewport for this axis view (with the appropriate width and height)
 	m_viewport[2] = glm::vec4(0.0f, 0.0f, m_dimensions.x, m_dimensions.y);

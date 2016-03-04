@@ -23,6 +23,7 @@
 #include "Scheduler.h"
 #include "Camera.h"
 #include "Voxelizer.h"
+#include "DistanceField.h"
 #include "ResourceManager.h"
 
 #include <type_traits>
@@ -67,6 +68,9 @@ void nxScene::Init() {
 		m_EntitiesCount = tree.get("Scene.Count", 0);
 		m_SceneName = tree.get<std::string>("Scene.Name", "unknown");
 		
+		Utils::GL::CheckGLState("Distance Field Start");
+
+
 		std::string m_DefaultProgramName = tree.get<std::string>("Scene.Default Program", "Unknown");
 
 		BOOST_LOG_TRIVIAL(info) << "SceneCount : " << m_EntitiesCount;
@@ -99,11 +103,20 @@ void nxScene::Init() {
 			tree.get_child("Scene.Voxelizer").get<int>("DimY", 128),
 			tree.get_child("Scene.Voxelizer").get<int>("DimZ", 128));
 
+		Utils::GL::CheckGLState("Scene Start");
+
+
 		nxVoxelizer* voxel = new nxVoxelizer(m_pEngine, dimensions.x);
+		nxDistanceField* df = new nxDistanceField(4);
+		//df->Init(dimensions.x, dimensions.y, dimensions.z);
 		m_pEngine->Renderer()->SetVoxelizer(voxel);
+		m_pEngine->Renderer()->SetDistanceField(df);
 
 		nxVoxelizerInitializerBlob* voxelData = new nxVoxelizerInitializerBlob(m_pEngine, dimensions);
 		m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_VOXELIZER_INIT, voxelData));
+
+		nxDistanceFieldInitializerBlob* dfData = new nxDistanceFieldInitializerBlob(m_pEngine, dimensions);
+		m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_DISTANCE_FIELD_INIT, dfData));
 
 		// Memory backed models
 		glm::vec3* buffer = new glm::vec3[6];
@@ -166,7 +179,7 @@ void nxScene::Draw() {
 	m_MState.m_VMatrix = glm::mat4();
 
 	m_pEngine->Renderer()->UseProgram();
-	if (errorGL) Utils::GL::CheckGLState("Program USE");
+	//if (errorGL) Utils::GL::CheckGLState("Program USE");
 
 	for (size_t i = 0; i < m_Entities.size(); i++) {
 		m_MState.m_VMatrix = glm::translate(View(),
@@ -178,18 +191,18 @@ void nxScene::Draw() {
 		//m_MState.m_MMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
 		m_pEngine->Renderer()->Program()->SetUniform("NormalMatrix", Normal());
 		
-		if (errorGL) Utils::GL::CheckGLState("Set Normal");
+		//if (errorGL) Utils::GL::CheckGLState("Set Normal");
 
 		m_pEngine->Renderer()->Program()->SetUniform("MVP", m_MState.m_PMatrix*m_MState.m_VMatrix);
 		//m_pEngine->Renderer()->Program()->SetUniform("MVP", View());
-		if (errorGL) Utils::GL::CheckGLState("Set MVP");
+		//if (errorGL) Utils::GL::CheckGLState("Set MVP");
 
 		m_Entities[i]->Draw();
-		if (errorGL) Utils::GL::CheckGLState("Draw : " + i);
+		//if (errorGL) Utils::GL::CheckGLState("Draw : " + i);
 
 	}
 
-	errorGL = false;
+	//errorGL = false;
 }
 
 void nxScene::DrawVoxelized() {
@@ -201,7 +214,7 @@ void nxScene::DrawVoxelized() {
 	m_MState.m_VMatrix = glm::mat4();
 
 	m_pEngine->Renderer()->UseProgram();
-	if (errorGL) Utils::GL::CheckGLState("Program USE");
+	//if (errorGL) Utils::GL::CheckGLState("Voxelized Program USE");
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
 
@@ -221,23 +234,60 @@ void nxScene::DrawVoxelized() {
 		//m_MState.m_MMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
 		//m_pEngine->Renderer()->Program()->SetUniform("NormalMatrix", Normal());
 
-		if (errorGL) Utils::GL::CheckGLState("Set Normal");
+		//if (errorGL) Utils::GL::CheckGLState("Set Normal");
 		
 		//m_pEngine->Renderer()->Program()->SetUniform("ModelMatrix", glm::mat4());
-		m_pEngine->Renderer()->Program()->SetUniform("ModelMatrix", glm::translate(glm::mat4(), m_Entities[i]->ModelTransform()));
+		//m_pEngine->Renderer()->Program()->SetUniform("ModelMatrix", glm::translate(glm::mat4(), m_Entities[i]->ModelTransform()));
 		//m_pEngine->Renderer()->Program()->SetUniform("MVP", m_MState.m_PMatrix*m_MState.m_VMatrix);
 		m_pEngine->Renderer()->Program()->SetUniform("GridSize", m_pEngine->Renderer()->Voxelizer()->Dimesions());
 
 		m_pEngine->Renderer()->Program()->SetUniform("ViewProjMatrix", 3, m_pEngine->Renderer()->Voxelizer()->ViewProjections());
 
 		//m_pEngine->Renderer()->Program()->SetUniform("MVP", View());
-		if (errorGL) Utils::GL::CheckGLState("Set MVP");
+		//if (errorGL) Utils::GL::CheckGLState("Set MVP");
 
 		m_Entities[i]->Draw();
-		if (errorGL) Utils::GL::CheckGLState("Draw : " + i);
+		//if (errorGL) Utils::GL::CheckGLState("Draw : " + i);
 
 	}
+	
+	m_pEngine->Renderer()->GetActiveProgramByName("DistanceField")->Use();
 
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_pEngine->Renderer()->DistanceField()->DistanceFieldBuffer());
+
+	m_pEngine->Renderer()->GetActiveProgramByName("DistanceField")->SetUniform("u_Dim", m_pEngine->Renderer()->Voxelizer()->Dimesions());
+	m_pEngine->Renderer()->GetActiveProgramByName("DistanceField")->SetUniform("u_Truncation", 2);
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_pEngine->Renderer()->DistanceField()->DistanceFieldBuffer());
+
+	GLuint64 startTime, stopTime;
+	unsigned int queryID[2];
+
+	// generate two queries
+	glGenQueries(2, queryID);
+	
+	glQueryCounter(queryID[0], GL_TIMESTAMP);
+
+	m_pEngine->Renderer()->DistanceField()->Calculate(m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
+
+	glQueryCounter(queryID[1], GL_TIMESTAMP);
+
+	int stopTimerAvailable = 0;
+	while (!stopTimerAvailable) {
+		glGetQueryObjectiv(queryID[1],
+			GL_QUERY_RESULT_AVAILABLE,
+			&stopTimerAvailable);
+	}
+
+	// get query results
+	glGetQueryObjectui64v(queryID[0], GL_QUERY_RESULT, &startTime);
+	glGetQueryObjectui64v(queryID[1], GL_QUERY_RESULT, &stopTime);
+
+	printf("Time spent on the GPU: %f ms\n", (stopTime - startTime) / 1000000.0);
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	
 	errorGL = false;
 	/*if (CameraReady())
 		m_MState.m_RMatrix = Camera()->Update();
@@ -294,12 +344,14 @@ void nxScene::DrawVoxelized() {
 
 void nxScene::UpdateBounds(nxEntity* ent) {
 
-	if (ent->MinX() < m_GMinX) m_GMinX = ent->MinX();
-	if (ent->MinY() < m_GMinY) m_GMinY = ent->MinY();
-	if (ent->MinZ() < m_GMinZ) m_GMinZ = ent->MinZ();
-	if (ent->MaxX() > m_GMaxX) m_GMaxX = ent->MaxX();
-	if (ent->MaxY() > m_GMaxY) m_GMaxY = ent->MaxY();
-	if (ent->MaxZ() > m_GMaxZ) m_GMaxZ = ent->MaxZ();
+	static const float g_GridOffset = .1f;
+
+	if (ent->MinX() < m_GMinX) m_GMinX = ent->MinX() - g_GridOffset;
+	if (ent->MinY() < m_GMinY) m_GMinY = ent->MinY() - g_GridOffset;
+	if (ent->MinZ() < m_GMinZ) m_GMinZ = ent->MinZ() - g_GridOffset;
+	if (ent->MaxX() > m_GMaxX) m_GMaxX = ent->MaxX() + g_GridOffset;
+	if (ent->MaxY() > m_GMaxY) m_GMaxY = ent->MaxY() + g_GridOffset;
+	if (ent->MaxZ() > m_GMaxZ) m_GMaxZ = ent->MaxZ() + g_GridOffset;
 
 }
 

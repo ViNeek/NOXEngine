@@ -14,6 +14,10 @@ public:
 
 	void Init(nxUInt32 dimX, nxUInt32 dimY, nxUInt32 dimZ);
 	void Calculate(nxStorageBufferObject input);
+	void Calculate(GLuint input);
+	nxStorageBufferObject DistanceFieldBuffer() { return m_DistanceFieldBuffer; };
+
+	bool nxDistanceField::operator()(void* data);
 
 private:
 

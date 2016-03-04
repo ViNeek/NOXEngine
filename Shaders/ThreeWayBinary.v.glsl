@@ -18,5 +18,5 @@ void main()
     //VertexOut.uv = VertexTexCoord;
     //gl_Position = vec4(VertexPosition)/VertexPosition.w;
 	//gl_Position = ModelMatrix * /*uniform_view_proj * */ vec4(VertexPosition)/VertexPosition.w;
-	gl_Position = ModelMatrix * /*uniform_view_proj * */ vec4(VertexPosition.xyz, 1);
+	gl_Position = /*uniform_view_proj * */ vec4(VertexPosition.xyz, 1);
 }

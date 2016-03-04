@@ -5,6 +5,7 @@
 #include "Program.h"
 #include "Renderer.h"
 #include "Voxelizer.h"
+#include "DistanceField.h"
 #include "Camera.h"
 #include "Job.h"
 #include "Scheduler.h"
@@ -50,7 +51,7 @@ void nxRenderer::UseProgram() {
 	
 	m_pActiveProgram->Use();
 	
-	//printf("Active Program %s\n", m_pActiveProgram->GetName().c_str());
+	//printf("Active Program %s %d\n", m_pActiveProgram->GetName().c_str(), m_pActiveProgram->GetID());
 }
 
 bool error = true;
@@ -68,19 +69,19 @@ void *nxRenderer::Entry()
 		while ( m_pGLCommandQueue->pop(currentJob) )
 			m_IsActive = currentJob->Execute();
 
-		
-		UseProgram();
+		//UseProgram();
+
+		//glBindBuffer(GL_SHADER_STORAGE_BUFFER, this->Voxelizer()->VoxelBuffer());
 
 		//RenderFrameDemo();
 		RenderFrame();
 		
-		//glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
-		
+		/*
 		if (error) Utils::GL::CheckGLState("Clear Voxel Buffer");
 
 		if (error) Utils::GL::CheckGLState("Frame");
-		//nxUInt32* p = (nxUInt32*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
-		if (error) Utils::GL::CheckGLState("Frame");
+		nxUInt32* p = (nxUInt32*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
+		if (error) Utils::GL::CheckGLState("Frame");*/
 		/*if (p) {
 			typedef boost::multi_array_ref<nxUInt32, 3> array_type;
 			typedef array_type::index index;
@@ -100,17 +101,26 @@ void *nxRenderer::Entry()
 		if (error) Utils::GL::CheckGLState("Frame");
 		error = false;
 		*/
+		//if (errorGL) Utils::GL::CheckGLState("Program USE");
+
 		if (VoxelizerReady()) {
 			if (Voxelizer()->CaptureGrid()) {
+				//glBindBuffer(GL_SHADER_STORAGE_BUFFER, this->DistanceField()->DistanceFieldBuffer());
+				//glBindBuffer(GL_SHADER_STORAGE_BUFFER, this->Voxelizer()->VoxelBuffer());
+				glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, this->Voxelizer()->VoxelBuffer());
+				glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, this->DistanceField()->DistanceFieldBuffer());
+
 				printf("Capture \n");
 				Voxelizer()->SetCaptureGrid(false);
 				//Voxelizer()->PrintGridMesh(m_ssbo);
-				Voxelizer()->PrintGridMesh(Voxelizer()->VoxelBuffer());
+				//Voxelizer()->PrintGridMesh(Voxelizer()->VoxelBuffer());
+				Voxelizer()->PrintGridMesh(DistanceField()->DistanceFieldBuffer());
+				
 			}
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
+			glClearBufferData(GL_SHADER_STORAGE_BUFFER, GL_RGBA32I, GL_RGBA, GL_UNSIGNED_INT, NULL);
 		}
-
-		glClearBufferData(GL_SHADER_STORAGE_BUFFER, GL_RGBA32I, GL_RGBA, GL_UNSIGNED_INT, NULL);
-
+		
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 		SwapBuffers();
@@ -167,9 +177,12 @@ void nxRenderer::RenderDebugFrame() {
 }
 
 void nxRenderer::RenderFrame() {
+	//if (error) Utils::GL::CheckGLState("Frame");
+	//Utils::GL::CheckGLState("Render");
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	//if (error) Utils::GL::CheckGLState("Frame 0");
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	//if (error) Utils::GL::CheckGLState("Frame 1");
 	glViewport(0, 0, m_VWidth, m_VHeight);
 	//if (error) Utils::GL::CheckGLState("Frame");
 
@@ -184,6 +197,7 @@ void nxRenderer::RenderFrame() {
 		m_pEngine->Scene()->Draw();
 	else
 		m_pEngine->Scene()->DrawVoxelized();
+
 
 	//if (error) Utils::GL::CheckGLState("Draw");
 
@@ -284,6 +298,7 @@ void nxRenderer::InitFramebuffer() {
 	glBindRenderbuffer(GL_RENDERBUFFER, m_RBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, m_VWidth, m_VHeight);
 
+	Utils::GL::CheckGLState("RBO");
 	glGenFramebuffers(1, &m_FBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
 
@@ -302,8 +317,10 @@ void nxRenderer::InitFramebuffer() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 	//Utils::GL::CheckGLState("Texture Params");
 
+
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_VWidth, m_VHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
 
+	Utils::GL::CheckGLState("Depth Buffer");
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_DepthTexture, 0);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, m_RBO);
 	//Utils::GL::CheckGLState("Buffer Attach");
@@ -338,6 +355,9 @@ void nxRenderer::InitFramebuffer() {
 	glClearDepth(1.0f);									// Depth Buffer Setup
 	glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
+
+	Utils::GL::CheckGLState("\n\n\n\n\n Init Complete \n\nn\n\n");
+
 
 	m_State |= NX_RENDERER_FRAMEBUFFER_READY;
 

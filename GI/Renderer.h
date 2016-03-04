@@ -22,6 +22,7 @@ class nxGLJob;
 class nxEngine;
 class nxProgram;
 class nxVoxelizer;
+class nxDistanceField;
 
 typedef boost::lockfree::queue< nxGLJob* > nxGLJobQueue;
 
@@ -42,9 +43,10 @@ public:
 	void									ResizeFramebuffer();
 	void									UseProgram();
 	//nxProgram*							Program() { return m_ShaderPrograms[m_ProgramIndex]; }
-	//nxProgram*								Program() { return m_ShaderPrograms[m_ProgramName]; }
+	//nxProgram*							Program() { return m_ShaderPrograms[m_ProgramName]; }
 	nxProgram*								Program() { return m_pActiveProgram; }
 	nxVoxelizer*							Voxelizer() { return m_Voxelizer; }
+	nxDistanceField*						DistanceField() { return m_DistanceField; }
 
 	bool									InitExtensions();
 	bool									VoxelizerReady() { return m_IsVoxelizerReady; };
@@ -54,6 +56,7 @@ public:
 
 	void									SetViewportSize(int w, int h) { m_VWidth = w; m_VHeight = h; };
 	void									SetVoxelizer(nxVoxelizer* voxel) { m_Voxelizer = voxel; };
+	void									SetDistanceField(nxDistanceField* df) { m_DistanceField = df; };
 
 	int										Width() { return m_VWidth; }
 	int										Height() { return m_VHeight; }
@@ -78,6 +81,7 @@ private:
 
 	nxEngine*								m_pEngine;
 	nxVoxelizer*							m_Voxelizer;
+	nxDistanceField*						m_DistanceField;
 
 	GLuint									m_FBO;
 	GLuint									m_RBO;

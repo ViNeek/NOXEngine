@@ -79,26 +79,6 @@ void main()
 
 	vec3 absnormal = abs(normal0);
 
-	//uvec3 facts = uvec3(GridSize.x*GridSize.y, GridSize.y, 1);
-	//uvec3 facts = uvec3(GridSize.y, 1, GridSize.x*GridSize.y);
-	//uvec3 facts = uvec3(1, GridSize.x*GridSize.y, GridSize.y);
-	//int index = X_AXIS_LAYER;
-	//dX = 1;
-	//dY = GridSize.x;
-	//dZ = GridSize.x * GridSize.z;
-	//offX = 0;
-	//offY = 0;
-	//offZ = 0;
-	//index = X_AXIS_LAYER;
-	/*index = Z_AXIS_LAYER;
-		dX = 1;
-		dY = GridSize.y;
-		dZ = GridSize.y * GridSize.x;*/
-	/*
-	index = Y_AXIS_LAYER;
-		dX = 1;
-		dY = GridSize.y*GridSize.z;
-		dZ = GridSize.y;*/
 	int index = X_AXIS_LAYER;
 	dX = 1;
 	dY = int(GridSize.x);

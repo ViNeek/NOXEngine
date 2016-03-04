@@ -169,11 +169,11 @@ void nxFrame::OnKeyDown(wxKeyEvent& evt) {
 }
 
 void nxFrame::OnProgramAdded(wxCommandEvent& evt) {
-	std::cout << "Adding Program " << evt.GetString();
+	//std::cout << "Adding Program " << evt.GetString();
 	wxWindowID newID = wxWindow::NewControlId();
 	m_pShaderMenu->Append(newID, evt.GetString(), "Simple Shader", true);
 	m_pShaderMenu->Check(newID, false);
-	std::cout << "\n\nProgram Name  " << evt.GetInt() << " " << evt.GetString() << "\n\n";
+	//std::cout << "\n\nProgram Name  " << evt.GetInt() << " " << evt.GetString() << "\n\n";
 	//std::cout << "\n\nProgram Names Equal  " << (evt.GetString() == m_EngineState->Renderer()->Program()->GetName()) << "\n\n";
 	if ( evt.GetInt() == 1 ) {
 		m_pShaderMenu->Check(newID, true);
@@ -207,10 +207,10 @@ void nxFrame::OnResize(wxSizeEvent& evt) {
 	if (Engine()->Scene()->CameraReady()) {
 		Engine()->Scene()->Camera()->SetBounds(evt.GetSize().GetX(), evt.GetSize().GetY());
 		
-		std::cout << "Width : " << evt.GetSize().GetX();
-		std::cout << "Height : " << evt.GetSize().GetY();
-		std::cout << "Width : " << Engine()->Scene()->Camera()->Width();
-		std::cout << "Height : " << Engine()->Scene()->Camera()->Height();
+		//std::cout << "Width : " << evt.GetSize().GetX();
+		//std::cout << "Height : " << evt.GetSize().GetY();
+		//std::cout << "Width : " << Engine()->Scene()->Camera()->Width();
+		//std::cout << "Height : " << Engine()->Scene()->Camera()->Height();
 
 	}
 
@@ -370,5 +370,5 @@ nxStatusBar::nxStatusBar( wxWindow* parent )
 
 void nxStatusBar::Resize()
 {
-	m_pProgressGauge->SetSize(wxSize(this->GetParent()->GetSize().GetWidth(), GetSize().GetHeight()));
+	m_pProgressGauge->SetSize(wxSize(this->GetParent()->GetSize().GetWidth()+100, GetSize().GetHeight()));
 }

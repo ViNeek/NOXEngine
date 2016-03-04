@@ -225,8 +225,9 @@ bool nxProgramLinker::operator()(void* data) {
 		//Value v = iter->second;
 	}
 	*/
-	blob->m_Prog->ShowActiveUniforms();
-	blob->m_Prog->ShowActiveAttributes();
+	
+	//blob->m_Prog->ShowActiveUniforms();
+	//blob->m_Prog->ShowActiveAttributes();
 
 	//std::cout << "Program Linked " << blob->m_Prog->IsLinked();
 
