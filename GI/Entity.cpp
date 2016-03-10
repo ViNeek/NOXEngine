@@ -114,7 +114,6 @@ void nxEntity::InitFromFile(const std::string& path) {
 	const int vertex_size = sizeof(aiVector3D) * 2 + sizeof(aiVector2D);
 
 	m_NumMeshes = scene->mNumMeshes;
-
 	std::cout << "Num of Meshes " << scene->mNumMeshes << std::endl;
 	for (size_t i = 0; i < scene->mNumMeshes; i++) {
 		aiMesh* mesh = scene->mMeshes[i];

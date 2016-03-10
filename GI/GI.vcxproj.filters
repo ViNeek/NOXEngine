@@ -201,7 +201,10 @@
     <None Include="..\Scenes\MetalGearSolid.json">
       <Filter>Resource Files\Scenes</Filter>
     </None>
-    <None Include="..\Shaders\DistanceField.c.glsl">
+    <None Include="..\Shaders\DistanceFieldInit.c.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\DistanceFieldStep.c.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>

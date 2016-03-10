@@ -2,18 +2,17 @@
 #extension GL_ARB_compute_variable_group_size : enable
 
 uniform uvec3 u_Dim;
-uniform int u_Truncation;
 
 layout(std430, binding=2) readonly buffer VoxelData {
     uint voxel_data[];
 };
 layout(std430, binding=3) writeonly buffer DistanceField {
-    uint field_data[];
+    float field_data[];
 };
 
 layout ( local_size_variable ) in;
 
-void setVoxelAt( uint value, uint x, uint y, uint z ) {
+void setVoxelAt( float value, uint x, uint y, uint z ) {
 	field_data[x + u_Dim.x * y + u_Dim.x * u_Dim.y * z] = value;
 }
 
@@ -22,39 +21,54 @@ uint getVoxelAt( uint x, uint y, uint z ) {
 }
 
 void calculateDistanceFieldAt(uint x, uint y, uint z) {
-	//int l_Step = 2 * u_Truncation;
-	int l_Step = u_Truncation;
-	for ( int i = -u_Truncation; i <= u_Truncation; i+=l_Step ) {
-		if ( ( x + i ) > u_Dim.x ) 
-			continue;
-		for ( int j = -u_Truncation; j <= u_Truncation; j+=l_Step ) {
-			if ( ( y + j ) > u_Dim.y ) 
-				continue;
-			for ( int k = -u_Truncation; k <= u_Truncation; k+=l_Step ) {
-				if ( ( z + k ) > u_Dim.z ) 
-					continue;
+	uvec3 l_VoxelCoords = uvec3(x, y, z);
+	ivec3 l_iVoxelCoords = ivec3(int(x), int(y), int(z));
+	float l_MinDistance = 20000;
+	uint l_X;
+	uint l_Y;
+	uint l_Z;
 
-				uvec3 l_Neighbour = uvec3(x + i, y + j, z + k);
+	for ( int i = -1; i <= 1; i++ ) {
+		l_X = clamp ( l_iVoxelCoords.x + i, 0, u_Dim.x - 1);
+		for ( int j = -1; j <= 1; j++ ) {
+			l_Y = clamp ( l_iVoxelCoords.y + j, 0, u_Dim.y - 1);
+			for ( int k = -1; k <= 1; k++ ) {
+				l_Z = clamp ( l_iVoxelCoords.z + k, 0, u_Dim.z - 1);
+
+				uvec3 l_Neighbour = uvec3(
+						l_X,
+						l_Y, 
+						l_Z);
+
+				/*z
+				uvec3 l_Neighbour = uvec3(
+						l_X,
+						l_Y, 
+						l_Z);
+				*/
 
 				uint l_Occupied = getVoxelAt( l_Neighbour.x,
 					                          l_Neighbour.y,
 											  l_Neighbour.z );
 
 				if ( l_Occupied == 1 ) {
-					setVoxelAt(1, x,
-					              y,
-								  z);
-					
-					setVoxelAt(0, l_Neighbour.x,
-					              l_Neighbour.y,
-								  l_Neighbour.z );
-
-					return;
+					//float dist = distance( l_VoxelCoords, l_Neighbour );
+					float l_CurrentDist = length( ivec3( i, j, k ) );
+					//float l_CurrentDist = abs(i) + abs(j) + abs(k) ;
+					if ( l_CurrentDist < l_MinDistance ) {
+						l_MinDistance = l_CurrentDist;
+					}
 				}
 			}
 		}
 	}
+
+	setVoxelAt(l_MinDistance, l_VoxelCoords.x,
+							  l_VoxelCoords.y,
+							  l_VoxelCoords.z );
+
 }
+
 
 void main() {
 	

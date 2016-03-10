@@ -63,6 +63,7 @@ public:
 
 	void								PrintGrid();
 	void								PrintGridMesh(GLuint ssbo);
+	void								PrintGridMeshF(GLuint ssbo);
 
 private:
 

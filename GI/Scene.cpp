@@ -214,6 +214,9 @@ void nxScene::DrawVoxelized() {
 	m_MState.m_VMatrix = glm::mat4();
 
 	m_pEngine->Renderer()->UseProgram();
+
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
+
 	//if (errorGL) Utils::GL::CheckGLState("Voxelized Program USE");
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
@@ -251,29 +254,46 @@ void nxScene::DrawVoxelized() {
 
 	}
 	
-	m_pEngine->Renderer()->GetActiveProgramByName("DistanceField")->Use();
+	m_pEngine->Renderer()->GetActiveProgramByName("DistanceFieldInit")->Use();
 
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_pEngine->Renderer()->DistanceField()->DistanceFieldBuffer());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_pEngine->Renderer()->DistanceField()->DistanceFieldFrontBuffer());
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, m_pEngine->Renderer()->DistanceField()->DistanceFieldBackBuffer());
 
-	m_pEngine->Renderer()->GetActiveProgramByName("DistanceField")->SetUniform("u_Dim", m_pEngine->Renderer()->Voxelizer()->Dimesions());
-	m_pEngine->Renderer()->GetActiveProgramByName("DistanceField")->SetUniform("u_Truncation", 2);
-
+	m_pEngine->Renderer()->GetActiveProgramByName("DistanceFieldInit")->SetUniform("u_Dim", m_pEngine->Renderer()->Voxelizer()->Dimesions());
+	//m_pEngine->Renderer()->GetActiveProgramByName("DistanceField")->SetUniform("u_Truncation", 4);
+	
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_pEngine->Renderer()->DistanceField()->DistanceFieldBuffer());
 
 	GLuint64 startTime, stopTime;
 	unsigned int queryID[2];
+	int stopTimerAvailable = 0;
 
 	// generate two queries
 	glGenQueries(2, queryID);
-	
+
 	glQueryCounter(queryID[0], GL_TIMESTAMP);
 
 	m_pEngine->Renderer()->DistanceField()->Calculate(m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
 
+	m_pEngine->Renderer()->GetActiveProgramByName("DistanceFieldStep")->Use();
+
+	m_pEngine->Renderer()->GetActiveProgramByName("DistanceFieldStep")->SetUniform("u_Dim", m_pEngine->Renderer()->Voxelizer()->Dimesions());
+
+	for (int i = 1; i < 1; i++) {
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_pEngine->Renderer()->DistanceField()->DistanceFieldFrontBuffer());
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, m_pEngine->Renderer()->DistanceField()->DistanceFieldBackBuffer());
+
+		m_pEngine->Renderer()->DistanceField()->Calculate(m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
+
+		
+
+		m_pEngine->Renderer()->DistanceField()->SwapBuffers();
+
+	}
+	
 	glQueryCounter(queryID[1], GL_TIMESTAMP);
 
-	int stopTimerAvailable = 0;
 	while (!stopTimerAvailable) {
 		glGetQueryObjectiv(queryID[1],
 			GL_QUERY_RESULT_AVAILABLE,

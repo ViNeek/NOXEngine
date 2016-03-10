@@ -1,4 +1,5 @@
 #include <iostream>
+#include <utility>
 
 #include "DistanceField.h"
 #include "Engine.h"
@@ -7,15 +8,17 @@
 
 nxDistanceField::nxDistanceField (nxUInt32 truncation) {
 	m_Truncation = truncation;
-	m_DistanceFieldBuffer = -1;
+	m_DistanceFieldBackBuffer = -1;
+	m_DistanceFieldFrontBuffer = -1;
 }
 
 nxDistanceField::nxDistanceField () {
 	m_Truncation = 4;
-	m_DistanceFieldBuffer = -1;
+	m_DistanceFieldBackBuffer = -1;
+	m_DistanceFieldFrontBuffer = -1;
 }
 
-static const int g_WorkGroupSize = 4;
+static const int g_WorkGroupSize = 8;
 void nxDistanceField::Calculate(nxStorageBufferObject input) {
 	int l_InvocationCount = m_DimX * m_DimY * m_DimZ;
 	glm::uvec3 l_GroupSize(
@@ -67,22 +70,27 @@ void nxDistanceField::Calculate(GLuint input) {
 
 }
 
+void nxDistanceField::SwapBuffers() {
+
+	std::swap( m_DistanceFieldBackBuffer, m_DistanceFieldFrontBuffer );
+
+}
+
 void nxDistanceField::Init(nxUInt32 dimX, nxUInt32 dimY, nxUInt32 dimZ) {
 	m_DimX = dimX;
 	m_DimY = dimY;
 	m_DimZ = dimZ;
 
-	Utils::GL::CheckGLState("Distance Field Start");
-	glGenBuffers(1, m_DistanceFieldBuffer);
-	Utils::GL::CheckGLState("Distance Field");
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_DistanceFieldBuffer);
-	Utils::GL::CheckGLState("Distance Field");
-	glBufferData(GL_SHADER_STORAGE_BUFFER, m_DimX * m_DimY * m_DimZ * 4, NULL, GL_DYNAMIC_DRAW);
-	Utils::GL::CheckGLState("Distance Field");
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, m_resolution * m_resolution * m_resolution / 8, NULL, GL_DYNAMIC_COPY);
-	Utils::GL::CheckGLState("Distance Field");
+	glGenBuffers(1, m_DistanceFieldBackBuffer);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_DistanceFieldBackBuffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, m_DimX * m_DimY * m_DimZ * sizeof(GLfloat), NULL, GL_DYNAMIC_DRAW);
 
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_DistanceFieldBuffer);
+	glGenBuffers(1, m_DistanceFieldFrontBuffer);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_DistanceFieldFrontBuffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, m_DimX * m_DimY * m_DimZ * sizeof(GLfloat), NULL, GL_DYNAMIC_DRAW);
+
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, m_DistanceFieldBackBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_DistanceFieldFrontBuffer);
 
 	Utils::GL::CheckGLState("Distance Field");
 	// TODO: REMOVE (vao should be set externally)

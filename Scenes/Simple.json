@@ -53,10 +53,18 @@
                 ]
             },
 			{
-                "Name":  "DistanceField",
+                "Name":  "DistanceFieldInit",
                 "Shaders": [
 					{
-                        "Compute": "../Shaders/DistanceField.c.glsl"
+                        "Compute": "../Shaders/DistanceFieldInit.c.glsl"
+					}
+                ]
+            },
+			{
+                "Name":  "DistanceFieldStep",
+                "Shaders": [
+					{
+                        "Compute": "../Shaders/DistanceFieldStep.c.glsl"
 					}
                 ]
             }

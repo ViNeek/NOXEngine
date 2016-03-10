@@ -197,7 +197,8 @@
   <ItemGroup>
     <None Include="..\Scenes\MetalGearSolid.json" />
     <None Include="..\Scenes\Simple.json" />
-    <None Include="..\Shaders\DistanceField.c.glsl" />
+    <None Include="..\Shaders\DistanceFieldInit.c.glsl" />
+    <None Include="..\Shaders\DistanceFieldStep.c.glsl" />
     <None Include="..\Shaders\SimplePass.f.glsl" />
     <None Include="..\Shaders\SimplePass.g.glsl" />
     <None Include="..\Shaders\SimplePass.v.glsl" />

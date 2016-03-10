@@ -114,7 +114,7 @@ void *nxRenderer::Entry()
 				Voxelizer()->SetCaptureGrid(false);
 				//Voxelizer()->PrintGridMesh(m_ssbo);
 				//Voxelizer()->PrintGridMesh(Voxelizer()->VoxelBuffer());
-				Voxelizer()->PrintGridMesh(DistanceField()->DistanceFieldBuffer());
+				Voxelizer()->PrintGridMeshF(DistanceField()->DistanceFieldBuffer());
 				
 			}
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
