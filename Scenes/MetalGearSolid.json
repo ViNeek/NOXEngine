@@ -52,14 +52,6 @@
                     }
                 ]
             },
-			{
-                "Name":  "DistanceField",
-                "Shaders": [
-					{
-                        "Compute": "../Shaders/DistanceField.c.glsl"
-					}
-                ]
-            },
             {
                 "Name":  "Voxelize Preview",
                 "Shaders": [
@@ -72,6 +64,22 @@
                     {
                         "Geometry": "../Shaders/VoxelPreview.g.glsl"
                     }
+                ]
+            },
+			{
+                "Name":  "DistanceFieldInit",
+                "Shaders": [
+					{
+                        "Compute": "../Shaders/DistanceFieldInit.c.glsl"
+					}
+                ]
+            },
+			{
+                "Name":  "DistanceFieldStep",
+                "Shaders": [
+					{
+                        "Compute": "../Shaders/DistanceFieldStep.c.glsl"
+					}
                 ]
             }
         ]
