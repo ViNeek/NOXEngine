@@ -39,6 +39,10 @@
 #include <GL/gl.h>
 #endif
 
+// FreeImage
+#include "freeimage/FreeImage.h"
+
+
 class nxApp : public wxApp
 {
 	virtual bool OnInit();
@@ -55,6 +59,13 @@ IMPLEMENT_APP(nxApp)
 bool nxApp::OnInit()
 {
 	Utils::Debug::init_debug_console();
+
+
+	FreeImage_Initialise();
+	std::cout << FreeImage_GetVersion();
+	std::cout << FreeImage_GetCopyrightMessage();
+	FreeImage_DeInitialise();
+
 	/*
 	using boost::timer::cpu_timer;
 	using boost::timer::cpu_times;

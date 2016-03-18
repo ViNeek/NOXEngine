@@ -115,7 +115,23 @@ void nxEntity::InitFromFile(const std::string& path) {
 
 	m_NumMeshes = scene->mNumMeshes;
 	std::cout << "Num of Meshes " << scene->mNumMeshes << std::endl;
-	for (size_t i = 0; i < scene->mNumMeshes; i++) {
+
+	for (auto i = 0; i < scene->mNumMaterials; i++) {
+		nxInt32 l_TextureIndex = 0;
+		aiString l_TexturePath;  // filename
+
+		aiReturn l_TexFound = scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, l_TextureIndex, &l_TexturePath);
+		std::cout << "Image path : " << l_TexturePath.data << std::endl;
+		while (l_TexFound == AI_SUCCESS) {
+			//fill map with textures, OpenGL image ids set to 0
+			//textureIdMap[path.data] = 0;
+			// more textures?
+			l_TextureIndex++;
+			l_TexFound = scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, l_TextureIndex, &l_TexturePath);
+		}
+	}
+
+	for (auto i = 0; i < scene->mNumMeshes; i++) {
 		aiMesh* mesh = scene->mMeshes[i];
 		//std::cout << "Num of Faces " << mesh->mNumFaces << std::endl;
 

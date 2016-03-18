@@ -24,6 +24,7 @@
 #include "Camera.h"
 #include "Voxelizer.h"
 #include "DistanceField.h"
+#include "ReflectiveShadowMap.h"
 #include "ResourceManager.h"
 
 #include <type_traits>
@@ -70,7 +71,6 @@ void nxScene::Init() {
 		
 		Utils::GL::CheckGLState("Distance Field Start");
 
-
 		std::string m_DefaultProgramName = tree.get<std::string>("Scene.Default Program", "Unknown");
 
 		BOOST_LOG_TRIVIAL(info) << "SceneCount : " << m_EntitiesCount;
@@ -103,20 +103,27 @@ void nxScene::Init() {
 			tree.get_child("Scene.Voxelizer").get<int>("DimY", 128),
 			tree.get_child("Scene.Voxelizer").get<int>("DimZ", 128));
 
+		glm::uvec2 rsmDim(tree.get_child("Scene.RSM").get<int>("DimX", 128),
+			tree.get_child("Scene.RSM").get<int>("DimY", 128));
+
 		Utils::GL::CheckGLState("Scene Start");
-
-
+		
 		nxVoxelizer* voxel = new nxVoxelizer(m_pEngine, dimensions.x);
+		nxRSM* rsm = new nxRSM(rsmDim.x, rsmDim.y);
 		nxDistanceField* df = new nxDistanceField(4);
 		//df->Init(dimensions.x, dimensions.y, dimensions.z);
 		m_pEngine->Renderer()->SetVoxelizer(voxel);
 		m_pEngine->Renderer()->SetDistanceField(df);
+		m_pEngine->Renderer()->SetRSM(rsm);
 
 		nxVoxelizerInitializerBlob* voxelData = new nxVoxelizerInitializerBlob(m_pEngine, dimensions);
 		m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_VOXELIZER_INIT, voxelData));
 
 		nxDistanceFieldInitializerBlob* dfData = new nxDistanceFieldInitializerBlob(m_pEngine, dimensions);
 		m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_DISTANCE_FIELD_INIT, dfData));
+
+		nxRSMInitializerBlob* rsmData = new nxRSMInitializerBlob(m_pEngine, rsmDim);
+		m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_RSM_INIT, rsmData));
 
 		// Memory backed models
 		glm::vec3* buffer = new glm::vec3[6];
@@ -129,6 +136,29 @@ void nxScene::Init() {
 
 		nxGLBufferedAssetLoaderBlob* bufferData = new nxGLBufferedAssetLoaderBlob(m_pEngine, buffer, 6);
 		//m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_BUFF_ASSET, bufferData));
+
+		BOOST_LOG_TRIVIAL(info) << "Number of Lights : " << tree.get_child("Scene.Lights").size();
+		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Lights")) {
+			BOOST_LOG_TRIVIAL(info) << "Camera X position : " << v.second.get<float>("CenterX", 0.0f);
+			BOOST_LOG_TRIVIAL(info) << "Camera Y position : " << v.second.get<float>("CenterY", 0.0f);
+			BOOST_LOG_TRIVIAL(info) << "Camera Z position : " << v.second.get<float>("CenterZ", 0.0f);
+			BOOST_LOG_TRIVIAL(info) << "View X position : " << v.second.get<float>("ViewX", 0.0f);
+			BOOST_LOG_TRIVIAL(info) << "View Y position : " << v.second.get<float>("ViewY", 0.0f);
+			BOOST_LOG_TRIVIAL(info) << "View Z position : " << v.second.get<float>("ViewZ", 0.0f);
+
+			/*
+			nxAssetLoaderBlob* data = new nxAssetLoaderBlob(
+				m_pEngine,
+				v.second.get("ModelName", "unknkown"),
+				v.second.get("ModelType", "unknkown"),
+				glm::vec3(v.second.get<float>("CenterX", 0.0f),
+				v.second.get<float>("CenterY", 0.0f),
+				v.second.get<float>("CenterZ", 0.0f)),
+				v.second.get<float>("Scale", 1.0f));
+
+			m_pEngine->Scheduler()->ScheduleJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_LOAD_ASSET, data));
+			*/
+		}
 
 		BOOST_LOG_TRIVIAL(info) << "Number of Entities : " << tree.get_child("Scene.Entities").size();
 		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Entities")) {

@@ -23,6 +23,8 @@ class nxEngine;
 class nxProgram;
 class nxVoxelizer;
 class nxDistanceField;
+class nxReflectiveShadowMap;
+typedef nxReflectiveShadowMap nxRSM;
 
 typedef boost::lockfree::queue< nxGLJob* > nxGLJobQueue;
 
@@ -47,6 +49,7 @@ public:
 	nxProgram*								Program() { return m_pActiveProgram; }
 	nxVoxelizer*							Voxelizer() { return m_Voxelizer; }
 	nxDistanceField*						DistanceField() { return m_DistanceField; }
+	nxRSM*									RSM() { return m_RSM; }
 
 	bool									InitExtensions();
 	bool									VoxelizerReady() { return m_IsVoxelizerReady; };
@@ -57,6 +60,7 @@ public:
 	void									SetViewportSize(int w, int h) { m_VWidth = w; m_VHeight = h; };
 	void									SetVoxelizer(nxVoxelizer* voxel) { m_Voxelizer = voxel; };
 	void									SetDistanceField(nxDistanceField* df) { m_DistanceField = df; };
+	void									SetRSM(nxRSM* rsm) { m_RSM = rsm; };
 
 	int										Width() { return m_VWidth; }
 	int										Height() { return m_VHeight; }
@@ -82,6 +86,7 @@ private:
 	nxEngine*								m_pEngine;
 	nxVoxelizer*							m_Voxelizer;
 	nxDistanceField*						m_DistanceField;
+	nxRSM*									m_RSM;
 
 	GLuint									m_FBO;
 	GLuint									m_RBO;

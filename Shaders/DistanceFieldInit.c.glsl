@@ -24,16 +24,16 @@ void calculateDistanceFieldAt(uint x, uint y, uint z) {
 	uvec3 l_VoxelCoords = uvec3(x, y, z);
 	ivec3 l_iVoxelCoords = ivec3(int(x), int(y), int(z));
 	float l_MinDistance = 20000;
-	uint l_X;
-	uint l_Y;
-	uint l_Z;
+	int l_X;
+	int l_Y;
+	int l_Z;
 
 	for ( int i = -1; i <= 1; i++ ) {
-		l_X = clamp ( l_iVoxelCoords.x + i, 0, u_Dim.x - 1);
+		l_X = clamp ( l_iVoxelCoords.x + i, 0, int(u_Dim.x) - 1);
 		for ( int j = -1; j <= 1; j++ ) {
-			l_Y = clamp ( l_iVoxelCoords.y + j, 0, u_Dim.y - 1);
+			l_Y = clamp ( l_iVoxelCoords.y + j, 0, int(u_Dim.y) - 1);
 			for ( int k = -1; k <= 1; k++ ) {
-				l_Z = clamp ( l_iVoxelCoords.z + k, 0, u_Dim.z - 1);
+				l_Z = clamp ( l_iVoxelCoords.z + k, 0, int(u_Dim.z) - 1);
 
 				uvec3 l_Neighbour = uvec3(
 						l_X,

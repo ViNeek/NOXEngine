@@ -27,9 +27,17 @@ private:
 
 };
 
+struct NOXFrameBufferObject;
+typedef nxGLObject<NOXFrameBufferObject> nxFrameBufferObject;
+
 struct NOXProgramObject;
 typedef nxGLObject<NOXProgramObject> nxProgramObject;
 struct NOXShaderObject{};
 typedef nxGLObject<NOXShaderObject> nxShaderObject;
 struct NOXStorageBufferObject;
 typedef nxGLObject<NOXStorageBufferObject> nxStorageBufferObject;
+struct NOXDepthTextureObject;
+typedef nxGLObject<NOXDepthTextureObject> nxDepthTextureObject;
+typedef nxGLObject<NOXDepthTextureObject> nxShadowMapObject;
+struct NOXTextureObject;
+typedef nxGLObject<NOXTextureObject> nxTextureObject;

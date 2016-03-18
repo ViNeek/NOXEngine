@@ -6,6 +6,7 @@
 #include "Renderer.h"
 #include "Voxelizer.h"
 #include "DistanceField.h"
+#include "ReflectiveShadowMap.h"
 #include "Camera.h"
 #include "Job.h"
 #include "Scheduler.h"

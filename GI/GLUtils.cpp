@@ -24,7 +24,7 @@ btTransform Utils::GL::getOrtho(float left, float right, float bottom, float top
 	btTransform ret;
 
 	float matrix[16];
-
+	
 	float temp, temp2, temp3, temp4;
 	temp = 2.0f * znear;
 	temp2 = right - left;

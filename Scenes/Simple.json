@@ -13,6 +13,10 @@
             "DimY": 64,
             "DimZ": 64
         },
+		"RSM": {
+            "DimX": 512,
+            "DimY": 512
+        },
         "Entities": [
             {
                 "ModelName": "Models/Cube",

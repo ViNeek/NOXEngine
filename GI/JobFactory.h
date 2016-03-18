@@ -6,6 +6,7 @@
 #include <string>
 
 #include <glm/vec3.hpp>
+#include <glm/vec2.hpp>
 
 class nxJob;
 class nxFrame;
@@ -36,6 +37,7 @@ enum nxJobID {
 	NX_GL_JOB_FRAMEBUFFER_INIT,
 	NX_GL_JOB_VOXELIZER_INIT,
 	NX_GL_JOB_DISTANCE_FIELD_INIT,
+	NX_GL_JOB_RSM_INIT,
 	NX_GL_JOB_FRAMEBUFFER_RESIZE,
 	NX_GL_JOB_COMPILE_SHADER,
 	NX_GL_JOB_LOAD_ASSET,
@@ -205,6 +207,11 @@ struct nxAssetLoader  {
 	bool operator()(void* data);
 };
 
+/*
+
+Voxel Grid Generation
+
+*/
 
 struct nxVoxelizerInitializerBlob {
 	nxVoxelizerInitializerBlob(nxEngine* eng, glm::uvec3 dims)
@@ -217,6 +224,12 @@ struct nxVoxelizerInitializerBlob {
 struct nxVoxelizerInitializer {
 	bool operator()(void* data);
 };
+
+/*
+
+Distance Field Generation
+
+*/
 
 struct nxDistanceFieldInitializerBlob {
 	nxDistanceFieldInitializerBlob(nxEngine* eng, glm::uvec3 dims)
@@ -231,6 +244,30 @@ struct nxDistanceFieldInitializer {
 	bool operator()(void* data);
 };
 
+/*
+
+Reflective SHadow Map Generation
+
+*/
+
+struct nxRSMInitializerBlob {
+	nxRSMInitializerBlob(nxEngine* eng, glm::uvec2 dims)
+		: m_Engine(eng), m_Dimensions(dims) {}
+
+	nxEngine*		m_Engine;
+	glm::uvec2		m_Dimensions;
+
+};
+
+struct nxRSMInitializer {
+	bool operator()(void* data);
+};
+
+/*
+
+Termination functionalities
+
+*/
 
 struct nxRendererTerminator {
 	bool operator()(void* data);

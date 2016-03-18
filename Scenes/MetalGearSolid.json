@@ -6,16 +6,30 @@
         "Camera": {
             "PositionX": 0,
             "PositionY": 0,
-            "PositionZ": 800
+            "PositionZ": 80
         },
         "Voxelizer": {
             "DimX": 64,
             "DimY": 64,
             "DimZ": 64
         },
+		"RSM": {
+            "DimX": 512,
+            "DimY": 512
+        },
+		"Lights": [
+            {
+                "CenterX": 0,
+                "CenterY": 10,
+                "CenterZ": 0,
+				"ViewX": 0,
+                "ViewY": 0,
+                "ViewZ": 1
+            }
+        ],
         "Entities": [
             {
-                "ModelName": "Models/REX2",
+                "ModelName": "Models/sponza/sponza_corrected",
                 "ModelType": ".obj",
                 "CenterX": 0,
                 "CenterY": 0,
@@ -49,6 +63,20 @@
                     },
                     {
                         "Geometry": "../Shaders/ThreeWayBinary.g.glsl"
+                    }
+                ]
+            },
+            {
+                "Name":  "RSM",
+                "Shaders": [
+                    {
+                        "Fragment": "../Shaders/RSM.f.glsl"
+                    },
+                    {
+                        "Vertex": "../Shaders/RSM.v.glsl"
+                    },
+                    {
+                        "Geometry": "../Shaders/RSM.g.glsl"
                     }
                 ]
             },

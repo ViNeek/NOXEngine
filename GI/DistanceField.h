@@ -20,8 +20,6 @@ public:
 	nxStorageBufferObject DistanceFieldBuffer() { return m_DistanceFieldFrontBuffer; };
 	void SwapBuffers();
 
-	bool nxDistanceField::operator()(void* data);
-
 private:
 
 	nxUInt32					m_Truncation;

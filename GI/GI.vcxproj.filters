@@ -78,6 +78,9 @@
     <ClCompile Include="DistanceField.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ReflectiveShadowMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utils.h">
@@ -161,6 +164,12 @@
     <ClInclude Include="GLObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ReflectiveShadowMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Shaders\Shaders.txt">
@@ -205,6 +214,15 @@
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="..\Shaders\DistanceFieldStep.c.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\RSM.f.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\RSM.g.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\RSM.v.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
