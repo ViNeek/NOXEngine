@@ -22,6 +22,7 @@
 
 #include "Scheduler.h"
 #include "Camera.h"
+#include "Light.h"
 #include "Voxelizer.h"
 #include "DistanceField.h"
 #include "ReflectiveShadowMap.h"
@@ -53,7 +54,7 @@ boost::assign::map_list_of("Compute", GL_COMPUTE_SHADER)
 ("Geometry", GL_GEOMETRY_SHADER)
 ("Fragment", GL_FRAGMENT_SHADER);
 
-static const float gridSpan = 300.0f;
+static const float gridSpan = 30.0f;
 
 void nxScene::Init() {
 	try {
@@ -73,13 +74,13 @@ void nxScene::Init() {
 
 		std::string m_DefaultProgramName = tree.get<std::string>("Scene.Default Program", "Unknown");
 
-		BOOST_LOG_TRIVIAL(info) << "SceneCount : " << m_EntitiesCount;
-		BOOST_LOG_TRIVIAL(info) << "Scene Name : " << m_SceneName;
+		//BOOST_LOG_TRIVIAL(info) << "SceneCount : " << m_EntitiesCount;
+		//BOOST_LOG_TRIVIAL(info) << "Scene Name : " << m_SceneName;
 
 		// Use get_child to find the node containing the modules, and iterate over
 		// its children. If the path cannot be resolved, get_child throws.
 		// A C++11 for-range loop would also work.
-		BOOST_LOG_TRIVIAL(info) << "Number of Program Shaders : " << tree.get_child("Scene.Programs").size();
+		//BOOST_LOG_TRIVIAL(info) << "Number of Program Shaders : " << tree.get_child("Scene.Programs").size();
 		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Programs")) {
 			nxProgram* prog = new nxProgram(v.second.get_child("Shaders").size());
 			//static_assert(nox::interfaces::IsResource<int>::value);
@@ -137,30 +138,30 @@ void nxScene::Init() {
 		nxGLBufferedAssetLoaderBlob* bufferData = new nxGLBufferedAssetLoaderBlob(m_pEngine, buffer, 6);
 		//m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_BUFF_ASSET, bufferData));
 
-		BOOST_LOG_TRIVIAL(info) << "Number of Lights : " << tree.get_child("Scene.Lights").size();
+		//BOOST_LOG_TRIVIAL(info) << "Number of Lights : " << tree.get_child("Scene.Lights").size();
 		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Lights")) {
-			BOOST_LOG_TRIVIAL(info) << "Camera X position : " << v.second.get<float>("CenterX", 0.0f);
-			BOOST_LOG_TRIVIAL(info) << "Camera Y position : " << v.second.get<float>("CenterY", 0.0f);
-			BOOST_LOG_TRIVIAL(info) << "Camera Z position : " << v.second.get<float>("CenterZ", 0.0f);
-			BOOST_LOG_TRIVIAL(info) << "View X position : " << v.second.get<float>("ViewX", 0.0f);
-			BOOST_LOG_TRIVIAL(info) << "View Y position : " << v.second.get<float>("ViewY", 0.0f);
-			BOOST_LOG_TRIVIAL(info) << "View Z position : " << v.second.get<float>("ViewZ", 0.0f);
+			//BOOST_LOG_TRIVIAL(info) << "Camera X position : " << v.second.get<float>("CenterX", 0.0f);
+			//BOOST_LOG_TRIVIAL(info) << "Camera Y position : " << v.second.get<float>("CenterY", 0.0f);
+			//BOOST_LOG_TRIVIAL(info) << "Camera Z position : " << v.second.get<float>("CenterZ", 0.0f);
+			//BOOST_LOG_TRIVIAL(info) << "View X position : " << v.second.get<float>("ViewX", 0.0f);
+			//BOOST_LOG_TRIVIAL(info) << "View Y position : " << v.second.get<float>("ViewY", 0.0f);
+			//BOOST_LOG_TRIVIAL(info) << "View Z position : " << v.second.get<float>("ViewZ", 0.0f);
 
-			/*
+			
 			nxAssetLoaderBlob* data = new nxAssetLoaderBlob(
 				m_pEngine,
-				v.second.get("ModelName", "unknkown"),
-				v.second.get("ModelType", "unknkown"),
+				"Models/Cube",
+				".3ds",
 				glm::vec3(v.second.get<float>("CenterX", 0.0f),
 				v.second.get<float>("CenterY", 0.0f),
 				v.second.get<float>("CenterZ", 0.0f)),
 				v.second.get<float>("Scale", 1.0f));
 
-			m_pEngine->Scheduler()->ScheduleJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_LOAD_ASSET, data));
-			*/
+			//m_pEngine->Scheduler()->ScheduleJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_LOAD_ASSET, data));
+			
 		}
 
-		BOOST_LOG_TRIVIAL(info) << "Number of Entities : " << tree.get_child("Scene.Entities").size();
+		//BOOST_LOG_TRIVIAL(info) << "Number of Entities : " << tree.get_child("Scene.Entities").size();
 		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Entities")) {
 			BOOST_LOG_TRIVIAL(info) << "STUFF : " << v.second.get("ModelName", "unknkown");
 			BOOST_LOG_TRIVIAL(info) << "Camera X position : " << v.second.get<float>("CenterX", 0.0f);
@@ -182,6 +183,23 @@ void nxScene::Init() {
 		m_Camera->SetPosition(tree.get_child("Scene.Camera").get<float>("PositionX", 0.0f),
 			tree.get_child("Scene.Camera").get<float>("PositionY", 0.0f),
 			tree.get_child("Scene.Camera").get<float>("PositionZ", 0.0f));
+		m_Camera->SetViewTransform(
+			glm::lookAt(
+				glm::vec3(-80, -310, 200),
+				glm::vec3(0,0,0),
+				glm::vec3(0,0,1)
+			)
+		);
+
+		nxLight* l_Light = new nxSpotlight(
+			glm::vec3(-80, -310, 200),
+			glm::lookAt(
+				glm::vec3(-80, -310, 200),
+				glm::vec3(0, 0, 0),
+				glm::vec3(0, 0, 1)
+			));
+
+		m_Lights.push_back(l_Light);
 
 		SetProjection(45.0f, (float)m_pEngine->Renderer()->Width() / m_pEngine->Renderer()->Height(), 1.0f, 1000.0f);
 	
@@ -208,17 +226,29 @@ void nxScene::Draw() {
 
 	m_MState.m_VMatrix = glm::mat4();
 
-	m_pEngine->Renderer()->UseProgram();
 	//if (errorGL) Utils::GL::CheckGLState("Program USE");
 
-	for (size_t i = 0; i < m_Entities.size(); i++) {
-		m_MState.m_VMatrix = glm::translate(View(),
-			m_Camera->Position());
+	for (auto light : m_Lights ) {
+		m_pEngine->Renderer()->GetActiveProgramByName("RSM")->Use();
 
-		m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
+		m_MState.m_VMatrix = light->View();
+	}
+
+	m_pEngine->Renderer()->UseProgram();
+
+	for (size_t i = 0; i < m_Entities.size(); i++) {
+			m_MState.m_VMatrix = glm::mat4();
+
+		//m_MState.m_VMatrix = glm::translate(View(),
+		//	-m_Camera->Position());
+		m_MState.m_VMatrix = m_Camera->ViewTransform();
+
 		m_MState.m_VMatrix *= m_MState.m_RMatrix;
 
-		//m_MState.m_MMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
+		m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
+		m_MState.m_MMatrix = glm::translate(glm::mat4(), m_Entities[i]->ModelTransform());
+
+		//m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
 		m_pEngine->Renderer()->Program()->SetUniform("NormalMatrix", Normal());
 		
 		//if (errorGL) Utils::GL::CheckGLState("Set Normal");

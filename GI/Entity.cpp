@@ -147,8 +147,6 @@ void nxEntity::InitFromFile(const std::string& path) {
 			{
 				aiVector3D pos = mesh->mVertices[face.mIndices[k]];
 
-				//pos.z -= 11.2918f;
-
 				if (pos.x < m_MinX) m_MinX = pos.x;
 				if (pos.y < m_MinY) m_MinY = pos.y;
 				if (pos.z < m_MinZ) m_MinZ = pos.z;
@@ -158,11 +156,11 @@ void nxEntity::InitFromFile(const std::string& path) {
 
 				aiVector3D uv = mesh->mTextureCoords[0][face.mIndices[k]];
 				aiVector3D normal = mesh->mNormals[face.mIndices[k]];
-				m_EntityData.insert(m_EntityData.end(), (unsigned char*)&pos, (unsigned char*)&pos + sizeof(aiVector3D));
+				m_EntityData.insert(m_EntityData.end(), (nxByte*)&pos, (nxByte*)&pos + sizeof(aiVector3D));
 				m_DataCurrentSize += sizeof(aiVector3D);
-				m_EntityData.insert(m_EntityData.end(), (unsigned char*)&uv, (unsigned char*)&uv + sizeof(aiVector2D));
+				m_EntityData.insert(m_EntityData.end(), (nxByte*)&uv, (nxByte*)&uv + sizeof(aiVector2D));
 				m_DataCurrentSize += sizeof(aiVector2D);
-				m_EntityData.insert(m_EntityData.end(), (unsigned char*)&normal, (unsigned char*)&normal + sizeof(aiVector3D));
+				m_EntityData.insert(m_EntityData.end(), (nxByte*)&normal, (nxByte*)&normal + sizeof(aiVector3D));
 				m_DataCurrentSize += sizeof(aiVector3D);
 			}
 		}
@@ -205,6 +203,33 @@ void nxEntity::Draw() {
 	}
 }
 
+void nxEntity::Scale(nxFloat32 factor) {
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+
+	nxInt32 l_Size = m_EntityData.size();
+	nxInt32 l_Skip = 2 * sizeof(aiVector3D) + sizeof(aiVector2D);
+
+	nxFloat32* p = (nxFloat32*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+	
+	for (nxInt32 i = 0; i < l_Size; i += l_Skip) {
+		nxByte* l_BPtr = (nxByte*)p + i;
+		nxFloat32* l_FPtr = (nxFloat32*)l_BPtr;
+
+		l_FPtr[0] /= factor;
+		l_FPtr[1] /= factor;
+		l_FPtr[2] /= factor;
+
+		m_MaxX /= factor;
+		m_MaxY /= factor;
+		m_MaxZ /= factor;
+		m_MinX /= factor;
+		m_MinY /= factor;
+		m_MinZ /= factor;
+	}
+
+	glUnmapBuffer(GL_ARRAY_BUFFER);
+}
+
 bool nxAssetLoader::operator()(void* data) {
 	nxAssetLoaderBlob* blob = (nxAssetLoaderBlob*)data;
 	
@@ -218,9 +243,10 @@ bool nxAssetLoader::operator()(void* data) {
 	center.x = ((ent->MaxX() + ent->MinX())) / 2.0f;
 	center.y = ((ent->MaxY() + ent->MinY())) / 2.0f;
 	center.z = ((ent->MaxZ() + ent->MinZ())) / 2.0f;
-
-	//ent->SetModelTransform(blob->m_Center);
-	ent->SetModelTransform(center);
+	
+	ent->SetModelTransform(blob->m_Center);
+	//ent->SetModelTransform(glm::vec3());
+	ent->SetScale(blob->m_ScaleFactor);
 
 	BOOST_LOG_TRIVIAL(info) << "Asset MaxX " << ent->MaxX();
 	BOOST_LOG_TRIVIAL(info) << "Asset MaxY " << ent->MaxY();
@@ -254,9 +280,9 @@ bool nxGLBufferedAssetLoader::operator()(void* data) {
 
 bool nxGLAssetLoader::operator()(void* data) {
 	nxGLAssetLoaderBlob* blob = (nxGLAssetLoaderBlob*)data;
-
+	
 	blob->m_Entity->UploadData();
-
+	blob->m_Entity->Scale(blob->m_Entity->Scale());
 	blob->m_Engine->Scene()->AddEntity(blob->m_Entity);
 	blob->m_Engine->Scene()->UpdateBounds(blob->m_Entity);
 	blob->m_Engine->Renderer()->Voxelizer()->SetMatrices();

@@ -36,7 +36,7 @@ public:
 	void					BindVAO(){ glBindVertexArray(m_VAO); };
 	static void				BindVAO(GLuint id){ glBindVertexArray(id); };
 
-	void					Scale(float factor);
+	void					Scale(nxFloat32 factor);
 	void					Draw();
 
 private:

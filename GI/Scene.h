@@ -19,6 +19,7 @@ class nxEntity;
 class nxEngine;
 class nxArcballCamera;
 class nxVoxelizer;
+class nxLight;
 
 struct nxMatrixState {
 	glm::mat4					m_VMatrix;
@@ -95,6 +96,7 @@ private:
 
 	std::vector<nxByte>			m_SceneData;
 	std::vector<nxEntity*>		m_Entities;
+	std::vector<nxLight*>		m_Lights;
 	boost::mutex				m_SceneGuard;
 
 	nxArcballCamera*			m_Camera;

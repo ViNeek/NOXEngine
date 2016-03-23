@@ -62,10 +62,12 @@ public:
 	glm::vec4				Drag();
 	glm::mat4				Update();
 	void					SetPosition(float x, float y, float z) { m_Position = glm::vec3(-x, -y, -z); };
+	void					SetViewTransform(glm::mat4 transform) { m_ViewTransform = transform; };
 	void					SetX(float x) { m_Position.x = x; };
 	void					SetY(float y) { m_Position.y = y; };
 	void					SetZ(float z) { m_Position.z = z; };
 	glm::vec3&				Position() { return m_Position; };
+	glm::mat4&				ViewTransform() { return m_ViewTransform; };
 
 	float					Width() { return m_AdjustWidth; }
 	float					Height() { return m_AdjustHeight; }
@@ -84,6 +86,7 @@ private:
 	glm::vec3				m_ClickVec;          //Saved click vector
 	glm::vec3				m_DragVec;          //Saved drag vector
 	glm::vec3				m_Position;
+	glm::mat4				m_ViewTransform;
 	glm::mat4				m_ActiveRot;
 	glm::mat4				m_LastRot;
 

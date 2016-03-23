@@ -157,6 +157,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Scheduler.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShapeUtils.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Voxelizer.cpp" />
     <ClCompile Include="VoxelizerBase.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="Scheduler.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Engine.h" />
+    <ClInclude Include="ShapeUtils.h" />
     <ClInclude Include="Synchronizer.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Voxelizer.h" />

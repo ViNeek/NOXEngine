@@ -1,29 +1,33 @@
 #pragma once
 
 #include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
 
 class nxLight {
 
 private:
 
 	glm::vec3 m_Center;
+	glm::mat4 m_Transformation;
 
 public:
 
 	nxLight();
-	nxLight(glm::vec3 position);
+	nxLight(glm::vec3 position, glm::mat4 transform);
+
+	glm::mat4 View() { return m_Transformation; }
+	glm::vec3 Center() { return m_Center; }
 
 };
 
-class nxSpotlight : nxLight {
+class nxSpotlight : public nxLight {
 
 private:
 
-	glm::vec3 m_Orientation;
 
 public:
 
 	nxSpotlight();
-	nxSpotlight(glm::vec3 position, glm::vec3 orient_axis) : nxLight(position), m_Orientation(orient_axis);
+	nxSpotlight(glm::vec3 position, glm::mat4 transform) : nxLight(position, transform) { };
 
 };
