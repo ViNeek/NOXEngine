@@ -63,7 +63,7 @@ bool nxApp::OnInit()
 	FreeImage_Initialise();
 	std::cout << FreeImage_GetVersion();
 	std::cout << FreeImage_GetCopyrightMessage();
-	FreeImage_DeInitialise();
+	//FreeImage_DeInitialise();
 
 	/*
 	using boost::timer::cpu_timer;

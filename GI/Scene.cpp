@@ -30,6 +30,9 @@
 
 #include <type_traits>
 
+// FreeImage
+#include <freeimage/FreeImage.h>
+
 namespace pt = boost::property_tree;
 
 nxScene::nxScene(nxEngine* eng) {
@@ -185,23 +188,23 @@ void nxScene::Init() {
 			tree.get_child("Scene.Camera").get<float>("PositionZ", 0.0f));
 		m_Camera->SetViewTransform(
 			glm::lookAt(
-				glm::vec3(-90, -10, 20),
-				glm::vec3(0,0,80),
-				glm::vec3(0,0,1)
+				glm::vec3(0, 20, 0),
+				glm::vec3(0,0,0),
+				glm::vec3(0,0, 1)
 			)
 		);
 
 		nxLight* l_Light = new nxSpotlight(
-            glm::vec3(-90.0f, -10.0f, 200.0f),
-            glm::lookAt(
-                glm::vec3(-90, -10, 20),
-                glm::vec3(0, 0, 80),
+            glm::vec3(0.0f, 20.0f, 0.0f),
+			glm::lookAt(
+                glm::vec3(0, 20, 0),
+                glm::vec3(0, 0, 0),
                 glm::vec3(0, 0, 1)
 			));
 
 		m_Lights.push_back(l_Light);
 
-		SetProjection(45.0f, (float)m_pEngine->Renderer()->Width() / m_pEngine->Renderer()->Height(), 1.0f, 1000.0f);
+		SetProjection(30.0f, 512.0f / 512, 1.0f, 1000.0f);
 	
 	} catch (std::exception const& e)
 	{
@@ -220,6 +223,10 @@ glm::mat3& nxScene::Normal() {
 bool errorGL = true;
 
 void nxScene::CaptureRSM() {
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);
+	glDisable(GL_CULL_FACE);
+
     for (auto light : m_Lights) {
         nxProgram* l_Prog = m_pEngine->Renderer()->GetActiveProgramByName("RSM");
 
@@ -232,11 +239,10 @@ void nxScene::CaptureRSM() {
         if (l_Prog) {
             //printf("Luda IN");
             l_Prog->Use();
-            glm::mat4 l_ProjRSM = glm::perspective(30.0f, 512.0f / 512, 1.0f, 2000.0f);
+            glm::mat4 l_ProjRSM = glm::perspective(45.0f, 512.0f / 512, 5.0f, 300.0f);
             for (auto entity : m_Entities) {
                 m_MState.m_VMatrix = light->View();
                 m_MState.m_VMatrix = glm::translate(View(), entity->ModelTransform());
-
 
                 //m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
                 l_Prog->SetUniform("NormalMatrix", Normal());
@@ -244,23 +250,101 @@ void nxScene::CaptureRSM() {
 
                 entity->Draw();
             }
-            nxFloat32* buffer = new nxFloat32[512 * 512];
-            glBindTexture(GL_TEXTURE_2D, m_pEngine->Renderer()->RSM()->ShadowMap());
-            glGetTextureImage(m_pEngine->Renderer()->RSM()->ShadowMap(), 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, 512 * 512 * 4, buffer);
+			if (errorGL) {
+				nxFloat32* buffer = new nxFloat32[512 * 512];
+				glBindTexture(GL_TEXTURE_2D, m_pEngine->Renderer()->RSM()->ShadowMap());
+				glGetTextureImage(m_pEngine->Renderer()->RSM()->ShadowMap(), 0, GL_DEPTH_COMPONENT, GL_FLOAT, 512 * 512 * 4, buffer);
 
-            Utils::GL::CheckGLState("Program USE");
-            if (errorGL) {
-                for (int i = 0; i < 512; i++) {
-                    for (int j = 0; j < 512; j++) {
-                        printf("   %f   ", buffer[i * 512 + j], buffer[i * 512 + j], buffer[i * 512 + j]);
-                    }
-                    printf("\n");
-                }
-            }
-            delete[] buffer;
+				FIBITMAP* Image = FreeImage_ConvertFromRawBitsEx(true, (BYTE*)buffer, FIT_FLOAT, 512, 512, 4 * 512, 32, 0, 0, 0, false);
+				FreeImage_Save(FIF_TIFF, Image, "shadow_map.tiff", 0);
+				
+				FIBITMAP* bitmap = FreeImage_Allocate(512, 512, 24);
+				RGBQUAD color;
+
+				nxFloat32 l_DepthMax = buffer[0];
+				nxFloat32 l_DepthMin = buffer[0];
+				nxFloat32 l_DepthRange = 0.0f;
+
+				for (int i = 0; i < 512; i++) {
+					if (buffer[i] > l_DepthMax)
+						l_DepthMax = buffer[i];
+				}
+
+				for (int i = 0; i < 512; i++) {
+					if (buffer[i] < l_DepthMin)
+						l_DepthMin = buffer[i];
+				}
+
+				l_DepthRange = l_DepthMax - l_DepthMin;
+				//l_DepthMin -= 0.01;
+
+
+				std::cout << "Depth Max " << l_DepthMax << std::endl;
+				std::cout << "Depth Min " << l_DepthMin << std::endl;
+				std::cout << "Depth Range " << l_DepthRange << std::endl;
+
+				for (int i = 0; i < 512; i++) {
+					for (int j = 0; j < 512; j++) {
+						//printf("   %f   ", buffer[i * 512 + j], buffer[i * 512 + j], buffer[i * 512 + j]);
+						color.rgbRed = ((buffer[i * 512 + j] - l_DepthMin) / (l_DepthRange)) * 255;
+						color.rgbGreen = ((buffer[i * 512 + j] - l_DepthMin) / (l_DepthRange)) * 255;
+						color.rgbBlue = ((buffer[i * 512 + j] - l_DepthMin) / (l_DepthRange)) * 255;
+						FreeImage_SetPixelColor(bitmap, j, i, &color);
+					}
+				}
+
+				if (FreeImage_Save(FIF_TARGA, bitmap, "test.tga", 0))
+					std::cout << "Image succesful" << std::endl;
+
+				if (FreeImage_Save(FIF_PNG, bitmap, "test.png", 0))
+					std::cout << "Image succesful" << std::endl;
+
+				FreeImage_Unload(Image);
+
+				Image = FreeImage_Allocate(512, 512, 24);
+
+				glm::u8vec3* bufferNorm = new glm::u8vec3[512 * 512];
+
+				glBindTexture(GL_TEXTURE_2D, m_pEngine->Renderer()->RSM()->NormalMap());
+				glGetTextureImage(m_pEngine->Renderer()->RSM()->NormalMap(), 0, GL_RGB, GL_UNSIGNED_BYTE, 512 * 512 * 3, bufferNorm);
+
+				for (int i = 0; i < 512; i++) {
+					for (int j = 0; j < 512; j++) {
+						//printf("   %f   ", buffer[i * 512 + j], buffer[i * 512 + j], buffer[i * 512 + j]);
+						glm::u8vec3& current = bufferNorm[i * 512 + j];
+
+						color.rgbRed = current.x;
+						color.rgbGreen = current.y;
+						color.rgbBlue = current.z;
+						FreeImage_SetPixelColor(Image, j, i, &color);
+					}
+				}
+
+				if (FreeImage_Save(FIF_TARGA, Image, "test2.tga", 0))
+					std::cout << "Image succesful" << std::endl;
+
+				if (FreeImage_Save(FIF_PNG, Image, "test2.png", 0))
+					std::cout << "Image succesful" << std::endl;
+
+				FreeImage_DeInitialise();
+
+				Utils::GL::CheckGLState("Program USE");
+				if (errorGL) {
+					for (int i = 0; i < 512; i++) {
+						for (int j = 0; j < 512; j++) {
+							//printf("   %f   ", buffer[i * 512 + j], buffer[i * 512 + j], buffer[i * 512 + j]);
+						}
+						//printf("\n");
+					}
+				}
+				delete[] buffer;
+			}
+			errorGL = false;
         }
         
     }
+
+	glDisable(GL_CULL_FACE);
 }
 
 void nxScene::Draw() {
@@ -403,7 +487,7 @@ void nxScene::DrawVoxelized() {
 	glGetQueryObjectui64v(queryID[0], GL_QUERY_RESULT, &startTime);
 	glGetQueryObjectui64v(queryID[1], GL_QUERY_RESULT, &stopTime);
 
-	printf("Time spent on the GPU: %f ms\n", (stopTime - startTime) / 1000000.0);
+	//printf("Time spent on the GPU: %f ms\n", (stopTime - startTime) / 1000000.0);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	

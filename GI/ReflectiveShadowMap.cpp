@@ -80,7 +80,6 @@ void nxReflectiveShadowMap::Init() {
 	else
 		std::cout << "Buffer creation completed\n\n\n";
 
-    glCullFace(GL_FRONT);
     glShadeModel(GL_SMOOTH);							// Enable Smooth Shading
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);				// Black Background
     glClearDepth(1.0f);									// Depth Buffer Setup

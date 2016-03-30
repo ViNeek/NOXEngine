@@ -5,8 +5,8 @@
         "Default Program": "Simple Pass",
         "Camera": {
             "PositionX": 0,
-            "PositionY": 0,
-            "PositionZ": -120
+            "PositionY": -10,
+            "PositionZ": 0
         },
         "Voxelizer": {
             "DimX": 64,
@@ -19,30 +19,22 @@
         },
 		"Lights": [
             {
-                "CenterX": -80,
-                "CenterY": -310,
-                "CenterZ": 200,
+                "CenterX": 0,
+                "CenterY": -10,
+                "CenterZ": 0,
 				"ViewX": 0,
                 "ViewY": 0,
                 "ViewZ": 1
             }
         ],
         "Entities": [
-            {
-                "ModelName": "Models/Cube",
-                "ModelType": ".3ds",
-                "CenterX": -100,
-                "CenterY": -310,
-                "CenterZ": 200,
-                "Scale": 10
-            },
 			{
-                "ModelName": "Models/REX",
+                "ModelName": "Models/sponza/sponza_corrected",
                 "ModelType": ".obj",
                 "CenterX": 0,
                 "CenterY": 0,
                 "CenterZ": 0,
-                "Scale": 4
+                "Scale": 1
             }
         ],
         "Programs": [
