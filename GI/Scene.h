@@ -75,7 +75,8 @@ public:
 
 	bool						CameraReady() { return m_Camera != NULL; }
 
-	nxArcballCamera*			Camera() { return m_Camera; }
+    nxArcballCamera*			Camera() { return m_Camera; }
+    void            			CaptureRSM();
 
 	void						UpdateBounds(nxEntity* ent);
 	float						GMaxX(){ return m_GMaxX; }

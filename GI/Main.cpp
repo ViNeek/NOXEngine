@@ -40,8 +40,7 @@
 #endif
 
 // FreeImage
-#include "freeimage/FreeImage.h"
-
+#include <freeimage/FreeImage.h>
 
 class nxApp : public wxApp
 {

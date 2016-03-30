@@ -185,18 +185,18 @@ void nxScene::Init() {
 			tree.get_child("Scene.Camera").get<float>("PositionZ", 0.0f));
 		m_Camera->SetViewTransform(
 			glm::lookAt(
-				glm::vec3(-80, -310, 200),
-				glm::vec3(0,0,0),
+				glm::vec3(-90, -10, 20),
+				glm::vec3(0,0,80),
 				glm::vec3(0,0,1)
 			)
 		);
 
 		nxLight* l_Light = new nxSpotlight(
-			glm::vec3(-80, -310, 200),
-			glm::lookAt(
-				glm::vec3(-80, -310, 200),
-				glm::vec3(0, 0, 0),
-				glm::vec3(0, 0, 1)
+            glm::vec3(-90.0f, -10.0f, 200.0f),
+            glm::lookAt(
+                glm::vec3(-90, -10, 20),
+                glm::vec3(0, 0, 80),
+                glm::vec3(0, 0, 1)
 			));
 
 		m_Lights.push_back(l_Light);
@@ -210,7 +210,7 @@ void nxScene::Init() {
 }
 
 glm::mat3& nxScene::Normal() {
-	m_MState.m_NMatrix = glm::mat3(m_MState.m_MMatrix);
+	m_MState.m_NMatrix = glm::mat3(m_MState.m_VMatrix);
 	m_MState.m_NMatrix = glm::inverse(m_MState.m_NMatrix);
 	m_MState.m_NMatrix = glm::transpose(m_MState.m_NMatrix);
 
@@ -218,6 +218,51 @@ glm::mat3& nxScene::Normal() {
 }
 
 bool errorGL = true;
+
+void nxScene::CaptureRSM() {
+    for (auto light : m_Lights) {
+        nxProgram* l_Prog = m_pEngine->Renderer()->GetActiveProgramByName("RSM");
+
+        m_pEngine->Renderer()->RSM()->Bind();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glViewport(0, 0, 512, 512);
+
+        //printf("Luda OUT");
+        if (l_Prog) {
+            //printf("Luda IN");
+            l_Prog->Use();
+            glm::mat4 l_ProjRSM = glm::perspective(30.0f, 512.0f / 512, 1.0f, 2000.0f);
+            for (auto entity : m_Entities) {
+                m_MState.m_VMatrix = light->View();
+                m_MState.m_VMatrix = glm::translate(View(), entity->ModelTransform());
+
+
+                //m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
+                l_Prog->SetUniform("NormalMatrix", Normal());
+                l_Prog->SetUniform("MVP", l_ProjRSM*m_MState.m_VMatrix);
+
+                entity->Draw();
+            }
+            nxFloat32* buffer = new nxFloat32[512 * 512];
+            glBindTexture(GL_TEXTURE_2D, m_pEngine->Renderer()->RSM()->ShadowMap());
+            glGetTextureImage(m_pEngine->Renderer()->RSM()->ShadowMap(), 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, 512 * 512 * 4, buffer);
+
+            Utils::GL::CheckGLState("Program USE");
+            if (errorGL) {
+                for (int i = 0; i < 512; i++) {
+                    for (int j = 0; j < 512; j++) {
+                        printf("   %f   ", buffer[i * 512 + j], buffer[i * 512 + j], buffer[i * 512 + j]);
+                    }
+                    printf("\n");
+                }
+            }
+            delete[] buffer;
+        }
+        
+    }
+}
+
 void nxScene::Draw() {
 	if (CameraReady())
 		m_MState.m_RMatrix = Camera()->Update();
@@ -227,12 +272,6 @@ void nxScene::Draw() {
 	m_MState.m_VMatrix = glm::mat4();
 
 	//if (errorGL) Utils::GL::CheckGLState("Program USE");
-
-	for (auto light : m_Lights ) {
-		m_pEngine->Renderer()->GetActiveProgramByName("RSM")->Use();
-
-		m_MState.m_VMatrix = light->View();
-	}
 
 	m_pEngine->Renderer()->UseProgram();
 

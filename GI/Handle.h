@@ -20,7 +20,7 @@ private:
 	}
 
 public:
-
+    
 	nxHandle(T* ref) {
 
 		std::cout << "ctor" << std::endl;

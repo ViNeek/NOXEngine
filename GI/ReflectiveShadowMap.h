@@ -14,6 +14,7 @@ public:
 	nxReflectiveShadowMap();
 
 	void Init();
+    void Bind();
 	nxShadowMapObject ShadowMap() { return m_ShadowMap; }
 	nxTextureObject FLuxMap() { return m_FluxMap; }
 	nxTextureObject NormalMap() { return m_NormalMap; }

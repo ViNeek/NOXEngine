@@ -29,8 +29,13 @@ nxReflectiveShadowMap::nxReflectiveShadowMap() {
 	m_FrameBuffer = -1;
 }
 
+void nxReflectiveShadowMap::Bind() {
+    glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer);
+}
+
 void nxReflectiveShadowMap::Init() {
-	// Generate Framebuffer for RSM
+
+    // Generate Framebuffer for RSM
 	glGenFramebuffers(1, m_FrameBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer);
 
@@ -63,6 +68,10 @@ void nxReflectiveShadowMap::Init() {
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_FluxMap, 0);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + 1, m_NormalMap, 0);
 
+    // Set the list of draw buffers.
+    GLenum DrawBuffers[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT0+1 };
+    glDrawBuffers(2, DrawBuffers); // "1" is the size of DrawBuffers
+
 	// Always check that our framebuffer is ok
 	GLuint status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	std::cout << status << " status flag\n\n\n";
@@ -70,6 +79,15 @@ void nxReflectiveShadowMap::Init() {
 		Utils::GL::CheckGLState("RSM buffers creation : ");
 	else
 		std::cout << "Buffer creation completed\n\n\n";
+
+    glCullFace(GL_FRONT);
+    glShadeModel(GL_SMOOTH);							// Enable Smooth Shading
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);				// Black Background
+    glClearDepth(1.0f);									// Depth Buffer Setup
+    glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
+    glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
+
 }
 
 bool nxRSMInitializer::operator()(void* data) {
