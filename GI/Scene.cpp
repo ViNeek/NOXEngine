@@ -143,8 +143,36 @@ void nxScene::Init() {
 		buffer[8] = glm::vec3(0, jump, 0);
 		buffer[9] = glm::vec3(-10, jump + 10, 10);
 
-		nxGLBufferedAssetLoaderBlob* bufferData = new nxGLBufferedAssetLoaderBlob(m_pEngine, buffer, 10);
+		std::vector<glm::vec3>* pixels = new std::vector<glm::vec3>;
+
+		static const float offseting = 10.0f;
+		static const int TEST_WIDTH = 16;
+		static const int TEST_HEIGHT = 16;
+		for (int i = 0; i < TEST_WIDTH; i++) {
+			float u = (i + 0.5f) / (TEST_WIDTH);
+			for (int j = 0; j < TEST_HEIGHT; j++) {
+				float v = (j + 0.5f) / (TEST_WIDTH);
+				glm::vec2 uv(u, v);
+				uv = 2.0f * uv - 1.0f;
+				glm::vec3 orient = glm::vec3(1.0 * offseting, jump - uv.y * offseting, -uv.x * offseting);
+				pixels->emplace_back(0, jump, 0);
+				pixels->push_back(orient);
+			}
+		}
+		for (int i = 0; i < TEST_WIDTH; i++) {
+			float u = (i + 0.5f) / (TEST_WIDTH);
+			for (int j = 0; j < TEST_HEIGHT; j++) {
+				float v = (j + 0.5f) / (TEST_WIDTH);
+				glm::vec2 uv(u, v);
+				uv = 2.0f * uv - 1.0f;
+				glm::vec3 orient = glm::vec3(-1.0 * offseting, jump - uv.y * offseting, uv.x * offseting);
+				pixels->emplace_back(0, jump, 0);
+				pixels->push_back(orient);
+			}
+		}
+		nxGLBufferedAssetLoaderBlob* bufferData = new nxGLBufferedAssetLoaderBlob(m_pEngine, pixels->data(), pixels->size());
 		m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, bufferData));
+		//m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, &pixels->at(0)));
 
 		//BOOST_LOG_TRIVIAL(info) << "Number of Lights : " << tree.get_child("Scene.Lights").size();
 		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Lights")) {
@@ -194,7 +222,7 @@ void nxScene::Init() {
 			glm::lookAt(
 				glm::vec3(0, 20, 0),
 				glm::vec3(0,0,0),
-				glm::vec3(0,0, 1)
+				glm::vec3(0,0, -1)
 			)
 		);
 
@@ -203,7 +231,7 @@ void nxScene::Init() {
 			glm::lookAt(
                 glm::vec3(0, 20, 0),
                 glm::vec3(0, 0, 0),
-                glm::vec3(0, 0, 1)
+                glm::vec3(0, 0, -1)
 			));
 
 		m_Lights.push_back(l_Light);

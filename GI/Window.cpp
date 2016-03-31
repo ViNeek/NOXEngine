@@ -264,8 +264,8 @@ void nxGLPanel::OnMouseMoved(wxMouseEvent& evt) {
 		m_pEngine->Scene()->Camera()->SetClicked(evt.LeftIsDown());
 
 		if (evt.MiddleIsDown()) {
-			std::cout << " Delta X : " << (m_pEngine->Scene()->Camera()->Cursor().x - tempPoint.x) << std::endl;
-			std::cout << " Delta X : " << (m_pEngine->Scene()->Camera()->Cursor().y - tempPoint.y) << std::endl;
+			//std::cout << " Delta X : " << (m_pEngine->Scene()->Camera()->Cursor().x - tempPoint.x) << std::endl;
+			//std::cout << " Delta X : " << (m_pEngine->Scene()->Camera()->Cursor().y - tempPoint.y) << std::endl;
 			m_pEngine->Scene()->Camera()->SetX(m_pEngine->Scene()->Camera()->Position().x + ((m_pEngine->Scene()->Camera()->Cursor().x - tempPoint.x)*5));
 			m_pEngine->Scene()->Camera()->SetY(m_pEngine->Scene()->Camera()->Position().y - ((m_pEngine->Scene()->Camera()->Cursor().y - tempPoint.y)*5));
 		}
