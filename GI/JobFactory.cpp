@@ -29,6 +29,7 @@ static const nxFramebufferResizer			nxFramebufferResizer_;
 static const nxShaderCompiler				nxShaderCompiler_;
 static const nxGLAssetLoader				nxGLAssetLoader_;
 static const nxGLBufferedAssetLoader		nxGLBufferedAssetLoader_;
+static const nxGLDebugAssetLoader			nxGLDebugAssetLoader_;
 static const nxProgramLinker				nxProgramLinker_;
 
 static const nxJobCallback nxJobDispatchTable[NX_JOB_MAX]
@@ -53,6 +54,7 @@ static const nxJobCallback nxJobDispatchTable[NX_JOB_MAX]
 	nxShaderCompiler_,
 	nxGLAssetLoader_,
 	nxGLBufferedAssetLoader_,
+	nxGLDebugAssetLoader_,
 	nxProgramLinker_
 };
 

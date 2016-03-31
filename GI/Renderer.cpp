@@ -343,6 +343,8 @@ void nxRenderer::InitFramebuffer() {
 	}
 
 	//glEnable(GL_CULL_FACE);
+	glEnable(GL_LINE_SMOOTH);
+	glLineWidth(5);
 	glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
 	glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations

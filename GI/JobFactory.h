@@ -42,6 +42,7 @@ enum nxJobID {
 	NX_GL_JOB_COMPILE_SHADER,
 	NX_GL_JOB_LOAD_ASSET,
 	NX_GL_JOB_LOAD_BUFF_ASSET,
+	NX_GL_JOB_LOAD_DEBUG_ASSET,
 	NX_GL_JOB_LINK_PROGRAM,
 	NX_JOB_MAX
 };
@@ -164,6 +165,12 @@ struct nxSceneLoader {
 	bool operator()(void* data);
 };
 
+/*
+
+Asset loading
+
+*/
+
 struct nxGLAssetLoaderBlob {
 	nxGLAssetLoaderBlob(nxEngine* eng, nxEntity* ent )
 		: m_Engine( eng ), m_Entity( ent ) {}
@@ -188,6 +195,10 @@ struct nxGLAssetLoader {
 };
 
 struct nxGLBufferedAssetLoader {
+	bool operator()(void* data);
+};
+
+struct nxGLDebugAssetLoader {
 	bool operator()(void* data);
 };
 

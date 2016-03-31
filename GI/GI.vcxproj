@@ -202,8 +202,12 @@
   <ItemGroup>
     <None Include="..\Scenes\MetalGearSolid.json" />
     <None Include="..\Scenes\Simple.json" />
+    <None Include="..\Shaders\DebugPass.f.glsl" />
+    <None Include="..\Shaders\DebugPass.g.glsl" />
+    <None Include="..\Shaders\DebugPass.v.glsl" />
     <None Include="..\Shaders\DistanceFieldInit.c.glsl" />
     <None Include="..\Shaders\DistanceFieldStep.c.glsl" />
+    <None Include="..\Shaders\RayMarching.c.glsl" />
     <None Include="..\Shaders\RSM.f.glsl" />
     <None Include="..\Shaders\RSM.g.glsl" />
     <None Include="..\Shaders\RSM.v.glsl" />

@@ -38,6 +38,7 @@ public:
 
 	void					Scale(nxFloat32 factor);
 	void					Draw();
+	void					LineDraw();
 
 private:
 

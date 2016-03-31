@@ -57,7 +57,7 @@ boost::assign::map_list_of("Compute", GL_COMPUTE_SHADER)
 ("Geometry", GL_GEOMETRY_SHADER)
 ("Fragment", GL_FRAGMENT_SHADER);
 
-static const float gridSpan = 30.0f;
+static const float gridSpan = 300.0f;
 
 void nxScene::Init() {
 	try {
@@ -129,17 +129,22 @@ void nxScene::Init() {
 		nxRSMInitializerBlob* rsmData = new nxRSMInitializerBlob(m_pEngine, rsmDim);
 		m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_RSM_INIT, rsmData));
 
+		static const nxFloat32 jump = 20.0f;
 		// Memory backed models
-		glm::vec3* buffer = new glm::vec3[6];
-		buffer[0] = glm::vec3(-gridSpan, -gridSpan, -gridSpan);
-		buffer[1] = glm::vec3(-gridSpan, gridSpan, gridSpan);
-		buffer[2] = glm::vec3(gridSpan, gridSpan, gridSpan);
-		buffer[3] = glm::vec3(gridSpan, gridSpan, gridSpan);
-		buffer[4] = glm::vec3(gridSpan, -gridSpan, -gridSpan);
-		buffer[5] = glm::vec3(-gridSpan, -gridSpan, -gridSpan);
+		glm::vec3* buffer = new glm::vec3[10];
+		buffer[0] = glm::vec3(0, jump, 0);
+		buffer[1] = glm::vec3(10, jump, 0);
+		buffer[2] = glm::vec3(0, jump, 0);
+		buffer[3] = glm::vec3(0, jump+10, 0);
+		buffer[4] = glm::vec3(0, jump, 0);
+		buffer[5] = glm::vec3(0, jump, -10);
+		buffer[6] = glm::vec3(0, jump, 0);
+		buffer[7] = glm::vec3(10, jump + 10, -10);
+		buffer[8] = glm::vec3(0, jump, 0);
+		buffer[9] = glm::vec3(-10, jump + 10, 10);
 
-		nxGLBufferedAssetLoaderBlob* bufferData = new nxGLBufferedAssetLoaderBlob(m_pEngine, buffer, 6);
-		//m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_BUFF_ASSET, bufferData));
+		nxGLBufferedAssetLoaderBlob* bufferData = new nxGLBufferedAssetLoaderBlob(m_pEngine, buffer, 10);
+		m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, bufferData));
 
 		//BOOST_LOG_TRIVIAL(info) << "Number of Lights : " << tree.get_child("Scene.Lights").size();
 		BOOST_FOREACH(pt::ptree::value_type &v, tree.get_child("Scene.Lights")) {
@@ -150,7 +155,6 @@ void nxScene::Init() {
 			//BOOST_LOG_TRIVIAL(info) << "View Y position : " << v.second.get<float>("ViewY", 0.0f);
 			//BOOST_LOG_TRIVIAL(info) << "View Z position : " << v.second.get<float>("ViewZ", 0.0f);
 
-			
 			nxAssetLoaderBlob* data = new nxAssetLoaderBlob(
 				m_pEngine,
 				"Models/Cube",
@@ -362,9 +366,9 @@ void nxScene::Draw() {
 	for (size_t i = 0; i < m_Entities.size(); i++) {
 			m_MState.m_VMatrix = glm::mat4();
 
-		//m_MState.m_VMatrix = glm::translate(View(),
-		//	-m_Camera->Position());
-		m_MState.m_VMatrix = m_Camera->ViewTransform();
+		m_MState.m_VMatrix = glm::translate(View(),
+			-m_Camera->Position());
+		//m_MState.m_VMatrix = m_Camera->ViewTransform();
 
 		m_MState.m_VMatrix *= m_MState.m_RMatrix;
 
@@ -384,6 +388,30 @@ void nxScene::Draw() {
 		//if (errorGL) Utils::GL::CheckGLState("Draw : " + i);
 
 	}
+
+	nxProgram* l_Prog = m_pEngine->Renderer()->GetActiveProgramByName("Debug");
+	
+	if (l_Prog) {
+		
+		l_Prog->Use();
+		for (auto entity : m_DebugEntities) {
+			//printf("Luda IN");
+			m_MState.m_VMatrix = glm::mat4();
+
+			m_MState.m_VMatrix = glm::translate(View(),
+				-m_Camera->Position());
+			//m_MState.m_VMatrix = m_Camera->ViewTransform();
+
+			m_MState.m_VMatrix *= m_MState.m_RMatrix;
+
+			l_Prog->SetUniform("MVP", m_MState.m_PMatrix*m_MState.m_VMatrix);
+			//m_pEngine->Renderer()->Program()->SetUniform("MVP", View());
+			//if (errorGL) Utils::GL::CheckGLState("Set MVP");
+
+			entity->LineDraw();
+		}
+	}
+	
 
 	//errorGL = false;
 }

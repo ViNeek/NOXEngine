@@ -80,6 +80,20 @@
                     }
                 ]
             },
+			{
+                "Name":  "Debug",
+                "Shaders": [
+                    {
+                        "Fragment": "../Shaders/DebugPass.f.glsl"
+                    },
+                    {
+                        "Vertex": "../Shaders/DebugPass.v.glsl"
+                    },
+                    {
+                        "Geometry": "../Shaders/DebugPass.g.glsl"
+                    }
+                ]
+            },
             {
                 "Name":  "Voxelize Preview",
                 "Shaders": [

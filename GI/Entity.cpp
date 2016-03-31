@@ -203,6 +203,14 @@ void nxEntity::Draw() {
 	}
 }
 
+void nxEntity::LineDraw() {
+	BindVAO();
+	for (size_t i = 0; i < m_NumMeshes; i++)
+	{
+		glDrawArrays(GL_LINES, m_MeshStartIndices[i], m_MeshSizes[i]);
+	}
+}
+
 void nxEntity::Scale(nxFloat32 factor) {
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
@@ -261,6 +269,20 @@ bool nxAssetLoader::operator()(void* data) {
 
 	nxGLAssetLoaderBlob* newData = new nxGLAssetLoaderBlob(blob->m_Engine, ent);
 	blob->m_Engine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_ASSET, newData));
+
+	return true;
+}
+
+bool nxGLDebugAssetLoader::operator()(void* data) {
+	nxGLBufferedAssetLoaderBlob* blob = (nxGLBufferedAssetLoaderBlob*)data;
+
+	nxEntity* newEnt = new nxEntity();
+	newEnt->InitFromBuffer(blob->m_Buffer, blob->m_BSize);
+
+	blob->m_Engine->Scene()->AddDebugEntity(newEnt);
+	//blob->m_Engine->Scene()->AddEntity(newEnt);
+	//blob->m_Engine->Scene()->UpdateBounds(newEnt);
+	//blob->m_Engine->Renderer()->Voxelizer()->SetMatrices();
 
 	return true;
 }

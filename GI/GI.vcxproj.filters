@@ -231,5 +231,17 @@
     <None Include="..\Shaders\RSM.v.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="..\Shaders\DebugPass.f.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\DebugPass.g.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\DebugPass.v.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\RayMarching.c.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
