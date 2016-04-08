@@ -6,6 +6,8 @@
 
 #include "CustomTypes.h"
 
+#include <string>
+
 namespace Utils {
 
 	namespace Debug {
@@ -15,4 +17,6 @@ namespace Utils {
 
 	nxInt32 RandomInRange(nxInt32 min, nxInt32 max);
 
+    std::string GetParentDirectory(const std::string& file);
+    std::string GetFilename(const std::string& path_to_file);
 };

@@ -9,6 +9,8 @@
 
 #include "CustomTypes.h"
 
+#include "Texture.h"
+
 class nxEntity {
 public:
 
@@ -40,6 +42,9 @@ public:
 	void					Draw();
 	void					LineDraw();
 
+    std::vector<nxTexture*>& Cache() { return m_TextureCache; }
+    nxTexture* CachedAt(int p_Index) { return m_TextureCache[p_Index]; }
+
 private:
 
 	std::vector<nxByte>		m_EntityData;
@@ -70,7 +75,9 @@ private:
 	std::vector<int>		m_MeshStartIndices;
 	std::vector<int>		m_MeshSizes;
 
-	std::string				m_ModelName;
+    std::vector<nxTexture*> m_TextureCache;
+	
+    std::string				m_ModelName;
 
 	glm::vec3				m_ModelTransform;
 

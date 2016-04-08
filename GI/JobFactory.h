@@ -17,8 +17,9 @@ class nxEntity;
 class nxScene;
 class nxRenderer;
 class nxScheduler;
+class nxTexture;
 
-// Request from glbal NOX Engine State
+// Request from global NOX Engine State
 #define NOX_ENGINE_GET(Object) ((nxEngine*)data)->Object()
 
 enum nxJobID {
@@ -39,8 +40,9 @@ enum nxJobID {
 	NX_GL_JOB_DISTANCE_FIELD_INIT,
 	NX_GL_JOB_RSM_INIT,
 	NX_GL_JOB_FRAMEBUFFER_RESIZE,
-	NX_GL_JOB_COMPILE_SHADER,
-	NX_GL_JOB_LOAD_ASSET,
+    NX_GL_JOB_COMPILE_SHADER,
+    NX_GL_JOB_LOAD_TEXTURE,
+    NX_GL_JOB_LOAD_ASSET,
 	NX_GL_JOB_LOAD_BUFF_ASSET,
 	NX_GL_JOB_LOAD_DEBUG_ASSET,
 	NX_GL_JOB_LINK_PROGRAM,
@@ -188,6 +190,19 @@ struct nxGLBufferedAssetLoaderBlob {
 	glm::vec3*		m_Buffer;
 	nxInt32			m_BSize;
 
+};
+
+struct nxGLTextureLoaderBlob {
+    nxGLTextureLoaderBlob(nxEngine* eng, nxTexture* texture)
+        : m_Engine(eng), m_Texture(texture) {}
+
+    nxEngine*		m_Engine;
+    nxTexture*		m_Texture;
+
+};
+
+struct nxGLTextureLoader {
+    bool operator()(void* data);
 };
 
 struct nxGLAssetLoader {

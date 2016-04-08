@@ -408,8 +408,9 @@ void nxScene::Draw() {
 		
 		//if (errorGL) Utils::GL::CheckGLState("Set Normal");
 
-		m_pEngine->Renderer()->Program()->SetUniform("MVP", m_MState.m_PMatrix*m_MState.m_VMatrix);
-		//m_pEngine->Renderer()->Program()->SetUniform("MVP", View());
+        m_pEngine->Renderer()->Program()->SetUniform("MVP", m_MState.m_PMatrix*m_MState.m_VMatrix);
+        m_pEngine->Renderer()->Program()->SetUniform("DiffuseTexture", NOX_DIFFUSE_MAP);
+        //m_pEngine->Renderer()->Program()->SetUniform("MVP", View());
 		//if (errorGL) Utils::GL::CheckGLState("Set MVP");
 
 		m_Entities[i]->Draw();

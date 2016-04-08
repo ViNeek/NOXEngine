@@ -18,6 +18,8 @@
 
 #include <boost/log/trivial.hpp>
 
+#include "Texture.h"
+
 nxEntity::nxEntity() {
 	m_IBO = -1;
 	m_VBO = -1;
@@ -101,8 +103,12 @@ void nxEntity::InitFromBuffer(glm::vec3* buffer, nxInt32 size) {
 
 void nxEntity::InitFromFile(const std::string& path) {
 	Assimp::Importer importer;
+    std::cout << "Loading " << path << std::endl;
+
 	const aiScene* scene = importer.ReadFile(path,
 		aiProcess_CalcTangentSpace |
+        aiProcess_Triangulate |
+        aiProcess_JoinIdenticalVertices |
 		aiProcess_SortByPType);
 
 	if (!scene)
@@ -111,69 +117,134 @@ void nxEntity::InitFromFile(const std::string& path) {
 	}
 
 	const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
-	const int vertex_size = sizeof(aiVector3D) * 2 + sizeof(aiVector2D);
+	const int vertex_size = sizeof(aiVector3D) * 4 + sizeof(aiVector2D);
 
-	m_NumMeshes = scene->mNumMeshes;
+    m_NumMeshes = scene->mNumMeshes;
+
+    for (auto i = 0; i < m_NumMeshes; i++) {
+        aiMesh* mesh = scene->mMeshes[i];
+        //std::cout << "Num of Faces " << mesh->mNumFaces << std::endl;
+
+        m_NumVertices += mesh->mNumVertices;
+        m_NumFaces += mesh->mNumFaces;
+        int before_size = m_DataCurrentSize;
+        m_MaterialIndices.push_back(mesh->mMaterialIndex);
+        m_MeshStartIndices.push_back(before_size / vertex_size);
+
+        for (size_t j = 0; j < mesh->mNumFaces; j++) {
+            const aiFace& face = mesh->mFaces[j];
+            for (int k = 0; k < 3; k++)
+            {
+                aiVector3D pos = mesh->mVertices[face.mIndices[k]];
+
+                if (pos.x < m_MinX) m_MinX = pos.x;
+                if (pos.y < m_MinY) m_MinY = pos.y;
+                if (pos.z < m_MinZ) m_MinZ = pos.z;
+                if (pos.x > m_MaxX) m_MaxX = pos.x;
+                if (pos.y > m_MaxY) m_MaxY = pos.y;
+                if (pos.z > m_MaxZ) m_MaxZ = pos.z;
+
+                aiVector3D uv = mesh->mTextureCoords[0][face.mIndices[k]];
+                aiVector3D normal = mesh->mNormals[face.mIndices[k]];
+                aiVector3D l_Tangent = mesh->mTangents[face.mIndices[k]];
+                aiVector3D l_Bitangent = mesh->mBitangents[face.mIndices[k]];
+
+                m_EntityData.insert(m_EntityData.end(), (nxByte*)&pos, (nxByte*)&pos + sizeof(aiVector3D));
+                m_DataCurrentSize += sizeof(aiVector3D);
+                m_EntityData.insert(m_EntityData.end(), (nxByte*)&uv, (nxByte*)&uv + sizeof(aiVector2D));
+                m_DataCurrentSize += sizeof(aiVector2D);
+                m_EntityData.insert(m_EntityData.end(), (nxByte*)&normal, (nxByte*)&normal + sizeof(aiVector3D));
+                m_DataCurrentSize += sizeof(aiVector3D);
+                m_EntityData.insert(m_EntityData.end(), (nxByte*)&l_Tangent, (nxByte*)&l_Tangent + sizeof(aiVector3D));
+                m_DataCurrentSize += sizeof(aiVector3D);
+                m_EntityData.insert(m_EntityData.end(), (nxByte*)&l_Bitangent, (nxByte*)&l_Bitangent + sizeof(aiVector3D));
+                m_DataCurrentSize += sizeof(aiVector3D);
+            }
+        }
+
+        m_MeshSizes.push_back((m_DataCurrentSize - before_size) / vertex_size);
+    }
+    std::cout << "Entity Data Length " << m_EntityData.size() << std::endl;
+
 	std::cout << "Num of Meshes " << scene->mNumMeshes << std::endl;
 
-	for (auto i = 0; i < scene->mNumMaterials; i++) {
-		nxInt32 l_TextureIndex = 0;
-		aiString l_TexturePath;  // filename
+    auto l_NumOfMaterials = scene->mNumMaterials;
+    std::vector<int> l_MaterialsRemap(l_NumOfMaterials);
 
-		aiReturn l_TexFound = scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, l_TextureIndex, &l_TexturePath);
-		std::cout << "Image path : " << l_TexturePath.data << std::endl;
-		while (l_TexFound == AI_SUCCESS) {
+    for (auto i = 0; i < l_NumOfMaterials; i++) {
+		auto l_TextureIndex = 0;
+        auto l_DiffTexturePath = aiString();  // filename
+        auto l_NormalTexturePath = aiString();  // filename
+        auto l_Material = scene->mMaterials[i];
+
+        aiReturn l_TexFound;
+
+        l_TexFound = l_Material->GetTexture(aiTextureType_DIFFUSE, l_TextureIndex, &l_DiffTexturePath);
+
+        //std::cout << "Image path : " << l_DiffTexturePath.data << std::endl;
+        auto&& l_CacheRef = Cache();
+        if (l_TexFound == AI_SUCCESS) {
 			//fill map with textures, OpenGL image ids set to 0
 			//textureIdMap[path.data] = 0;
 			// more textures?
-			l_TextureIndex++;
-			l_TexFound = scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, l_TextureIndex, &l_TexturePath);
-		}
-	}
 
-	for (auto i = 0; i < scene->mNumMeshes; i++) {
-		aiMesh* mesh = scene->mMeshes[i];
-		//std::cout << "Num of Faces " << mesh->mNumFaces << std::endl;
+            std::string l_PathEnd = Utils::GetParentDirectory(l_DiffTexturePath.data);
+            std::string l_PathStart = Utils::GetParentDirectory(path);
+            std::string l_Filename = Utils::GetFilename(l_DiffTexturePath.data);
+            std::string l_FullRelativePath = l_PathStart + "/" + l_PathEnd + "/" + l_Filename;
 
-		m_NumVertices += mesh->mNumVertices;
-		m_NumFaces += mesh->mNumFaces;
-		int before_size = m_DataCurrentSize;
-		m_MaterialIndices.push_back(mesh->mMaterialIndex);
-		m_MeshStartIndices.push_back(before_size / vertex_size);
-		
-		for (size_t j = 0; j < mesh->mNumFaces; j++) {
-			const aiFace& face = mesh->mFaces[j];
-			for (int k = 0; k < 3; k++)
-			{
-				aiVector3D pos = mesh->mVertices[face.mIndices[k]];
+            std::cout << "Full path: " << l_FullRelativePath << '\n';
+            
+            auto l_TextureIterator = std::find_if(l_CacheRef.begin(), l_CacheRef.end(), [&l_FullRelativePath](nxTexture* t) { return t->Path() == l_FullRelativePath; });
+            //auto l_TextureIndex = std::distance(l_CacheRef.begin(), l_TextureIterator);
 
-				if (pos.x < m_MinX) m_MinX = pos.x;
-				if (pos.y < m_MinY) m_MinY = pos.y;
-				if (pos.z < m_MinZ) m_MinZ = pos.z;
-				if (pos.x > m_MaxX) m_MaxX = pos.x;
-				if (pos.y > m_MaxY) m_MaxY = pos.y;
-				if (pos.z > m_MaxZ) m_MaxZ = pos.z;
+            if (l_TextureIterator == l_CacheRef.end()) {
+                l_CacheRef.push_back(new nxTexture(l_FullRelativePath, NOX_DIFFUSE_MAP));
+                auto l_LastEntryIndex = l_CacheRef.size() - 1;
+                //auto& l_LastEntry = nxTexture::CachedAt(l_LastEntryIndex);
+                //l_LastEntry.Load();
+                l_MaterialsRemap[i] = l_LastEntryIndex;
+            }
+            else {
+                auto l_CachedTextureIndex = std::distance(l_CacheRef.begin(), l_TextureIterator) - 1;
+                l_MaterialsRemap[i] = l_CachedTextureIndex;
+            }
 
-				aiVector3D uv = mesh->mTextureCoords[0][face.mIndices[k]];
-				aiVector3D normal = mesh->mNormals[face.mIndices[k]];
-				m_EntityData.insert(m_EntityData.end(), (nxByte*)&pos, (nxByte*)&pos + sizeof(aiVector3D));
-				m_DataCurrentSize += sizeof(aiVector3D);
-				m_EntityData.insert(m_EntityData.end(), (nxByte*)&uv, (nxByte*)&uv + sizeof(aiVector2D));
-				m_DataCurrentSize += sizeof(aiVector2D);
-				m_EntityData.insert(m_EntityData.end(), (nxByte*)&normal, (nxByte*)&normal + sizeof(aiVector3D));
-				m_DataCurrentSize += sizeof(aiVector3D);
-			}
+            std::cout << "Index : " << l_TextureIndex << std::endl;
+
+			//l_TextureIndex++;
+            //l_TexFound = scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, l_TextureIndex, &l_DiffTexturePath);
 		}
 
-		m_MeshSizes.push_back((m_DataCurrentSize - before_size) / vertex_size);
+        /*
+        l_TextureIndex = 0;
+        l_TexFound = l_Material->GetTexture(aiTextureType_HEIGHT, l_TextureIndex, &l_NormalTexturePath);
+        std::cout << "Bump Image path : " << l_NormalTexturePath.data << std::endl;
+        while (l_TexFound == AI_SUCCESS) {
+            //fill map with textures, OpenGL image ids set to 0
+            //textureIdMap[path.data] = 0;
+            // more textures?
+            l_TextureIndex++;
+            l_TexFound = scene->mMaterials[i]->GetTexture(aiTextureType_HEIGHT, l_TextureIndex, &l_NormalTexturePath);
+        }
+        */
 	}
-	std::cout << "Entity Data Length " << m_EntityData.size() << std::endl;
+
+    for (nxInt32 i = 0; i < m_MeshSizes.size(); i++ )
+    {
+        nxInt32 l_OldIndex = m_MaterialIndices[i];
+        std::cout << "Old : " << l_OldIndex << std::endl;
+        std::cout << "I : " << i << std::endl;
+        m_MaterialIndices[i] = l_MaterialsRemap[l_OldIndex];
+    }
 
 	//m_NumMaterials = scene->mNumMaterials;
 }
 
 void nxEntity::UploadData() {
-	glGenBuffers(1, &m_VBO);
+    const auto l_VertexSize = sizeof(aiVector3D) * 4 + sizeof(aiVector2D);
+
+    glGenBuffers(1, &m_VBO);
 
 	glGenVertexArrays(1, &m_VAO);
 	glBindVertexArray(m_VAO);
@@ -183,13 +254,20 @@ void nxEntity::UploadData() {
 
 	// Vertex positions
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 2 * sizeof(aiVector3D) + sizeof(aiVector2D), 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, l_VertexSize, 0);
 	// Texture coordinates
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(aiVector3D) + sizeof(aiVector2D), (void*)sizeof(aiVector3D));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, l_VertexSize, (void*)sizeof(aiVector3D));
 	// Normal vectors
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 2 * sizeof(aiVector3D) + sizeof(aiVector2D), (void*)(sizeof(aiVector3D) + sizeof(aiVector2D)));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, l_VertexSize, (void*)(sizeof(aiVector3D) + sizeof(aiVector2D)));
+    // Tangent vectors
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, l_VertexSize, (void*)(2 * sizeof(aiVector3D) + sizeof(aiVector2D)));
+    // Bitangent vectors
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, l_VertexSize, (void*)(3 * sizeof(aiVector3D) + sizeof(aiVector2D)));
+
 
 	Utils::GL::CheckGLState("VAOs");
 
@@ -197,8 +275,11 @@ void nxEntity::UploadData() {
 
 void nxEntity::Draw() {
 	BindVAO();
-	for (size_t i = 0; i < m_NumMeshes; i++)
+    m_NumMeshes = m_MeshSizes.size();
+    for (nxInt32 i = 0; i < m_NumMeshes; i++ )
 	{
+        nxInt32 l_MatIndex = m_MaterialIndices[i];
+        m_TextureCache[l_MatIndex]->Bind();
 		glDrawArrays(GL_TRIANGLES, m_MeshStartIndices[i], m_MeshSizes[i]);
 	}
 }
@@ -247,16 +328,22 @@ bool nxAssetLoader::operator()(void* data) {
 
 	nxEntity* ent = new nxEntity(blob->m_ResourcePath + blob->m_ResourceType);
 
+    for (auto l_Texture : ent->Cache()) {
+        nxGLTextureLoaderBlob* textureBlob = new nxGLTextureLoaderBlob(blob->m_Engine, l_Texture);
+        blob->m_Engine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_TEXTURE, textureBlob));
+    }
+
 	glm::vec3 center;
 	center.x = ((ent->MaxX() + ent->MinX())) / 2.0f;
 	center.y = ((ent->MaxY() + ent->MinY())) / 2.0f;
 	center.z = ((ent->MaxZ() + ent->MinZ())) / 2.0f;
-	
+	    
 	ent->SetModelTransform(blob->m_Center);
 	//ent->SetModelTransform(glm::vec3());
 	ent->SetScale(blob->m_ScaleFactor);
 
-	BOOST_LOG_TRIVIAL(info) << "Asset MaxX " << ent->MaxX();
+	/*
+    BOOST_LOG_TRIVIAL(info) << "Asset MaxX " << ent->MaxX();
 	BOOST_LOG_TRIVIAL(info) << "Asset MaxY " << ent->MaxY();
 	BOOST_LOG_TRIVIAL(info) << "Asset MaxZ " << ent->MaxZ();
 	BOOST_LOG_TRIVIAL(info) << "Asset MaxX " << ent->MinX();
@@ -265,7 +352,7 @@ bool nxAssetLoader::operator()(void* data) {
 	BOOST_LOG_TRIVIAL(info) << "Asset CenterX " << center.x;
 	BOOST_LOG_TRIVIAL(info) << "Asset CenterY " << center.y;
 	BOOST_LOG_TRIVIAL(info) << "Asset CenterZ " << center.z;
-
+    */
 
 	nxGLAssetLoaderBlob* newData = new nxGLAssetLoaderBlob(blob->m_Engine, ent);
 	blob->m_Engine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_ASSET, newData));

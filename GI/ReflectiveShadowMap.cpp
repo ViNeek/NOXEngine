@@ -1,6 +1,7 @@
 #include "ReflectiveShadowMap.h"
 #include "Renderer.h"
 #include "Engine.h"
+#include "Texture.h"
 
 static const nxUInt32 DEFAULT_TEXTURE_SIZE = 512;
 
@@ -38,6 +39,8 @@ void nxReflectiveShadowMap::Init() {
     // Generate Framebuffer for RSM
 	glGenFramebuffers(1, m_FrameBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer);
+
+    glActiveTexture(GL_TEXTURE0 + NOX_FRAMEBUFFER_TARGET);
 
 	// Depth texture. Slower than a depth buffer, but you can sample it later in your shader
 	glGenTextures(1, m_ShadowMap);

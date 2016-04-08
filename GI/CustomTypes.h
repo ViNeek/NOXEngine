@@ -3,6 +3,7 @@
 typedef unsigned char			nxByte;
 typedef unsigned char			nxUInt8;
 typedef int						nxInt32;
+typedef bool					nxBool;
 typedef unsigned int			nxUInt32;
 typedef long long				nxInt64;
 typedef unsigned long long		nxUInt64;

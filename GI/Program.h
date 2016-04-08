@@ -23,9 +23,7 @@ class nxProgram {
 public:
 
 											nxProgram(int initCount);
-											nxProgram(nxProgram&& prog) {
-												std::cout << "Move it Program" << std::endl;
-											}
+											nxProgram(nxProgram&& prog) {}
 
 	void									ProgramLog();
 	bool									ReadyForLinking() { return m_InitShaderCount == m_Shaders.size(); }
