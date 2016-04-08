@@ -68,9 +68,9 @@ void nxProgram::Destroy() {
 
 void nxProgram::Attach() {
 
-	std::cout << "Program ID " << m_ProgramID;
+	//std::cout << "Program ID " << m_ProgramID;
 	for (size_t i = 0; i < m_Shaders.size(); i++) {
-		std::cout << "Shader ID " << m_Shaders[i]->ShaderID();
+		//std::cout << "Shader ID " << m_Shaders[i]->ShaderID();
 		glAttachShader(m_ProgramID, m_Shaders[i]->ShaderID());
 	}
 

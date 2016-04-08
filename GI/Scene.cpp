@@ -25,8 +25,11 @@
 #include "Light.h"
 #include "Voxelizer.h"
 #include "DistanceField.h"
+#include "RayMarcher.h"
 #include "ReflectiveShadowMap.h"
 #include "ResourceManager.h"
+
+#include "ShapeUtils.h"
 
 #include <type_traits>
 
@@ -110,15 +113,21 @@ void nxScene::Init() {
 		glm::uvec2 rsmDim(tree.get_child("Scene.RSM").get<int>("DimX", 128),
 			tree.get_child("Scene.RSM").get<int>("DimY", 128));
 
+		glm::uvec2 rmVDim(tree.get_child("Scene.RayMarcher").get<int>("VDimX", 16),
+			tree.get_child("Scene.RayMarcher").get<int>("VDimY", 16));
+
 		Utils::GL::CheckGLState("Scene Start");
 		
 		nxVoxelizer* voxel = new nxVoxelizer(m_pEngine, dimensions.x);
 		nxRSM* rsm = new nxRSM(rsmDim.x, rsmDim.y);
 		nxDistanceField* df = new nxDistanceField(4);
+		nxRayMarcher* raym = new nxRayMarcher(voxel, df, rmVDim.x, rmVDim.y);
+
 		//df->Init(dimensions.x, dimensions.y, dimensions.z);
 		m_pEngine->Renderer()->SetVoxelizer(voxel);
 		m_pEngine->Renderer()->SetDistanceField(df);
 		m_pEngine->Renderer()->SetRSM(rsm);
+		m_pEngine->Renderer()->SetRayMarcher(raym);
 
 		nxVoxelizerInitializerBlob* voxelData = new nxVoxelizerInitializerBlob(m_pEngine, dimensions);
 		m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_VOXELIZER_INIT, voxelData));
@@ -128,6 +137,9 @@ void nxScene::Init() {
 
 		nxRSMInitializerBlob* rsmData = new nxRSMInitializerBlob(m_pEngine, rsmDim);
 		m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_RSM_INIT, rsmData));
+
+		nxRayMarcherInitializerBlob* rmData = new nxRayMarcherInitializerBlob(m_pEngine, rmVDim);
+		m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_RAY_MARCHER_INIT, rmData));
 
 		static const nxFloat32 jump = 20.0f;
 		// Memory backed models
@@ -170,8 +182,13 @@ void nxScene::Init() {
 				pixels->push_back(orient);
 			}
 		}
-		nxGLBufferedAssetLoaderBlob* bufferData = new nxGLBufferedAssetLoaderBlob(m_pEngine, pixels->data(), pixels->size());
-		m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, bufferData));
+
+		std::vector<glm::vec3>* sphere = new std::vector<glm::vec3>;
+		//*sphere = Utils::Shape::generateSphereMesh(8, 8);
+		*sphere = Utils::Shape::generateSphereMeshAt(8, 8, glm::vec3(0, 10, 0) );
+
+		nxGLBufferedAssetLoaderBlob* bufferData = new nxGLBufferedAssetLoaderBlob(m_pEngine, sphere->data(), sphere->size());
+		m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_BUFF_ASSET, bufferData));
 		//m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, &pixels->at(0)));
 
 		//BOOST_LOG_TRIVIAL(info) << "Number of Lights : " << tree.get_child("Scene.Lights").size();
@@ -397,14 +414,13 @@ void nxScene::Draw() {
 		m_MState.m_VMatrix = glm::translate(View(),
 			-m_Camera->Position());
 		//m_MState.m_VMatrix = m_Camera->ViewTransform();
-
+		m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
 		m_MState.m_VMatrix *= m_MState.m_RMatrix;
 
-		m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
 		m_MState.m_MMatrix = glm::translate(glm::mat4(), m_Entities[i]->ModelTransform());
 
 		//m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
-		m_pEngine->Renderer()->Program()->SetUniform("NormalMatrix", Normal());
+		//m_pEngine->Renderer()->Program()->SetUniform("NormalMatrix", Normal());
 		
 		//if (errorGL) Utils::GL::CheckGLState("Set Normal");
 
@@ -520,16 +536,13 @@ void nxScene::DrawVoxelized() {
 
 	m_pEngine->Renderer()->GetActiveProgramByName("DistanceFieldStep")->SetUniform("u_Dim", m_pEngine->Renderer()->Voxelizer()->Dimesions());
 
-	for (int i = 1; i < 1; i++) {
+	for (int i = 1; i < 4; i++) {
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_pEngine->Renderer()->DistanceField()->DistanceFieldFrontBuffer());
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, m_pEngine->Renderer()->DistanceField()->DistanceFieldBackBuffer());
 
 		m_pEngine->Renderer()->DistanceField()->Calculate(m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
 
-		
-
 		m_pEngine->Renderer()->DistanceField()->SwapBuffers();
-
 	}
 	
 	glQueryCounter(queryID[1], GL_TIMESTAMP);
@@ -545,6 +558,15 @@ void nxScene::DrawVoxelized() {
 	glGetQueryObjectui64v(queryID[1], GL_QUERY_RESULT, &stopTime);
 
 	//printf("Time spent on the GPU: %f ms\n", (stopTime - startTime) / 1000000.0);
+
+	m_pEngine->Renderer()->GetActiveProgramByName("RayMarch")->Use();
+
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, m_pEngine->Renderer()->DistanceField()->DistanceFieldFrontBuffer());
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, m_pEngine->Renderer()->RayMarcher()->Buffer());
+
+	if (m_pEngine->Renderer()->VoxelizerReady()) {
+		
+	}
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	

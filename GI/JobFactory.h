@@ -38,6 +38,7 @@ enum nxJobID {
 	NX_GL_JOB_FRAMEBUFFER_INIT,
 	NX_GL_JOB_VOXELIZER_INIT,
 	NX_GL_JOB_DISTANCE_FIELD_INIT,
+	NX_GL_JOB_RAY_MARCHER_INIT,
 	NX_GL_JOB_RSM_INIT,
 	NX_GL_JOB_FRAMEBUFFER_RESIZE,
     NX_GL_JOB_COMPILE_SHADER,
@@ -267,6 +268,25 @@ struct nxDistanceFieldInitializerBlob {
 };
 
 struct nxDistanceFieldInitializer {
+	bool operator()(void* data);
+};
+
+/*
+
+Ray Marcher Generation
+
+*/
+
+struct nxRayMarcherInitializerBlob {
+	nxRayMarcherInitializerBlob(nxEngine* eng, glm::uvec2 vdims)
+		: m_Engine(eng), m_VDimensions(vdims) {}
+
+	nxEngine*			m_Engine;
+	glm::uvec2			m_VDimensions;
+
+};
+
+struct nxRayMarcherInitializer {
 	bool operator()(void* data);
 };
 

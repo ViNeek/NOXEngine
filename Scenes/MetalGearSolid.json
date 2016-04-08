@@ -13,6 +13,10 @@
             "DimY": 64,
             "DimZ": 64
         },
+		"RayMarcher": {
+            "VDimX": 16,
+            "VDimY": 16
+        },
 		"RSM": {
             "DimX": 512,
             "DimY": 512
@@ -121,6 +125,14 @@
                 "Shaders": [
 					{
                         "Compute": "../Shaders/DistanceFieldStep.c.glsl"
+					}
+                ]
+            },
+			{
+                "Name":  "RayMarch",
+                "Shaders": [
+					{
+                        "Compute": "../Shaders/RayMarch.c.glsl"
 					}
                 ]
             }

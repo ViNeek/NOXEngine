@@ -6,7 +6,7 @@
 
 void nxTexture::Bind() {
     glActiveTexture(GL_TEXTURE0 + m_Type);
-    std::cout << "Binding " << m_Path;
+    //std::cout << "Binding " << m_Path;
     glBindTexture(GL_TEXTURE_2D, m_TextureHandle);
 }
 

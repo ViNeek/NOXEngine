@@ -278,8 +278,10 @@ void nxEntity::Draw() {
     m_NumMeshes = m_MeshSizes.size();
     for (nxInt32 i = 0; i < m_NumMeshes; i++ )
 	{
-        nxInt32 l_MatIndex = m_MaterialIndices[i];
-        m_TextureCache[l_MatIndex]->Bind();
+		if (m_MaterialIndices.size() > i) {
+			nxInt32 l_MatIndex = m_MaterialIndices[i];
+			m_TextureCache[l_MatIndex]->Bind();
+		}
 		glDrawArrays(GL_TRIANGLES, m_MeshStartIndices[i], m_MeshSizes[i]);
 	}
 }

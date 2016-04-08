@@ -24,6 +24,7 @@ static const nxExtensionInitializer			nxExtensionInitializer_;
 static const nxFramebufferInitializer		nxFramebufferInitializer_;
 static const nxVoxelizerInitializer			nxVoxelizerInitializer_;
 static const nxDistanceFieldInitializer		nxDistanceFieldInitializer_;
+static const nxRayMarcherInitializer		nxRayMarcherInitializer_;
 static const nxRSMInitializer				nxRSMInitializer_;
 static const nxFramebufferResizer			nxFramebufferResizer_;
 static const nxShaderCompiler				nxShaderCompiler_;
@@ -50,6 +51,7 @@ static const nxJobCallback nxJobDispatchTable[NX_JOB_MAX]
 	nxFramebufferInitializer_,
 	nxVoxelizerInitializer_,
 	nxDistanceFieldInitializer_,
+	nxRayMarcherInitializer_,
 	nxRSMInitializer_,
 	nxFramebufferResizer_,
 	nxShaderCompiler_,

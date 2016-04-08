@@ -297,6 +297,9 @@ glm::vec3 nxVoxelizer::GridMax() {
 
 void nxVoxelizer::PrintGridMeshF(GLuint ssbo) {
 	FILE* fp = fopen("voxels.asc", "w");
+	FILE* fp1 = fopen("voxels1.asc", "w");
+	FILE* fp2 = fopen("voxels2.asc", "w");
+	FILE* fp3 = fopen("voxels3.asc", "w");
 	glm::vec3 size = GridSize();
 	glm::vec3 half_size = size * 0.5f;
 	glm::vec3 voxel = size / glm::vec3(m_dimensions);
@@ -334,12 +337,63 @@ void nxVoxelizer::PrintGridMeshF(GLuint ssbo) {
 			}
 		}
 
+		for (int i = 0; i < m_dimensions.x; i++) {
+			for (int j = 0; j < m_dimensions.y; j++) {
+				for (int k = 0; k < m_dimensions.z; k++) {
+					if (ip[i][j][k] > 1 && ip[i][j][k] < 2) {
+						countVoxels++;
+						xCount++;
+						yCount++;
+						zCount++;
+						fprintf(fp1, "%g ", i * voxel.x);
+						fprintf(fp1, "%g ", j * voxel.y);
+						fprintf(fp1, "%g\n", k * voxel.z);
+					}
+				}
+			}
+		}
+
+		for (int i = 0; i < m_dimensions.x; i++) {
+			for (int j = 0; j < m_dimensions.y; j++) {
+				for (int k = 0; k < m_dimensions.z; k++) {
+					if (ip[i][j][k] > 2 && ip[i][j][k] < 3) {
+						countVoxels++;
+						xCount++;
+						yCount++;
+						zCount++;
+						fprintf(fp2, "%g ", i * voxel.x);
+						fprintf(fp2, "%g ", j * voxel.y);
+						fprintf(fp2, "%g\n", k * voxel.z);
+					}
+				}
+			}
+		}
+
+		for (int i = 0; i < m_dimensions.x; i++) {
+			for (int j = 0; j < m_dimensions.y; j++) {
+				for (int k = 0; k < m_dimensions.z; k++) {
+					if (ip[i][j][k] > 3 && ip[i][j][k] < 4) {
+						countVoxels++;
+						xCount++;
+						yCount++;
+						zCount++;
+						fprintf(fp3, "%g ", i * voxel.x);
+						fprintf(fp3, "%g ", j * voxel.y);
+						fprintf(fp3, "%g\n", k * voxel.z);
+					}
+				}
+			}
+		}
+
 		printf("Voxel Count %d\n", countVoxels);
 		printf("X Count %d\n", xCount);
 		printf("Y Count %d\n", yCount);
 		printf("Z Count %d\n", zCount);
 
 		fclose(fp);
+		fclose(fp1);
+		fclose(fp2);
+		fclose(fp3);
 
 		//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 1 : " << ( ip[0][0][0] );
 		//if (error) Utils::GL::CheckGLState("Frame");

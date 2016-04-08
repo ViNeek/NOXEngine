@@ -3,9 +3,15 @@
 
 uniform ivec3 u_Dim;
 uniform ivec2 u_VPort;
+uniform vec3 u_GridSize;
+uniform vec3 u_VoxelSize;
 
 layout(std430, binding=4) readonly buffer DistanceField {
     float field_data[];
+};
+
+layout(std430, binding=5) writeonly buffer Marcher {
+    float march_data[];
 };
 
 vec3 cubeMapPixelToDirection(vec2 texcoord, int face)
@@ -45,5 +51,19 @@ vec3 cubeMapPixelToDirection(vec2 texcoord, int face)
 }
 
 void main() {
-	
+	vec3 l_GlobalTestPosition(0, -10, 0);
+	vec2 l_PixelNDC;
+
+	for ( int f = 0; f < 6; f++ ) {
+		for ( int i = 0; i < u_VPort.x; i++ ) {
+			l_PixelNDC.x = ( i + 0.5) / u_VPort.x;
+			for ( int j = 0; j < u_VPort.y; j++ ) {
+				l_PixelNDC.y = ( j + 0.5) / u_VPort.y;
+
+				vec3 l_Dir;
+
+				l_Dir = cubeMapPixelToDirection(l_PixelNDC, f);
+			}
+		}
+	}
 }

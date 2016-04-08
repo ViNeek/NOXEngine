@@ -6,6 +6,7 @@
 #include "Renderer.h"
 #include "Voxelizer.h"
 #include "DistanceField.h"
+#include "RayMarcher.h"
 #include "ReflectiveShadowMap.h"
 #include "Camera.h"
 #include "Job.h"
@@ -72,39 +73,34 @@ void *nxRenderer::Entry()
 
 		//UseProgram();
 
-		//glBindBuffer(GL_SHADER_STORAGE_BUFFER, this->Voxelizer()->VoxelBuffer());
-
 		//RenderFrameDemo();
 		RenderFrame();
 		
-		/*
-		if (error) Utils::GL::CheckGLState("Clear Voxel Buffer");
-
-		if (error) Utils::GL::CheckGLState("Frame");
-		nxUInt32* p = (nxUInt32*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
-		if (error) Utils::GL::CheckGLState("Frame");*/
-		/*if (p) {
-			typedef boost::multi_array_ref<nxUInt32, 3> array_type;
-			typedef array_type::index index;
-			array_type ip(p, boost::extents[512][512][512]);
-
-		    //BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 1 : " << ( ip[0][0][0] );
-			if (error) Utils::GL::CheckGLState("Frame");
-			//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 2 : " << ( ip[127][127][127]);
-			if (error) Utils::GL::CheckGLState("Frame");
-			//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 3 : " << ( ip[1][0][0]);
-			if (error) Utils::GL::CheckGLState("Frame");
-			//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT 4 : " << ( ip[0][0][0]);
-			//BOOST_LOG_TRIVIAL(info) << "PRINTING BINARY SHIT : " << "done";
-			if (error) Utils::GL::CheckGLState("Frame");
-		}
-		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-		if (error) Utils::GL::CheckGLState("Frame");
-		error = false;
-		*/
 		//if (errorGL) Utils::GL::CheckGLState("Program USE");
 
 		if (VoxelizerReady()) {
+			glm::vec3 l_TestPosition(0, 10, 0);
+			glm::vec3 l_TestPositionA(0, 10, 0);
+			glm::vec3 l_TestPositionB(0, 10, 0);
+			glm::vec3 l_GridSize = Voxelizer()->GridSize();
+			glm::vec3 l_GridCenter = Voxelizer()->GridCenter();
+			glm::uvec3 l_Dims = Voxelizer()->Dimesions();
+			glm::vec3 l_GridMax = Voxelizer()->GridMax();
+			glm::vec3 l_GridMin = Voxelizer()->GridMin();
+
+			std::cout << "Grid Center : " << l_GridCenter.x << "," << l_GridCenter.y << "," << l_GridCenter.y << "\n";
+
+			l_TestPositionA -= l_GridMin;
+			std::cout << "Voxelizer : " << l_TestPositionA.x << "," << l_TestPositionA.y << "," << l_TestPositionA.y << "\n";
+
+			l_TestPositionB += l_GridMin;
+			std::cout << "Voxelizer : " << l_TestPositionB.x << "," << l_TestPositionB.y << "," << l_TestPositionB.y << "\n";
+
+			//std::cout << "Voxelizer : " << l_GridSize.x << "," << l_GridSize.y << "," << l_GridSize.y << "\n";
+			//std::cout << "Voxelizer : " << l_Dims.x << "," << l_Dims.y << "," << l_Dims.y << "\n";
+			//std::cout << "Voxelizer : " << l_GridMax.x << "," << l_GridMax.y << "," << l_GridMax.y << "\n";
+			//std::cout << "Voxelizer : " << l_GridMin.x << "," << l_GridMin.y << "," << l_GridMin.y << "\n";
+
 			if (Voxelizer()->CaptureGrid()) {
 				//glBindBuffer(GL_SHADER_STORAGE_BUFFER, this->DistanceField()->DistanceFieldBuffer());
 				//glBindBuffer(GL_SHADER_STORAGE_BUFFER, this->Voxelizer()->VoxelBuffer());
@@ -118,6 +114,7 @@ void *nxRenderer::Entry()
 				Voxelizer()->PrintGridMeshF(DistanceField()->DistanceFieldBuffer());
 				
 			}
+
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
 			glClearBufferData(GL_SHADER_STORAGE_BUFFER, GL_RGBA32I, GL_RGBA, GL_UNSIGNED_INT, NULL);
 		}

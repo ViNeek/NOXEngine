@@ -23,6 +23,7 @@ class nxEngine;
 class nxProgram;
 class nxVoxelizer;
 class nxDistanceField;
+class nxRayMarcher;
 class nxReflectiveShadowMap;
 typedef nxReflectiveShadowMap nxRSM;
 
@@ -49,6 +50,7 @@ public:
 	nxProgram*								Program() { return m_pActiveProgram; }
 	nxVoxelizer*							Voxelizer() { return m_Voxelizer; }
 	nxDistanceField*						DistanceField() { return m_DistanceField; }
+	nxRayMarcher*							RayMarcher() { return m_RayMarcher; }
 	nxRSM*									RSM() { return m_RSM; }
 
 	bool									InitExtensions();
@@ -61,6 +63,7 @@ public:
 	void									SetVoxelizer(nxVoxelizer* voxel) { m_Voxelizer = voxel; };
 	void									SetDistanceField(nxDistanceField* df) { m_DistanceField = df; };
 	void									SetRSM(nxRSM* rsm) { m_RSM = rsm; };
+	void									SetRayMarcher(nxRayMarcher* rm) { m_RayMarcher = rm; };
 
 	int										Width() { return m_VWidth; }
 	int										Height() { return m_VHeight; }
@@ -86,6 +89,7 @@ private:
 	nxEngine*								m_pEngine;
 	nxVoxelizer*							m_Voxelizer;
 	nxDistanceField*						m_DistanceField;
+	nxRayMarcher*							m_RayMarcher;
 	nxRSM*									m_RSM;
 
 	GLuint									m_FBO;

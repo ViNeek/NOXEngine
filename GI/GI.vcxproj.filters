@@ -87,6 +87,9 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RayMarcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utils.h">
@@ -182,6 +185,9 @@
     <ClInclude Include="Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RayMarcher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Shaders\Shaders.txt">
@@ -246,7 +252,7 @@
     <None Include="..\Shaders\DebugPass.v.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="..\Shaders\RayMarching.c.glsl">
+    <None Include="..\Shaders\RayMarch.c.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>

@@ -151,6 +151,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Program.cpp" />
+    <ClCompile Include="RayMarcher.cpp" />
     <ClCompile Include="ReflectiveShadowMap.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="Light.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="Program.h" />
+    <ClInclude Include="RayMarcher.h" />
     <ClInclude Include="ReflectiveShadowMap.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Resource.h" />
@@ -209,7 +211,7 @@
     <None Include="..\Shaders\DebugPass.v.glsl" />
     <None Include="..\Shaders\DistanceFieldInit.c.glsl" />
     <None Include="..\Shaders\DistanceFieldStep.c.glsl" />
-    <None Include="..\Shaders\RayMarching.c.glsl" />
+    <None Include="..\Shaders\RayMarch.c.glsl" />
     <None Include="..\Shaders\RSM.f.glsl" />
     <None Include="..\Shaders\RSM.g.glsl" />
     <None Include="..\Shaders\RSM.v.glsl" />
