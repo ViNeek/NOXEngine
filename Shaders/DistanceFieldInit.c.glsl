@@ -2,6 +2,7 @@
 #extension GL_ARB_compute_variable_group_size : enable
 
 uniform uvec3 u_Dim;
+uniform vec3 u_VoxelSize;
 
 layout(std430, binding=2) readonly buffer VoxelData {
     uint voxel_data[];
@@ -23,6 +24,7 @@ uint getVoxelAt( uint x, uint y, uint z ) {
 void calculateDistanceFieldAt(uint x, uint y, uint z) {
 	uvec3 l_VoxelCoords = uvec3(x, y, z);
 	ivec3 l_iVoxelCoords = ivec3(int(x), int(y), int(z));
+	vec3 l_VoxelCenter = vec3(l_iVoxelCoords) * u_VoxelSize + u_VoxelSize * 0.5;
 	float l_MinDistance = 20000;
 	int l_X;
 	int l_Y;
@@ -39,7 +41,8 @@ void calculateDistanceFieldAt(uint x, uint y, uint z) {
 						l_X,
 						l_Y, 
 						l_Z);
-
+				vec3 l_NeighbourCenter = vec3(l_Neighbour) * u_VoxelSize + u_VoxelSize * 0.5;	
+						
 				/*z
 				uvec3 l_Neighbour = uvec3(
 						l_X,
@@ -53,6 +56,7 @@ void calculateDistanceFieldAt(uint x, uint y, uint z) {
 
 				if ( l_Occupied == 1 ) {
 					//float dist = distance( l_VoxelCoords, l_Neighbour );
+					//float l_CurrentDist = length( l_NeighbourCenter - l_VoxelCenter );
 					float l_CurrentDist = length( ivec3( i, j, k ) );
 					//float l_CurrentDist = abs(i) + abs(j) + abs(k) ;
 					if ( l_CurrentDist < l_MinDistance ) {

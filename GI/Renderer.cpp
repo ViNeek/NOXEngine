@@ -87,14 +87,21 @@ void *nxRenderer::Entry()
 			glm::uvec3 l_Dims = Voxelizer()->Dimesions();
 			glm::vec3 l_GridMax = Voxelizer()->GridMax();
 			glm::vec3 l_GridMin = Voxelizer()->GridMin();
+			glm::vec3 l_Voxel = l_GridSize / glm::vec3(l_Dims);
 
-			std::cout << "Grid Center : " << l_GridCenter.x << "," << l_GridCenter.y << "," << l_GridCenter.y << "\n";
+			l_TestPosition -= l_GridMin;
+			glm::ivec3 l_Indexes= l_TestPosition / l_Voxel;
+			//std::cout << "Voxelizer : " << l_TestPosition.x << "," << l_TestPosition.y << "," << l_TestPosition.y << "\n";
+			//std::cout << "Voxel : " << l_Voxel.x << "," << l_Voxel.y << "," << l_Voxel.y << "\n";
+			//std::cout << "Voxel At : " << l_Indexes.x << "," << l_Indexes.y << "," << l_Indexes.y << "\n";
+			//std::cout << "Grid Center : " << l_GridCenter.x << "," << l_GridCenter.y << "," << l_GridCenter.y << "\n";
+			//std::cout << "Grid Size : " << l_GridSize.x << "," << l_GridSize.y << "," << l_GridSize.y << "\n";
 
 			l_TestPositionA -= l_GridMin;
-			std::cout << "Voxelizer : " << l_TestPositionA.x << "," << l_TestPositionA.y << "," << l_TestPositionA.y << "\n";
+			//std::cout << "Voxelizer : " << l_TestPositionA.x << "," << l_TestPositionA.y << "," << l_TestPositionA.y << "\n";
 
 			l_TestPositionB += l_GridMin;
-			std::cout << "Voxelizer : " << l_TestPositionB.x << "," << l_TestPositionB.y << "," << l_TestPositionB.y << "\n";
+			//std::cout << "Voxelizer : " << l_TestPositionB.x << "," << l_TestPositionB.y << "," << l_TestPositionB.y << "\n";
 
 			//std::cout << "Voxelizer : " << l_GridSize.x << "," << l_GridSize.y << "," << l_GridSize.y << "\n";
 			//std::cout << "Voxelizer : " << l_Dims.x << "," << l_Dims.y << "," << l_Dims.y << "\n";

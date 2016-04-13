@@ -321,6 +321,22 @@ void nxVoxelizer::PrintGridMeshF(GLuint ssbo) {
 		typedef array_type::index index;
 		array_type ip(p, boost::extents[m_dimensions.x][m_dimensions.y][m_dimensions.z]);
 
+		glm::vec3 l_TestPosition(0, 10, 0);
+		glm::vec3 l_TestPositionA(0, 10, 0);
+		glm::vec3 l_TestPositionB(0, 10, 0);
+		glm::vec3 l_GridSize = m_pEngine->Renderer()->Voxelizer()->GridSize();
+		glm::vec3 l_GridCenter = m_pEngine->Renderer()->Voxelizer()->GridCenter();
+		glm::uvec3 l_Dims = m_pEngine->Renderer()->Voxelizer()->Dimesions();
+		glm::vec3 l_GridMax = m_pEngine->Renderer()->Voxelizer()->GridMax();
+		glm::vec3 l_GridMin = m_pEngine->Renderer()->Voxelizer()->GridMin();
+		glm::vec3 l_Voxel = l_GridSize / glm::vec3(l_Dims);
+
+		l_TestPosition -= l_GridMin;
+		glm::ivec3 l_Indexes = l_TestPosition / l_Voxel;
+
+		std::cout << "place is : " << l_Indexes.x << ", " << l_Indexes.y << ", " << l_Indexes.z << std::endl;
+		std::cout << "distance at that place is : " << ip[l_Indexes.x][l_Indexes.y][l_Indexes.z] << std::endl;
+
 		for (int i = 0; i < m_dimensions.x; i++) {
 			for (int j = 0; j < m_dimensions.y; j++) {
 				for (int k = 0; k < m_dimensions.z; k++) {

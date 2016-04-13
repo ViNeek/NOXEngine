@@ -192,7 +192,10 @@ void nxFrame::OnProgramSwitch(wxCommandEvent& evt) {
 		if ( std::strcmp(progName.c_str(), m_pShaderMenu->GetMenuItems()[i]->GetText().c_str() ) == 0 ) {
 			m_pShaderMenu->GetMenuItems()[i]->Check(true);
 			m_EngineState->Renderer()->SetActiveProgramByName(progName.c_str().AsChar() );
-			m_EngineState->Renderer()->SetVoxelizing(true);
+			if (progName.compare("Voxelize") == 0)
+				m_EngineState->Renderer()->SetVoxelizing(true);
+			else 
+				m_EngineState->Renderer()->SetVoxelizing(false);
 		}
 		//std::cout << "\n\n" << m_pShaderMenu->GetMenuItems()[i]->GetText() << " " << progName << "\n\n" << std::endl;
 	}
