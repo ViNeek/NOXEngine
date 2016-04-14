@@ -14,8 +14,8 @@
             "DimZ": 64
         },
 		"RayMarcher": {
-            "VDimX": 16,
-            "VDimY": 16
+            "VDimX": 4,
+            "VDimY": 4
         },
 		"RSM": {
             "DimX": 512,

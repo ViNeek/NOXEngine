@@ -46,8 +46,8 @@ void calculateDistanceFieldAt(uint x, uint y, uint z) {
 											      l_Neighbour.z );
 				vec3 l_NeighbourCenter = vec3(l_Neighbour) * u_VoxelSize + u_VoxelSize * 0.5;	
 
-				//float l_CurrentDist = length( l_NeighbourCenter - l_VoxelCenter ) + l_NeighbourDist;
-				float l_CurrentDist = length( vec3( i, j, k ) ) + l_NeighbourDist;
+				float l_CurrentDist = length( l_NeighbourCenter - l_VoxelCenter ) + l_NeighbourDist;
+				//float l_CurrentDist = length( vec3( i, j, k ) ) + l_NeighbourDist;
 
 				if ( l_CurrentDist < l_MinDistance ) {
 					l_MinDistance = l_CurrentDist;
