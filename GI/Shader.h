@@ -2,6 +2,7 @@
 
 #include <string>
 #include <iostream>
+#include <ctime>
 
 #include <GL/glew.h>
 
@@ -18,27 +19,32 @@ public:
 	void				Create();
 	const std::string&	Filename(){ return m_FileName; }
 	void				Filename(const std::string& str){ m_FileName = str; }
-	GLuint				ShaderID(){ return m_ShaderID; }
+    GLuint				ShaderID(){ return m_ShaderID; }
+    GLenum				ShaderType(){ return m_Type; }
+    std::time_t			LastMod(){ return m_LastModification; }
+    void                SetLastMod(std::time_t p_Tick){ m_LastModification = p_Tick; }
 
 	// Resource Interface
 	void Manage(nxShader shader) {
-		std::cout << "load" << std::endl;
+		std::cout << "shader load" << std::endl;
 	}
 
 	void Save() {
-		std::cout << "save" << std::endl;
+		std::cout << "shader save" << std::endl;
 	}
 
 	void Get() {
-		std::cout << "get" << std::endl;
+		std::cout << "shader get" << std::endl;
 	}
 
 	void Reload() {
-		std::cout << "reload" << std::endl;
+		std::cout << "shader reload" << std::endl;
 	}
 
 	bool Changed() {
-		std::cout << "changed" << std::endl;
+		std::cout << "shader changed" << std::endl;
+
+        return true;
 	}
 
 private:
@@ -47,5 +53,6 @@ private:
 	std::string			m_SourceData;
 	std::string			m_FileName;
 	GLenum				m_Type;
+    std::time_t         m_LastModification;
 
 };

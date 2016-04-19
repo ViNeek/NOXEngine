@@ -9,15 +9,22 @@
 #include "Program.h"
 
 #include <boost/log/trivial.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/posix_time/conversion.hpp>
 
 nxShader::nxShader() {
 	m_ShaderID = -1;
+    auto l_Tick = boost::posix_time::second_clock::local_time();
+    m_LastModification = boost::posix_time::to_time_t(l_Tick);
 }
 
 nxShader::nxShader(std::string& path, GLenum shaderType) {
 	m_ShaderID = -1;
 	m_Type = shaderType;
 	m_FileName = path;
+    auto l_Tick = boost::posix_time::second_clock::local_time();
+    m_LastModification = boost::posix_time::to_time_t(l_Tick);
 
 	LoadSourceFromFile(path);
 }
@@ -52,6 +59,7 @@ void nxShader::LoadSourceFromFile(std::string& path) {
 	{
 		//Get shader source
 		m_SourceData.assign((std::istreambuf_iterator< char >(sourceFile)), std::istreambuf_iterator< char >());
+        m_LastModification = boost::filesystem::last_write_time(path);
 		//BOOST_LOG_TRIVIAL(info) << "Shader source: " << m_SourceData ;
 	}
 	else
@@ -97,11 +105,27 @@ bool nxShaderLoader::operator()(void* data) {
 	nxShader* newShader = new nxShader(blob->m_Source, blob->m_Type);
 
 	nxShaderCompilerBlob* newData =
-		new nxShaderCompilerBlob(blob->m_Engine, blob->m_Prog, newShader, blob->m_Use);
+		new nxShaderCompilerBlob(blob->m_Engine, blob->m_Prog, newShader, -1, blob->m_Use);
 
 	blob->m_Engine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_COMPILE_SHADER, newData));
 	
 	return true;
+}
+
+bool nxShaderReloader::operator()(void* data) {
+    nxShaderLoaderBlob* blob = (nxShaderLoaderBlob*)data;
+
+    nxShader* newShader = new nxShader(blob->m_Source, blob->m_Type);
+
+    std::cout << "about to reload\n";
+
+    
+    nxShaderCompilerBlob* newData =
+        new nxShaderCompilerBlob(blob->m_Engine, blob->m_Prog, newShader, false);
+
+    blob->m_Engine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_COMPILE_SHADER, newData));
+    
+    return true;
 }
 
 bool nxShaderCompiler::operator()(void* data) {
@@ -109,12 +133,24 @@ bool nxShaderCompiler::operator()(void* data) {
 
 	blob->m_Shader->Create();
 
-	blob->m_Prog->AddShader(blob->m_Shader);
+    if (blob->m_Index < 0) {
+        blob->m_Prog->AddShader(blob->m_Shader);
+    }
+    else {
+        blob->m_Prog->GetShaders()[blob->m_Index] = blob->m_Shader;
+    }
 
 	if (blob->m_Prog->ReadyForLinking()) {
 		std::cout << "Ready for linking" << std::endl;
-		nxProgramLinkerBlob* newData =
-			new nxProgramLinkerBlob(blob->m_Engine, blob->m_Prog, blob->m_Use);
+		nxProgramLinkerBlob* newData;
+        if (blob->m_Index < 0) {
+            newData =
+                new nxProgramLinkerBlob(blob->m_Engine, blob->m_Prog, blob->m_Use);
+        }
+        else {
+            newData =
+                new nxProgramLinkerBlob(blob->m_Engine, blob->m_Prog, blob->m_Use, false);
+        }
 		blob->m_Engine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LINK_PROGRAM, newData));
 	}
 

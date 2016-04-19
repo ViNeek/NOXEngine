@@ -211,10 +211,7 @@ bool nxProgramLinker::operator()(void* data) {
 	blob->m_Prog->Link();
 	//Utils::GL::CheckGLState("Linking");
 
-	blob->m_Engine->Renderer()->AddProgram(blob->m_Prog);
-
-	if ( blob->m_Use )
-		blob->m_Engine->Renderer()->SetActiveProgramByName("Simple Pass");
+	//blob->m_Engine->Renderer()->AddProgram(blob->m_Prog);
 
 	//std::cout << " PROGRAM : " << (blob->m_Prog == NULL) << std::endl;
 	//std::cout << " PROGRAM : " << (blob->m_Prog->GetName()) << std::endl;
@@ -235,6 +232,7 @@ bool nxProgramLinker::operator()(void* data) {
 
 	//std::cout << "Program Linked " << blob->m_Prog->IsLinked();
 
+    /*
 	wxFrame* evtHandler = blob->m_Engine->Scheduler()->EventHandler();
 	wxCommandEvent* evt = new wxCommandEvent(nxPROGRAM_ADDED_EVENT); // Still keeping it simple, don't give a specific event ID
 	evt->SetInt(0);
@@ -242,6 +240,31 @@ bool nxProgramLinker::operator()(void* data) {
 		evt->SetInt(1);
 	evt->SetString( blob->m_Prog->GetName() );
 	wxQueueEvent(evtHandler, evt); // This posts to ourselves: it'll be caught and sent to a different method
+    */
 
+    nxProgramAdderBlob* prograData = new nxProgramAdderBlob(blob->m_Engine, blob->m_Prog, blob->m_Use, blob->m_Add);
+    blob->m_Engine->Scheduler()->ScheduleOwnJob(nxJobFactory::CreateJob(NX_JOB_PROGRAM_ADD, prograData));
+ 
 	return true;
+};
+
+bool nxProgramAdder::operator()(void* data) {
+    nxProgramAdderBlob* blob = (nxProgramAdderBlob*)data;
+
+    std::cout <<  "Synchronously adding program\n";
+
+    blob->m_Engine->Renderer()->AddProgram(blob->m_Prog);
+
+    if (blob->m_Use)
+        blob->m_Engine->Renderer()->SetActiveProgramByName("Simple Pass");
+
+    wxFrame* evtHandler = blob->m_Engine->Scheduler()->EventHandler();
+    wxCommandEvent* evt = new wxCommandEvent(nxPROGRAM_ADDED_EVENT); // Still keeping it simple, don't give a specific event ID
+    evt->SetInt(0);
+    if (blob->m_Use)
+        evt->SetInt(1);
+    evt->SetString(blob->m_Prog->GetName());
+    wxQueueEvent(evtHandler, evt); // This posts to ourselves: it'll be caught and sent to a different method
+
+    return true;
 };

@@ -19,7 +19,7 @@ public:
 	bool AboutTime() { 
 
 		using boost::timer::cpu_times;
-		BOOST_LOG_TRIVIAL(info) << "Check Time ";
+		//BOOST_LOG_TRIVIAL(info) << "Check Time ";
 
 		if (m_Timer == nullptr) {
 			return true;
@@ -29,11 +29,11 @@ public:
 				+ elapsed_times.user);
 
 			if (elapsed >= m_Delay) {
-				BOOST_LOG_TRIVIAL(info) << "Resource Loop NOW";
+		        BOOST_LOG_TRIVIAL(info) << "Resource Loop NOW ";
 
 				return true;
 			} else {
-				BOOST_LOG_TRIVIAL(info) << "Resource Loop NOT yet ";
+				//BOOST_LOG_TRIVIAL(info) << "Resource Loop NOT yet ";
 				return false;
 			}
 		}

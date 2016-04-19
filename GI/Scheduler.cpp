@@ -4,6 +4,7 @@
 #include "Synchronizer.h"
 #include "CustomEvents.h"
 #include "JobFactory.h"
+#include "Engine.h"
 
 #define BASE_THREAD_COUNT 3
 
@@ -45,6 +46,7 @@ void* nxScheduler::Entry()
 				m_IsActive = currentJob->Execute();
 			} else {
 				ScheduleOwnJob(currentJob);
+                break;
 			}
 		} else {
 			break;
@@ -53,7 +55,7 @@ void* nxScheduler::Entry()
 
 	// blocking, lock-free queue loop
 	while (m_IsActive) {
-		boost::system_time const timeout = boost::get_system_time() + boost::posix_time::milliseconds(1);
+		boost::system_time const timeout = boost::get_system_time() + boost::posix_time::milliseconds(10);
 		boost::unique_lock<boost::mutex> lock( m_SchedulerSync->Mutex() );
 		m_SchedulerSync->ConditionVariable().timed_wait(lock, timeout);
 		m_WorkersSync->ConditionVariable().notify_all();
@@ -97,8 +99,8 @@ void nxScheduler::Init() {
 
 	//m_WorkerCount = 1;
 
-	BOOST_LOG_TRIVIAL(info) << "CPU Count : " << wxThread::GetCPUCount;
-	BOOST_LOG_TRIVIAL(info) << "Worker Count : " << m_WorkerCount;
+	//BOOST_LOG_TRIVIAL(info) << "CPU Count : " << wxThread::GetCPUCount;
+	//BOOST_LOG_TRIVIAL(info) << "Worker Count : " << m_WorkerCount;
 
 	for (int i = 0; i < m_WorkerCount; i++) {
 		nxWorker* worker = new nxWorker(m_pWorkersCommandQueue, m_WorkersSync);
@@ -131,15 +133,6 @@ bool nxSchedulerTerminator::operator()(void* data) {
 		std::cout << " firing ";
 		scheduler->ScheduleJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_WORKER_EXIT, scheduler));
 	}
-
-	return true;
-}
-
-bool nxResourceLooper::operator()(void* data) {
-	BOOST_LOG_TRIVIAL(info) << "Resource Loop Execute ";
-	nxScheduler* scheduler = (nxScheduler*)data;
-
-	scheduler->ScheduleJob(nxJobFactory::CreateJob(NX_JOB_RESOURCE_LOOP, data, true, 4 * NOXConstants::NANOS_IN_SECONDS));
 
 	return true;
 }

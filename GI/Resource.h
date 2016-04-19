@@ -8,6 +8,41 @@
 #include "Program.h"
 
 template <typename T>
+bool ChangedDispatch(void * p) {
+    return static_cast<T*>(p)->Changed();
+    std::cout << " " << std::endl;
+}
+
+template <typename T>
+void ReloadDispatch(void * p) {
+    static_cast<T*>(p)->Reload();
+    std::cout << " " << std::endl;
+}
+
+template <typename T = void>
+class nxResourceHandle {
+public:
+    bool(*ChangedDelegate)(void *);
+    void(*ReloadDelegate)(void *);
+    T * p;
+    template <typename U>
+    nxResourceHandle(U* p, 
+        bool(*ChangedDelegate)(void *) = &ChangedDispatch<typename std::remove_pointer<U>::type>,
+        void(*ReloadDelegate)(void *) = &ReloadDispatch<typename std::remove_pointer<U>::type>)
+        : p(p), ChangedDelegate(ChangedDelegate), ReloadDelegate(ReloadDelegate)
+    {}
+    bool Changed() {
+        return ChangedDelegate(p);
+    }
+    void Reload() {
+        ReloadDelegate(p);
+    }
+    ~nxResourceHandle() {
+        //deleter(p);
+    }
+};
+
+template <typename T>
 class nxResourceContainer {
 
 public:
@@ -61,6 +96,9 @@ namespace nox {
 
 	public:
 
+        using value_type = ResourceType;
+        using pointer_type = ResourceType*;
+
 		//static bool const value = (sizeof(HasManage<ResourceType>(0)) == sizeof(Yes));
 		static bool const value = (sizeof(HasGet<ResourceType>(0)) == sizeof(Yes))
 			&& (sizeof(HasReload<ResourceType>(0)) == sizeof(Yes))
@@ -68,7 +106,7 @@ namespace nox {
 			&& (sizeof(HasChanged<ResourceType>(0)) == sizeof(Yes))
 			&& (sizeof(HasSave<ResourceType>(0)) == sizeof(Yes));
 		
-		typedef std::enable_if_t<value> resource_type;
+        typedef std::enable_if_t<value, value_type> resource_type;
 
 		// Static member holding storage for the resources
 		//static ResourceContainer<resource_type>& GetContainer() { return m_Storage; }
@@ -77,7 +115,7 @@ namespace nox {
 	};
 
 	template <typename ResourceType>
-	nxResourceContainer< typename ResourceType > IsResource<ResourceType>::m_Storage = { };
+    nxResourceContainer< typename ResourceType > IsResource<ResourceType>::m_Storage = { };
 
 	} // namespace nox
 } // namespace interfaces
@@ -85,8 +123,8 @@ namespace nox {
 
 
 // Every nxHandle refering toa a resource can be called an nxResourceHandle
-template<typename T>
-using nxResourceHandle = nxHandle< typename std::enable_if_t<nox::interfaces::IsResource<T>::value> >;
+//template<typename T>
+//using nxResourceHandle = nxHandle< typename std::enable_if_t<nox::interfaces::IsResource<T>::value> >;
 
 // A typical nxResource
 // Could be considered a base class

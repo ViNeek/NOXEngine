@@ -60,27 +60,30 @@ public:
 
 	void									SetName(std::string& name) { m_ProgramName = name; };
 	const std::string&						GetName() { return m_ProgramName; };
-	GLuint									GetID() { return m_ProgramID; };
+    GLuint									GetID() { return m_ProgramID; };
+    std::vector<nxShader*>&                 GetShaders() { return m_Shaders; };
 
 	// Resource Interface
 	void Manage(nxProgram program) {
-		std::cout << "manage" << std::endl;
+		std::cout << "program manage" << std::endl;
 	}
 
 	void Save() {
-		std::cout << "save" << std::endl;
+		std::cout << "program save" << std::endl;
 	}
 
 	void Get() {
-		std::cout << "get" << std::endl;
+		std::cout << "program get" << std::endl;
 	}
 
 	void Reload() {
-		std::cout << "reload" << std::endl;
+		std::cout << "program reload" << std::endl;
 	}
 
 	bool Changed() {
-		std::cout << "changed" << std::endl;
+		std::cout << "program changed" << std::endl;
+
+        return true;
 	}
 
 private:

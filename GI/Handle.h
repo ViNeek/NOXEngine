@@ -2,7 +2,7 @@
 
 #include <atomic>
 
-template<typename T>
+template<class T = void>
 class nxHandle {
 
 private:

@@ -25,15 +25,17 @@ class nxTexture;
 enum nxJobID {
 	NX_JOB_DUMMY,
 	NX_JOB_EXIT,
-	NX_JOB_RESOURCE_LOOP,
 	NX_JOB_RENDERER_EXIT,
 	NX_JOB_SCHEDULER_EXIT,
 	NX_JOB_WORKER_EXIT,
 	NX_JOB_WORKER_FINISHED,
 	NX_JOB_LOAD_SCENE,
 	NX_JOB_LOAD_ASSET,
-	NX_JOB_LOAD_SHADER,
-	NX_GL_JOB_PROGRAM_SWAP,
+    NX_JOB_LOAD_SHADER,
+    NX_JOB_RELOAD_SHADER,
+    NX_JOB_PROGRAM_ADD,
+    NX_JOB_MANAGE_RESOURCES,
+    NX_GL_JOB_PROGRAM_SWAP,
 	NX_GL_JOB_EXTENSION_INIT,
 	NX_GL_JOB_FRAMEBUFFER_INIT,
 	NX_GL_JOB_VOXELIZER_INIT,
@@ -46,15 +48,16 @@ enum nxJobID {
     NX_GL_JOB_LOAD_ASSET,
 	NX_GL_JOB_LOAD_BUFF_ASSET,
 	NX_GL_JOB_LOAD_DEBUG_ASSET,
-	NX_GL_JOB_LINK_PROGRAM,
-	NX_JOB_MAX
+    NX_GL_JOB_LINK_PROGRAM,
+    NX_GL_JOB_RELINK_PROGRAM,
+    NX_JOB_MAX
 };
 
 class nxJobFactory {
 
 public:
 
-	static nxJob*	CreateJob(nxJobID id, void* data = 0, bool later = false, nxUInt64 after = NOXConstants::nxTimeNow);
+    static nxJob*	CreateJob(nxJobID id, void* data = 0, bool later = false, nxUInt64 after = NOXConstants::nxTimeNow);
 
 	void			Init();
 
@@ -90,6 +93,14 @@ struct nxExtensionInitializer {
 	bool operator()(void* data);
 };
 
+struct nxResourceLooperBlob {
+    nxResourceLooperBlob(nxEngine* eng, nxRenderer* rend)
+        : m_Engine(eng), m_Renderer(rend) {}
+
+    nxEngine*		m_Engine;
+    nxRenderer*		m_Renderer;
+};
+
 struct nxResourceLooper {
 	bool operator()(void* data);
 };
@@ -108,29 +119,36 @@ struct nxFramebufferInitializer {
 };
 
 struct nxShaderLoaderBlob {
-	nxShaderLoaderBlob(nxEngine* eng, nxProgram* prog, std::string source, GLenum type, bool use = false)
-		: m_Engine( eng ), m_Prog( prog ), m_Source( source ), m_Type( type ), m_Use ( use ) {}
+    nxShaderLoaderBlob(nxEngine* eng, nxProgram* prog, std::string source, GLenum type, nxInt32 index , bool use = false)
+        : m_Engine(eng), m_Prog(prog), m_Source(source), m_Type(type), m_Index(index), m_Use(use) {}
 
 	nxEngine*		m_Engine;
 	nxProgram*		m_Prog;
 	std::string		m_Source;
 	GLenum			m_Type;
 	bool			m_Use;
+    nxInt32         m_Index;
+
 };
 
 struct nxShaderLoader {
 	bool operator()(void* data);
 };
 
+struct nxShaderReloader {
+    bool operator()(void* data);
+};
 
 struct nxShaderCompilerBlob {
-	nxShaderCompilerBlob(nxEngine* eng, nxProgram* prog, nxShader* shad, bool use = false )
-		: m_Engine( eng ), m_Prog( prog ), m_Shader( shad ), m_Use(use) {}
+    nxShaderCompilerBlob(nxEngine* eng, nxProgram* prog, nxShader* shad, nxInt32 index = -1, bool use = false)
+        : m_Engine(eng), m_Prog(prog), m_Shader(shad), m_Index(index), m_Use(use) {}
 
 	nxEngine*		m_Engine;
 	nxProgram*		m_Prog;
 	nxShader*		m_Shader;
 	bool			m_Use;
+    nxInt32         m_Index;
+
 };
 
 struct nxShaderCompiler {
@@ -138,17 +156,33 @@ struct nxShaderCompiler {
 };
 
 struct nxProgramLinkerBlob {
-	nxProgramLinkerBlob(nxEngine* eng, nxProgram* prog, bool use = false)
-		: m_Engine( eng ), m_Prog( prog ), m_Use( use ) {}
+    nxProgramLinkerBlob(nxEngine* eng, nxProgram* prog, bool use = false, bool add = true)
+		: m_Engine( eng ), m_Prog( prog ), m_Use( use ), m_Add(add) {}
 
 	nxEngine*		m_Engine;
 	nxProgram*		m_Prog;
-	bool			m_Use;
+    bool			m_Use;
+    bool			m_Add;
 
 };
 
 struct nxProgramLinker {
 	bool operator()(void* data);
+};
+
+struct nxProgramAdderBlob {
+    nxProgramAdderBlob(nxEngine* eng, nxProgram* prog, bool use = false, bool add = true)
+        : m_Engine(eng), m_Prog(prog), m_Use(use), m_Add(add) {}
+
+    nxEngine*		m_Engine;
+    nxProgram*		m_Prog;
+    bool			m_Use;
+    bool			m_Add;
+
+};
+
+struct nxProgramAdder {
+    bool operator()(void* data);
 };
 
 struct nxProgramSwapperBlob {

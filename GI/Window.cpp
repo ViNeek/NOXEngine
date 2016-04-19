@@ -99,6 +99,9 @@ nxFrame::nxFrame(const wxChar *title, int xpos, int ypos, int width, int height)
 	nxFramebufferInitializerBlob* dataFBO = new nxFramebufferInitializerBlob(Engine(), Engine()->Renderer());
 	Engine()->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_FRAMEBUFFER_INIT, dataFBO));
 
+    nxResourceLooperBlob* ressourceData = new nxResourceLooperBlob(Engine(), Engine()->Renderer());
+    Engine()->Scheduler()->ScheduleOwnJob((nxJob*)nxJobFactory::CreateJob(NX_JOB_MANAGE_RESOURCES, ressourceData, true, 2000000000));
+
 	// Start Resource reload loop
 	//Engine()->Scheduler()->ScheduleJob(nxJobFactory::CreateJob(NX_JOB_RESOURCE_LOOP, Engine()->Scheduler(), true, 4 * NOXConstants::NANOS_IN_SECONDS));
 

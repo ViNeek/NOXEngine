@@ -42,6 +42,10 @@
 // FreeImage
 #include <freeimage/FreeImage.h>
 
+#include "Program.h"
+#include "Shader.h"
+#include "Resource.h"
+
 class nxApp : public wxApp
 {
 	virtual bool OnInit();
@@ -61,11 +65,20 @@ bool nxApp::OnInit()
 
 
 	FreeImage_Initialise();
-	std::cout << FreeImage_GetVersion();
-	std::cout << FreeImage_GetCopyrightMessage();
 	//FreeImage_DeInitialise();
+    /*
+    nxProgram prog(4);
+    nxShader shad;
+    nox::interfaces::IsResource<nxProgram>::value;
+    nox::interfaces::IsResource<nxProgram>::resource_type;
+    nxResourceHandle<> rs1(&prog);
+    nxResourceHandle<> rs2(&shad);
 
-	/*
+    std::cout << rs1.Changed() << std::endl;
+    std::cout << rs2.Changed() << std::endl;
+    */
+
+    /*
 	using boost::timer::cpu_timer;
 	using boost::timer::cpu_times;
 	using boost::timer::nanosecond_type;

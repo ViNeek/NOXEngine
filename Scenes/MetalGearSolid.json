@@ -9,9 +9,9 @@
             "PositionZ": 0
         },
         "Voxelizer": {
-            "DimX": 64,
-            "DimY": 64,
-            "DimZ": 64
+            "DimX": 128,
+            "DimY": 128,
+            "DimZ": 128
         },
 		"RayMarcher": {
             "VDimX": 4,

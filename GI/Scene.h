@@ -69,7 +69,8 @@ public:
 	void						SetProjection(glm::mat4& proj);
 
 	void						AddEntity(nxEntity* ent) { m_Entities.push_back(ent); }
-	void						AddDebugEntity(nxEntity* ent) { m_DebugEntities.push_back(ent); }
+    void						AddDebugEntity(nxEntity* ent) { m_DebugEntities.push_back(ent); }
+    void						ClearDebugEntities() { m_DebugEntities.clear(); }
 
 	void						Draw();
 	void						DrawVoxelized();
