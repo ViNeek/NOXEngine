@@ -15,5 +15,5 @@ void main()
 {	
     
 	//out_color = vec4(VertexIn.normal/4,0.0f);
-    out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb, 0.0f);
+    out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb * 0.3, 0.0f);
 }

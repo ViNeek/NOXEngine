@@ -6,6 +6,7 @@ layout (location = 2) in vec3 VertexNormal;
 
 out VertexData {
     vec3 normal;
+    vec3 worldcoord;
     //vec2 uv;
 } VertexOut;
 
@@ -15,7 +16,7 @@ uniform mat4 ModelMatrix;
 void main()
 {
     VertexOut.normal = normalize(NormalMatrix * VertexNormal);
-    //VertexOut.uv = VertexTexCoord;
+    VertexOut.worldcoord = VertexPosition.xyz;
     //gl_Position = vec4(VertexPosition)/VertexPosition.w;
 	//gl_Position = ModelMatrix * /*uniform_view_proj * */ vec4(VertexPosition)/VertexPosition.w;
 	gl_Position = /*uniform_view_proj * */ vec4(VertexPosition.xyz, 1);

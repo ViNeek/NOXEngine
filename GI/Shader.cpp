@@ -119,9 +119,8 @@ bool nxShaderReloader::operator()(void* data) {
 
     std::cout << "about to reload\n";
 
-    
     nxShaderCompilerBlob* newData =
-        new nxShaderCompilerBlob(blob->m_Engine, blob->m_Prog, newShader, false);
+        new nxShaderCompilerBlob(blob->m_Engine, blob->m_Prog, newShader, blob->m_Index, false);
 
     blob->m_Engine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_COMPILE_SHADER, newData));
     

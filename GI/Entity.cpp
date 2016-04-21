@@ -368,7 +368,7 @@ bool nxGLDebugAssetLoader::operator()(void* data) {
 	nxEntity* newEnt = new nxEntity();
 	newEnt->InitFromBuffer(blob->m_Buffer, blob->m_BSize);
 
-    blob->m_Engine->Scene()->ClearDebugEntities();
+    //blob->m_Engine->Scene()->ClearDebugEntities();
     blob->m_Engine->Scene()->AddDebugEntity(newEnt);
     //blob->m_Engine->Scene()->AddEntity(newEnt);
 	//blob->m_Engine->Scene()->UpdateBounds(newEnt);
@@ -382,6 +382,7 @@ bool nxGLBufferedAssetLoader::operator()(void* data) {
 
 	nxEntity* newEnt = new nxEntity();
 	newEnt->InitFromBuffer(blob->m_Buffer, blob->m_BSize);
+	newEnt->Scale(22);
 
 	blob->m_Engine->Scene()->AddEntity(newEnt);
 	blob->m_Engine->Scene()->UpdateBounds(newEnt);

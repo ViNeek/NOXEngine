@@ -29,7 +29,7 @@ public:
 				+ elapsed_times.user);
 
 			if (elapsed >= m_Delay) {
-		        BOOST_LOG_TRIVIAL(info) << "Resource Loop NOW ";
+		        //BOOST_LOG_TRIVIAL(info) << "Resource Loop NOW ";
 
 				return true;
 			} else {

@@ -27,11 +27,13 @@ flat out int offZ;
 
 in VertexData {
     vec3 normal;
+	vec3 worldcoord;
     //vec2 uv;
 } VertexIn[];
  
 out VertexData {
     vec3 normal;
+	vec3 worldcoord;
     //vec4 shadow_coords;
     //vec2 uv;
 } VertexOut;
@@ -110,6 +112,7 @@ void main()
 	// No more layered
 	//gl_Layer = index;
 	gl_ViewportIndex = index;
+	VertexOut.worldcoord = VertexIn[0].worldcoord;
 	depth = GridSize[index];
 	//factors = facts;
 	gl_Position = ViewProjMatrix[index] * gl_in[0].gl_Position;
@@ -120,6 +123,7 @@ void main()
 	//dX = GridSize.x;
 	//dY = GridSize.y;
 	//dZ = GridSize.z;
+	VertexOut.worldcoord = VertexIn[1].worldcoord;
 	gl_Position = ViewProjMatrix[index] * gl_in[1].gl_Position;
 	EmitVertex();
 	gl_ViewportIndex = index;
@@ -128,6 +132,7 @@ void main()
 	//dX = GridSize.x;
 	//dY = GridSize.y;
 	//dZ = GridSize.z;
+	VertexOut.worldcoord = VertexIn[2].worldcoord;
 	gl_Position = ViewProjMatrix[index] * gl_in[2].gl_Position;
 	EmitVertex();
 

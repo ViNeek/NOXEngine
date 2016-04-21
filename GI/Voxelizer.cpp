@@ -340,11 +340,14 @@ void nxVoxelizer::PrintGridMeshF(GLuint ssbo) {
 		for (int i = 0; i < m_dimensions.x; i++) {
 			for (int j = 0; j < m_dimensions.y; j++) {
 				for (int k = 0; k < m_dimensions.z; k++) {
-					if (ip[i][j][k] == 0) {
+					if (ip[i][j][k]  < 1) {
 						countVoxels++;
 						xCount++;
 						yCount++;
 						zCount++;
+						//printf("%g ", i * voxel.x);
+						//printf("%g ", j * voxel.y);
+						//printf("%g = %g\n", k * voxel.z, ip[i][j][k]);
 						fprintf(fp, "%g ", i * voxel.x);
 						fprintf(fp, "%g ", j * voxel.y);
 						fprintf(fp, "%g\n", k * voxel.z);

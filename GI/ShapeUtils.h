@@ -9,5 +9,6 @@ namespace Utils {
 	namespace Shape {
 		std::vector<glm::vec3> generateSphereMesh(int longitude_steps, int latitude_steps);
 		std::vector<glm::vec3> generateSphereMeshAt(int longitude_steps, int latitude_steps, glm::vec3 position);
+		std::vector<glm::vec3> generateSphereMeshScaledAt(int longitude_steps, int latitude_steps, float scale, glm::vec3 position);
 	}
 }
