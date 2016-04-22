@@ -69,8 +69,9 @@ public:
 	void						SetProjection(glm::mat4& proj);
 
 	void						AddEntity(nxEntity* ent) { m_Entities.push_back(ent); }
-    void						AddDebugEntity(nxEntity* ent) { m_DebugEntities.push_back(ent); }
-    void						ClearDebugEntities() { m_DebugEntities.clear(); }
+	void						AddDebugEntity(nxEntity* ent) { m_DebugEntities.push_back(ent); }
+	void						AddPreviewEntity(nxEntity* ent) { m_PreviewEntities.push_back(ent); }
+	void						ClearDebugEntities() { m_DebugEntities.clear(); }
 
 	void						Draw();
 	void						DrawVoxelized();
@@ -100,6 +101,8 @@ private:
 	std::vector<nxByte>			m_SceneData;
 	std::vector<nxEntity*>		m_Entities;
 	std::vector<nxEntity*>		m_DebugEntities;
+	std::vector<nxEntity*>		m_PreviewEntities;
+
 	std::vector<nxLight*>		m_Lights;
 	boost::mutex				m_SceneGuard;
 

@@ -34,6 +34,7 @@ static const nxGLTextureLoader				nxGLTextureLoader_;
 static const nxGLAssetLoader				nxGLAssetLoader_;
 static const nxGLBufferedAssetLoader		nxGLBufferedAssetLoader_;
 static const nxGLDebugAssetLoader			nxGLDebugAssetLoader_;
+static const nxGLPreviewAssetLoader			nxGLPreviewAssetLoader_;
 static const nxProgramLinker				nxProgramLinker_;
 static const nxProgramLinker				nxProgramRelinker_;
 
@@ -64,7 +65,8 @@ static const nxJobCallback nxJobDispatchTable[NX_JOB_MAX]
     nxGLAssetLoader_,
     nxGLBufferedAssetLoader_,
 	nxGLDebugAssetLoader_,
-    nxProgramLinker_,
+	nxGLPreviewAssetLoader_,
+	nxProgramLinker_,
     nxProgramRelinker_
 };
 

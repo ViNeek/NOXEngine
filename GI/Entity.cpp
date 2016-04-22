@@ -34,6 +34,8 @@ nxEntity::nxEntity() {
 	m_DataCurrentSize = 0;
 	m_VertexDataSize = 0;
 
+	m_AdHocTextureObject = -1;
+
 }
 
 nxEntity::nxEntity(const std::string filename) {
@@ -49,6 +51,8 @@ nxEntity::nxEntity(const std::string filename) {
 
 	m_DataCurrentSize = 0;
 	m_VertexDataSize = 0;
+
+	m_AdHocTextureObject = -1;
 
 	std::string model_name;
 	std::string::size_type posEnd = filename.find('.');
@@ -66,14 +70,14 @@ nxEntity::nxEntity(const std::string filename) {
 }
 
 
-void nxEntity::InitFromBuffer(glm::vec3* buffer, nxInt32 size) {
+void nxEntity::InitFromBuffer(glm::vec3* buffer, nxInt32 size, GLuint adHocTexture) {
 	glGenBuffers(1, &m_VBO);
 
 	glGenVertexArrays(1, &m_VAO);
 	glBindVertexArray(m_VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, size * sizeof(glm::vec3), buffer, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, size, buffer, GL_STATIC_DRAW);
 
 	for (nxSizeType i = 0; i < size; i++) {
 		if (buffer[i].x < m_MinX) m_MinX = buffer[i].x;
@@ -84,16 +88,19 @@ void nxEntity::InitFromBuffer(glm::vec3* buffer, nxInt32 size) {
 		if (buffer[i].z > m_MaxZ) m_MaxZ = buffer[i].z;
 	}
 	
+	const auto l_VertexSize = sizeof(aiVector3D) + sizeof(aiVector2D);
+
 	m_NumMeshes = 1;
 	m_MeshStartIndices.push_back(0);
-	m_MeshSizes.push_back(size);
+	m_MeshSizes.push_back(size / 5);
+	m_AdHocTextureObject = adHocTexture;
 
 	// Vertex positions
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(aiVector3D), 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, l_VertexSize, 0);
 	// Texture coordinates
-	//glEnableVertexAttribArray(1);
-	//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(aiVector3D) + sizeof(aiVector2D), (void*)sizeof(aiVector3D));
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, l_VertexSize, (void*)sizeof(aiVector3D));
 	// Normal vectors
 	//glEnableVertexAttribArray(2);
 	//glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 2 * sizeof(aiVector3D) + sizeof(aiVector2D), (void*)(sizeof(aiVector3D) + sizeof(aiVector2D)));
@@ -282,6 +289,11 @@ void nxEntity::Draw() {
 			nxInt32 l_MatIndex = m_MaterialIndices[i];
 			m_TextureCache[l_MatIndex]->Bind();
 		}
+		else if (m_AdHocTextureObject >= 0) {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, m_AdHocTextureObject);
+			//printf("Texture with id : %d", m_AdHocTextureObject);
+		}
 		glDrawArrays(GL_TRIANGLES, m_MeshStartIndices[i], m_MeshSizes[i]);
 	}
 }
@@ -381,7 +393,7 @@ bool nxGLBufferedAssetLoader::operator()(void* data) {
 	nxGLBufferedAssetLoaderBlob* blob = (nxGLBufferedAssetLoaderBlob*)data;
 
 	nxEntity* newEnt = new nxEntity();
-	newEnt->InitFromBuffer(blob->m_Buffer, blob->m_BSize);
+	newEnt->InitFromBuffer(blob->m_Buffer, blob->m_BSize, blob->m_TextureObject);
 	newEnt->Scale(22);
 
 	blob->m_Engine->Scene()->AddEntity(newEnt);
@@ -399,6 +411,19 @@ bool nxGLAssetLoader::operator()(void* data) {
 	blob->m_Engine->Scene()->AddEntity(blob->m_Entity);
 	blob->m_Engine->Scene()->UpdateBounds(blob->m_Entity);
 	blob->m_Engine->Renderer()->Voxelizer()->SetMatrices();
+
+	return true;
+}
+
+bool nxGLPreviewAssetLoader::operator()(void* data) {
+	nxGLBufferedAssetLoaderBlob* blob = (nxGLBufferedAssetLoaderBlob*)data;
+
+	nxEntity* newEnt = new nxEntity();
+	newEnt->InitFromBuffer(blob->m_Buffer, blob->m_BSize, blob->m_TextureObject);
+
+	blob->m_Engine->Scene()->AddPreviewEntity(newEnt);
+	//blob->m_Engine->Scene()->UpdateBounds(newEnt);
+	//blob->m_Engine->Renderer()->Voxelizer()->SetMatrices();
 
 	return true;
 }

@@ -100,5 +100,96 @@ bool nxRSMInitializer::operator()(void* data) {
 
 	blob->m_Engine->Renderer()->RSM()->Init();
 
+	auto buffer = new std::vector<nxByte>;
+	auto t_TempVec = glm::vec3(0.5, 0.8, 0.01);
+	auto t_TempCoordVec = glm::vec2(0, 0);
+	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
+	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
+	t_TempVec = glm::vec3(0.9, 0.8, 0.01);
+	t_TempCoordVec = glm::vec2(1, 0);
+	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
+	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
+	t_TempVec = glm::vec3(0.9, 0.3, 0.01);
+	t_TempCoordVec = glm::vec2(1, 1);
+	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
+	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
+	t_TempVec = glm::vec3(0.9, 0.3, 0.01);
+	t_TempCoordVec = glm::vec2(1, 1);
+	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
+	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
+	t_TempVec = glm::vec3(0.5, 0.3, 0.01);
+	t_TempCoordVec = glm::vec2(0, 1);
+	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
+	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
+	t_TempVec = glm::vec3(0.5, 0.8, 0.01);
+	t_TempCoordVec = glm::vec2(0, 0);
+	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
+	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
+
+	nxGLBufferedAssetLoaderBlob* bufferData = new nxGLBufferedAssetLoaderBlob(blob->m_Engine, (glm::vec3*) buffer->data(), buffer->size(), blob->m_Engine->Renderer()->RSM()->FLuxMap());
+	blob->m_Engine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_PREVIEW_ASSET, bufferData));
+
+	float l_OffsetY = 0.6;
+	
+	buffer = new std::vector<nxByte>;
+	t_TempVec = glm::vec3(0.5, 0.8 - l_OffsetY, 0.01);
+	t_TempCoordVec = glm::vec2(0, 0);
+	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
+	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
+	t_TempVec = glm::vec3(0.9, 0.8 - l_OffsetY, 0.01);
+	t_TempCoordVec = glm::vec2(1, 0);
+	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
+	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
+	t_TempVec = glm::vec3(0.9, 0.3 - l_OffsetY, 0.01);
+	t_TempCoordVec = glm::vec2(1, 1);
+	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
+	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
+	t_TempVec = glm::vec3(0.9, 0.3 - l_OffsetY, 0.01);
+	t_TempCoordVec = glm::vec2(1, 1);
+	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
+	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
+	t_TempVec = glm::vec3(0.5, 0.3 - l_OffsetY, 0.01);
+	t_TempCoordVec = glm::vec2(0, 1);
+	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
+	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
+	t_TempVec = glm::vec3(0.5, 0.8 - l_OffsetY, 0.01);
+	t_TempCoordVec = glm::vec2(0, 0);
+	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
+	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
+
+	bufferData = new nxGLBufferedAssetLoaderBlob(blob->m_Engine, (glm::vec3*) buffer->data(), buffer->size(), blob->m_Engine->Renderer()->RSM()->NormalMap());
+	blob->m_Engine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_PREVIEW_ASSET, bufferData));
+
+	l_OffsetY = 1.2;
+
+	buffer = new std::vector<nxByte>;
+	t_TempVec = glm::vec3(0.5, 0.8 - l_OffsetY, 0.01);
+	t_TempCoordVec = glm::vec2(0, 0);
+	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
+	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
+	t_TempVec = glm::vec3(0.9, 0.8 - l_OffsetY, 0.01);
+	t_TempCoordVec = glm::vec2(1, 0);
+	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
+	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
+	t_TempVec = glm::vec3(0.9, 0.3 - l_OffsetY, 0.01);
+	t_TempCoordVec = glm::vec2(1, 1);
+	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
+	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
+	t_TempVec = glm::vec3(0.9, 0.3 - l_OffsetY, 0.01);
+	t_TempCoordVec = glm::vec2(1, 1);
+	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
+	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
+	t_TempVec = glm::vec3(0.5, 0.3 - l_OffsetY, 0.01);
+	t_TempCoordVec = glm::vec2(0, 1);
+	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
+	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
+	t_TempVec = glm::vec3(0.5, 0.8 - l_OffsetY, 0.01);
+	t_TempCoordVec = glm::vec2(0, 0);
+	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
+	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
+
+	bufferData = new nxGLBufferedAssetLoaderBlob(blob->m_Engine, (glm::vec3*) buffer->data(), buffer->size(), blob->m_Engine->Renderer()->RSM()->ShadowMap());
+	blob->m_Engine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_PREVIEW_ASSET, bufferData));
+
 	return true;
 }

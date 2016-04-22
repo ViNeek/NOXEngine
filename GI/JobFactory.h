@@ -48,7 +48,8 @@ enum nxJobID {
     NX_GL_JOB_LOAD_ASSET,
 	NX_GL_JOB_LOAD_BUFF_ASSET,
 	NX_GL_JOB_LOAD_DEBUG_ASSET,
-    NX_GL_JOB_LINK_PROGRAM,
+	NX_GL_JOB_LOAD_PREVIEW_ASSET,
+	NX_GL_JOB_LINK_PROGRAM,
     NX_GL_JOB_RELINK_PROGRAM,
     NX_JOB_MAX
 };
@@ -218,12 +219,13 @@ struct nxGLAssetLoaderBlob {
 };
 
 struct nxGLBufferedAssetLoaderBlob {
-	nxGLBufferedAssetLoaderBlob(nxEngine* eng, glm::vec3* buff, nxInt32 size)
-		: m_Engine(eng), m_Buffer(buff), m_BSize(size) {}
+	nxGLBufferedAssetLoaderBlob(nxEngine* eng, glm::vec3* buff, nxInt32 size, GLuint textureid = -1)
+		: m_Engine(eng), m_Buffer(buff), m_BSize(size), m_TextureObject(textureid){}
 
 	nxEngine*		m_Engine;
 	glm::vec3*		m_Buffer;
 	nxInt32			m_BSize;
+	GLuint			m_TextureObject;
 
 };
 
@@ -249,6 +251,10 @@ struct nxGLBufferedAssetLoader {
 };
 
 struct nxGLDebugAssetLoader {
+	bool operator()(void* data);
+};
+
+struct nxGLPreviewAssetLoader {
 	bool operator()(void* data);
 };
 

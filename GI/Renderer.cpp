@@ -191,8 +191,8 @@ void nxRenderer::RenderFrame() {
 	glViewport(0, 0, m_VWidth, m_VHeight);
 	//if (error) Utils::GL::CheckGLState("Frame");
 
-    if (IsVoxelizing())
-        m_pEngine->Scene()->CaptureRSM();
+    //if (IsVoxelizing())
+	m_pEngine->Scene()->CaptureRSM();
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
 	//if (error) Utils::GL::CheckGLState("Draw");

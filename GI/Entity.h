@@ -17,7 +17,7 @@ public:
 							nxEntity();
 							nxEntity(const std::string filename);
 	void					InitFromFile(const std::string& filename);
-	void					InitFromBuffer(glm::vec3* buffer, nxInt32 size);
+	void					InitFromBuffer(glm::vec3* buffer, nxInt32 size, GLuint adHocTexture = -1);
 	void					ClearData();
 
 	void					UploadData();
@@ -76,7 +76,9 @@ private:
 	std::vector<int>		m_MeshSizes;
 
     std::vector<nxTexture*> m_TextureCache;
-	
+
+	GLuint					m_AdHocTextureObject;
+
     std::string				m_ModelName;
 
 	glm::vec3				m_ModelTransform;

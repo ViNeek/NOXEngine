@@ -11,11 +11,14 @@ uniform mat4 MVP;
 
 in VertexData {
     vec3 normal;
-    //vec2 uv;
+    vec3 worldpos;
+    vec2 uv;
 } VertexIn[];
  
 out VertexData {
     vec3 normal;
+    vec3 worldpos;
+    vec2 uv;
 } VertexOut;
  
 void main()
@@ -26,7 +29,8 @@ void main()
 		pos = MVP * gl_in[i].gl_Position;
 		//VertexOut.shadow_coords = depthMVP * gl_in[i].gl_Position;
 		VertexOut.normal = VertexIn[i].normal;
-		//VertexOut.uv = VertexIn[i].uv;
+		VertexOut.uv = VertexIn[i].uv;
+		VertexOut.worldpos = VertexIn[i].worldpos;
 		gl_Position = pos;
 
 		EmitVertex();
