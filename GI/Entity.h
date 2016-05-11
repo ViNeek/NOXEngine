@@ -18,6 +18,8 @@ public:
 							nxEntity(const std::string filename);
 	void					InitFromFile(const std::string& filename);
 	void					InitFromBuffer(glm::vec3* buffer, nxInt32 size, GLuint adHocTexture = -1);
+    void                    InitPreviewFromBuffer(glm::vec3* buffer, nxInt32 size, GLuint adHocTexture = -1);
+
 	void					ClearData();
 
 	void					UploadData();

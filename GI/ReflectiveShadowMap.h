@@ -15,7 +15,10 @@ public:
 
 	void Init();
     void Bind();
-	nxShadowMapObject ShadowMap() { return m_ShadowMap; }
+    nxUInt32        Width() { return m_DimX; }
+    nxUInt32        Height() { return m_DimY; }
+
+    nxShadowMapObject ShadowMap() { return m_ShadowMap; }
 	nxTextureObject FLuxMap() { return m_FluxMap; }
 	nxTextureObject NormalMap() { return m_NormalMap; }
 

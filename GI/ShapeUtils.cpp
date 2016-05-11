@@ -134,7 +134,7 @@ std::vector<glm::vec3> Utils::Shape::generateSphereMeshScaledAt(int longitude_st
 	}
 
 	for (auto& vert : sphere_data) {
-		vert += position;
+		//vert += position;
 		//vert /= scale;
 	}
 

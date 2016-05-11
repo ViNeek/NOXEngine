@@ -40,24 +40,33 @@ void nxReflectiveShadowMap::Init() {
 	glGenFramebuffers(1, m_FrameBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FrameBuffer);
 
-    glActiveTexture(GL_TEXTURE0 + NOX_FRAMEBUFFER_TARGET);
 
 	// Depth texture. Slower than a depth buffer, but you can sample it later in your shader
-	glGenTextures(1, m_ShadowMap);
+
+    glActiveTexture(GL_TEXTURE0 + NOX_DEPTH_MAP);
+
+    glGenTextures(1, m_ShadowMap);
 	glBindTexture(GL_TEXTURE_2D, m_ShadowMap);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, m_DimX, m_DimY, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_DimX, m_DimY, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    float l_BorderColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    //float l_BorderColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, l_BorderColor);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+
+    glActiveTexture(GL_TEXTURE0 + NOX_FRAMEBUFFER_TARGET);
+
 	glGenTextures(1, m_NormalMap);
-	glBindTexture(GL_TEXTURE_2D, m_NormalMap);
+    glBindTexture(GL_TEXTURE_2D, m_NormalMap);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, m_DimX, m_DimX, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	glGenTextures(1, m_FluxMap);
 	glBindTexture(GL_TEXTURE_2D, m_FluxMap);
@@ -102,27 +111,27 @@ bool nxRSMInitializer::operator()(void* data) {
 
 	auto buffer = new std::vector<nxByte>;
 	auto t_TempVec = glm::vec3(0.5, 0.8, 0.01);
-	auto t_TempCoordVec = glm::vec2(0, 0);
+	auto t_TempCoordVec = glm::vec2(0, 1);
 	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
 	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
 	t_TempVec = glm::vec3(0.9, 0.8, 0.01);
+	t_TempCoordVec = glm::vec2(1, 1);
+	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
+	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
+	t_TempVec = glm::vec3(0.9, 0.3, 0.01);
 	t_TempCoordVec = glm::vec2(1, 0);
 	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
 	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
 	t_TempVec = glm::vec3(0.9, 0.3, 0.01);
-	t_TempCoordVec = glm::vec2(1, 1);
-	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
-	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
-	t_TempVec = glm::vec3(0.9, 0.3, 0.01);
-	t_TempCoordVec = glm::vec2(1, 1);
+	t_TempCoordVec = glm::vec2(1, 0);
 	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
 	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
 	t_TempVec = glm::vec3(0.5, 0.3, 0.01);
-	t_TempCoordVec = glm::vec2(0, 1);
+	t_TempCoordVec = glm::vec2(0, 0);
 	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
 	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
 	t_TempVec = glm::vec3(0.5, 0.8, 0.01);
-	t_TempCoordVec = glm::vec2(0, 0);
+	t_TempCoordVec = glm::vec2(0, 1);
 	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
 	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
 
@@ -133,27 +142,27 @@ bool nxRSMInitializer::operator()(void* data) {
 	
 	buffer = new std::vector<nxByte>;
 	t_TempVec = glm::vec3(0.5, 0.8 - l_OffsetY, 0.01);
-	t_TempCoordVec = glm::vec2(0, 0);
+	t_TempCoordVec = glm::vec2(0, 1);
 	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
 	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
 	t_TempVec = glm::vec3(0.9, 0.8 - l_OffsetY, 0.01);
+	t_TempCoordVec = glm::vec2(1, 1);
+	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
+	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
+	t_TempVec = glm::vec3(0.9, 0.3 - l_OffsetY, 0.01);
 	t_TempCoordVec = glm::vec2(1, 0);
 	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
 	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
 	t_TempVec = glm::vec3(0.9, 0.3 - l_OffsetY, 0.01);
-	t_TempCoordVec = glm::vec2(1, 1);
-	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
-	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
-	t_TempVec = glm::vec3(0.9, 0.3 - l_OffsetY, 0.01);
-	t_TempCoordVec = glm::vec2(1, 1);
+	t_TempCoordVec = glm::vec2(1, 0);
 	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
 	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
 	t_TempVec = glm::vec3(0.5, 0.3 - l_OffsetY, 0.01);
-	t_TempCoordVec = glm::vec2(0, 1);
+	t_TempCoordVec = glm::vec2(0, 0);
 	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
 	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
 	t_TempVec = glm::vec3(0.5, 0.8 - l_OffsetY, 0.01);
-	t_TempCoordVec = glm::vec2(0, 0);
+	t_TempCoordVec = glm::vec2(0, 1);
 	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
 	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
 
@@ -164,27 +173,27 @@ bool nxRSMInitializer::operator()(void* data) {
 
 	buffer = new std::vector<nxByte>;
 	t_TempVec = glm::vec3(0.5, 0.8 - l_OffsetY, 0.01);
-	t_TempCoordVec = glm::vec2(0, 0);
+	t_TempCoordVec = glm::vec2(0, 1);
 	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
 	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
 	t_TempVec = glm::vec3(0.9, 0.8 - l_OffsetY, 0.01);
+	t_TempCoordVec = glm::vec2(1, 1);
+	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
+	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
+	t_TempVec = glm::vec3(0.9, 0.3 - l_OffsetY, 0.01);
 	t_TempCoordVec = glm::vec2(1, 0);
 	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
 	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
 	t_TempVec = glm::vec3(0.9, 0.3 - l_OffsetY, 0.01);
-	t_TempCoordVec = glm::vec2(1, 1);
-	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
-	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
-	t_TempVec = glm::vec3(0.9, 0.3 - l_OffsetY, 0.01);
-	t_TempCoordVec = glm::vec2(1, 1);
+	t_TempCoordVec = glm::vec2(1, 0);
 	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
 	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
 	t_TempVec = glm::vec3(0.5, 0.3 - l_OffsetY, 0.01);
-	t_TempCoordVec = glm::vec2(0, 1);
+	t_TempCoordVec = glm::vec2(0, 0);
 	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
 	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
 	t_TempVec = glm::vec3(0.5, 0.8 - l_OffsetY, 0.01);
-	t_TempCoordVec = glm::vec2(0, 0);
+	t_TempCoordVec = glm::vec2(0, 1);
 	buffer->insert(buffer->end(), (nxByte*)&t_TempVec, (nxByte*)&t_TempVec + sizeof(glm::vec3));
 	buffer->insert(buffer->end(), (nxByte*)&t_TempCoordVec, (nxByte*)&t_TempCoordVec + sizeof(glm::vec2));
 

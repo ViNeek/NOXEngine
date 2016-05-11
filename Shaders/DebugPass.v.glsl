@@ -8,5 +8,5 @@ layout (location = 4) in vec3 VertexBitangent;
 
 void main()
 {
-    gl_Position = vec4(VertexPosition)/VertexPosition.w;
+    gl_Position = vec4(VertexPosition);
 }

@@ -188,12 +188,18 @@ void nxScene::Init() {
 			}
 		}
 
+        pixels->clear();
+        pixels->push_back(glm::vec3(-2, 4.0f, -5.0f));
+        pixels->push_back(glm::vec3(100, -50.0f, -100.0f));
+        nxGLBufferedAssetLoaderBlob* bufferDataP = new nxGLBufferedAssetLoaderBlob(m_pEngine, pixels->data(), pixels->size());
+        m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, bufferDataP));
+
 		std::vector<glm::vec3>* sphere = new std::vector<glm::vec3>;
 		//*sphere = Utils::Shape::generateSphereMesh(8, 8);
-		*sphere = Utils::Shape::generateSphereMeshAt(8, 8, glm::vec3(0, 10, 0) );
+        *sphere = Utils::Shape::generateSphereMeshAt(8, 8, glm::vec3(-2, 2.0f, -5.0f));
 
-		nxGLBufferedAssetLoaderBlob* bufferData = new nxGLBufferedAssetLoaderBlob(m_pEngine, buffer->data(), buffer->size());
-		//m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_BUFF_ASSET, bufferData));
+        nxGLBufferedAssetLoaderBlob* bufferData = new nxGLBufferedAssetLoaderBlob(m_pEngine, sphere->data(), sphere->size());
+        m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, bufferData));
 		//m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_PREVIEW_ASSET, bufferData));
 		//m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, &pixels->at(0)));
 
@@ -250,10 +256,10 @@ void nxScene::Init() {
 		);
 
 		nxLight* l_Light = new nxSpotlight(
-            glm::vec3(0.0f, 3.0f, 0.0f),
-			glm::lookAt(
-                glm::vec3(0, 3, 0),
-                glm::vec3(0, 0, -100),
+            glm::vec3(-2, 4.0f, -5.0f),
+            glm::lookAt(
+                glm::vec3(-2, 4, -5.0),
+                glm::vec3(100, -50, -100),
                 glm::vec3(0, 1, 0)
 			));
 
@@ -278,10 +284,7 @@ glm::mat3& nxScene::Normal() {
 bool errorGL = true;
 
 void nxScene::CaptureRSM() {
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_FRONT);
-	glDisable(GL_CULL_FACE);
-
+	
     for (auto light : m_Lights) {
         nxProgram* l_Prog = m_pEngine->Renderer()->GetActiveProgramByName("RSM");
 
@@ -290,27 +293,45 @@ void nxScene::CaptureRSM() {
         m_pEngine->Renderer()->RSM()->Bind();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glViewport(0, 0, 512, 512);
+        glViewport(0, 0, m_pEngine->Renderer()->RSM()->Width(), m_pEngine->Renderer()->RSM()->Height());
 
         //printf("Luda OUT");
         if (l_Prog) {
             //printf("Luda IN");
             l_Prog->Use();
-            glm::mat4 l_ProjRSM = glm::perspective(45.0f, 512.0f / 512, 5.0f, 300.0f);
+            //glm::mat4 l_ProjRSM = glm::perspective(45.0f, 512.0f / 512.0f, 0.0f, 300.0f);
+            //glm::mat4 l_ProjRSM = glm::perspective(45.0f, (float)m_pEngine->Renderer()->RSM()->Width() / m_pEngine->Renderer()->RSM()->Height(), 0.1f, 300.0f);
             for (auto entity : m_Entities) {
-                m_MState.m_VMatrix = light->View();
+               // m_MState.m_VMatrix = light->View();
+
+                glm::mat4 l_ProjRSM = glm::perspective(45.0f, 512.0f / 512.0f, 1.0f, 30.0f);
+                glm::mat4 depthViewMatrix = light->View();
+                glm::mat4 depthModelMatrix = glm::translate(glm::mat4(), entity->ModelTransform());
+                glm::mat4 depthMVP = l_ProjRSM * depthViewMatrix * depthModelMatrix;
+
+                m_MState.m_VMatrix = glm::mat4();
+
+                m_MState.m_VMatrix = glm::translate(View(),
+                    light->Center());
+                //m_MState.m_VMatrix = m_Camera->ViewTransform();
                 m_MState.m_VMatrix = glm::translate(View(), entity->ModelTransform());
+                //m_MState.m_VMatrix *= m_MState.m_RMatrix;
+                //m_MState.m_VMatrix = glm::translate(View(), light->Center());
+                //m_MState.m_VMatrix = glm::translate(View(), entity->ModelTransform());
+                //m_MState.m_VMatrix = glm::translate(View(), -light->View());
+                //m_MState.m_VMatrix *= light->View();
 
                 //m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
                 l_Prog->SetUniform("NormalMatrix", Normal());
-                l_Prog->SetUniform("MVP", l_ProjRSM*m_MState.m_VMatrix);
-				l_Prog->SetUniform("DiffuseTexture", NOX_DIFFUSE_MAP);
+                //l_Prog->SetUniform("MVP", l_ProjRSM*m_MState.m_VMatrix);
+                l_Prog->SetUniform("MVP", depthMVP);
+                l_Prog->SetUniform("DiffuseTexture", NOX_DIFFUSE_MAP);
 				//l_Prog->SetUniform("u_LightPos", NOX_DIFFUSE_MAP);
 				//l_Prog->SetUniform("u_LightViewDir", NOX_DIFFUSE_MAP);
-				l_Prog->SetUniform("u_LightFOV", 45);
-				l_Prog->SetUniform("u_VPort", glm::ivec2(512,512));
-				l_Prog->SetUniform("u_ZFar", 300.0f);
-				l_Prog->SetUniform("u_ZNear", 5.0f);
+				//l_Prog->SetUniform("u_LightFOV", 45);
+				//l_Prog->SetUniform("u_VPort", glm::ivec2(512,512));
+				//l_Prog->SetUniform("u_ZFar", 300.0f);
+				//l_Prog->SetUniform("u_ZNear", 5.0f);
 
 				entity->Draw();
             }
@@ -408,7 +429,6 @@ void nxScene::CaptureRSM() {
         
     }
 
-	glDisable(GL_CULL_FACE);
 }
 
 void nxScene::Draw() {
@@ -422,9 +442,30 @@ void nxScene::Draw() {
 	//if (errorGL) Utils::GL::CheckGLState("Program USE");
 
 	m_pEngine->Renderer()->UseProgram();
+    static const glm::mat4 biasMatrix(
+        0.5, 0.0, 0.0, 0.0,
+        0.0, 0.5, 0.0, 0.0,
+        0.0, 0.0, 0.5, 0.0,
+        0.5, 0.5, 0.5, 1.0
+        );
 
 	for (size_t i = 0; i < m_Entities.size(); i++) {
 			m_MState.m_VMatrix = glm::mat4();
+
+       glm::mat4 lightMVP = glm::mat4();
+
+       //glm::mat4 depthProjectionMatrix = glm::ortho<float>(-10, 10, -10, 10, -10, 20);
+       glm::mat4 l_ProjRSM = glm::perspective(45.0f, 512.0f / 512.0f, 1.0f, 30.0f);
+       glm::mat4 depthViewMatrix = m_Lights[0]->View();
+       glm::mat4 depthModelMatrix = glm::translate(glm::mat4(), m_Entities[i]->ModelTransform());
+       glm::mat4 depthMVP = l_ProjRSM * depthViewMatrix * depthModelMatrix;
+
+       //lightMVP = glm::translate(lightMVP,
+       //    -m_Lights[0]->Center());
+       //m_MState.m_VMatrix = m_Camera->ViewTransform();
+       //glm::mat4 l_ProjRSM = glm::perspective(45.0f, (float)m_pEngine->Renderer()->RSM()->Width() / (float)m_pEngine->Renderer()->RSM()->Height(), 0.1f, 300.0f);
+       //glm::mat4 l_ProjRSM = glm::perspective(45.0f, 512.0f / 512.0f, 2.0f, 300.0f);
+       lightMVP = glm::translate(lightMVP, m_Entities[i]->ModelTransform());
 
 		m_MState.m_VMatrix = glm::translate(View(),
 			-m_Camera->Position());
@@ -435,12 +476,20 @@ void nxScene::Draw() {
 		m_MState.m_MMatrix = glm::translate(glm::mat4(), m_Entities[i]->ModelTransform());
 
 		//m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
-		//m_pEngine->Renderer()->Program()->SetUniform("NormalMatrix", Normal());
-		
+        m_pEngine->Renderer()->Program()->SetUniform("NormalMatrix", Normal());
+        m_pEngine->Renderer()->Program()->SetUniform("LightPosition", m_Lights[0]->Center());
+        //m_pEngine->Renderer()->Program()->SetUniform("LightPosition", m_Lights[0]->Center());
+
 		//if (errorGL) Utils::GL::CheckGLState("Set Normal");
 
         m_pEngine->Renderer()->Program()->SetUniform("MVP", m_MState.m_PMatrix*m_MState.m_VMatrix);
+        m_pEngine->Renderer()->Program()->SetUniform("lightMVP", depthMVP);
         m_pEngine->Renderer()->Program()->SetUniform("DiffuseTexture", NOX_DIFFUSE_MAP);
+        m_pEngine->Renderer()->Program()->SetUniform("ApplyShadows", true);
+        
+        glActiveTexture(GL_TEXTURE0 + NOX_DEPTH_MAP);
+        glBindTexture(GL_TEXTURE_2D, m_pEngine->Renderer()->RSM()->ShadowMap());
+        m_pEngine->Renderer()->Program()->SetUniform("ShadowTexture", NOX_DEPTH_MAP);
         //m_pEngine->Renderer()->Program()->SetUniform("MVP", View());
 		//if (errorGL) Utils::GL::CheckGLState("Set MVP");
 
@@ -490,6 +539,7 @@ void nxScene::Draw() {
 			//m_MState.m_VMatrix *= m_MState.m_RMatrix;
 			glm::mat4 pMa = glm::ortho(-1, 1, -1, 1);
 			m_pEngine->Renderer()->Program()->SetUniform("MVP", pMa * m_MState.m_VMatrix);
+            m_pEngine->Renderer()->Program()->SetUniform("ApplyShadows", false);
 			//m_pEngine->Renderer()->Program()->SetUniform("MVP", View());
 			//if (errorGL) Utils::GL::CheckGLState("Set MVP");
 
@@ -637,6 +687,13 @@ void nxScene::DrawVoxelized() {
 
 			ClearDebugEntities();
 
+            std::vector<glm::vec3>* sphereHitC = new std::vector<glm::vec3>;
+            //*sphereHitC = Utils::Shape::generateSphereMeshScaledAt(8, 8, 1.0f, glm::vec3(0, 10, 0));
+            *sphereHitC = Utils::Shape::generateSphereMeshAt(16, 16, glm::vec3(0, 100, 0));
+            
+            nxGLBufferedAssetLoaderBlob* bufferDataHitC = new nxGLBufferedAssetLoaderBlob(m_pEngine, sphereHitC->data(), sphereHitC->size());
+            //m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, bufferDataHitC));
+
 			/*
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_pEngine->Renderer()->DistanceField()->DistanceFieldFrontBuffer());
 
@@ -716,7 +773,7 @@ void nxScene::DrawVoxelized() {
 						*sphereHit = Utils::Shape::generateSphereMeshScaledAt(8, 8, 1.0f / l_Voxel.x, l_FinalPosHit);
 						
 						nxGLBufferedAssetLoaderBlob* bufferDataHit = new nxGLBufferedAssetLoaderBlob(m_pEngine, sphereHit->data(), sphereHit->size());
-						m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, bufferDataHit));
+						//m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, bufferDataHit));
 
 					}
 				}
@@ -738,7 +795,7 @@ void nxScene::DrawVoxelized() {
 			*sphere = Utils::Shape::generateSphereMeshAt(8, 8, l_FinalPos);
 
 			nxGLBufferedAssetLoaderBlob* bufferData = new nxGLBufferedAssetLoaderBlob(m_pEngine, sphere->data(), sphere->size());
-			m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, bufferData));
+			//m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, bufferData));
 			//m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, &pixels->at(0)));
 
 

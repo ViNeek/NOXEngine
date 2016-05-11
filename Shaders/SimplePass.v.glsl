@@ -7,19 +7,28 @@ layout (location = 3) in vec3 VertexTangent;
 layout (location = 4) in vec3 VertexBitangent;
 
 out VertexData {
+    vec3 world_pos;
+    vec4 shadow_coords;
     vec3 normal;
+    float NdotL;
     vec3 tangent;
     vec3 bitangent;
     vec2 uv;
 } VertexOut;
 
 uniform mat3 NormalMatrix;
+uniform vec3 LightPosition;
+uniform vec3 CameraPosition;
 
 void main()
 {
     VertexOut.normal = normalize(NormalMatrix * VertexNormal);
     VertexOut.tangent = normalize(NormalMatrix * VertexTangent);
     VertexOut.bitangent = normalize(NormalMatrix * VertexBitangent);
+    VertexOut.NdotL = max(dot(VertexOut.normal, normalize( LightPosition - vec3(100, -50.0f, -100.0f) )), 0.0);
     VertexOut.uv = VertexTexCoord;
-    gl_Position = vec4(VertexPosition)/VertexPosition.w;
+    VertexOut.shadow_coords = VertexPosition;
+    VertexOut.world_pos = vec3(vec4(VertexPosition)/VertexPosition.w);
+
+    gl_Position = vec4(VertexPosition);
 }

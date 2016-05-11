@@ -69,6 +69,43 @@ nxEntity::nxEntity(const std::string filename) {
 	InitFromFile(filename);
 }
 
+void nxEntity::InitPreviewFromBuffer(glm::vec3* buffer, nxInt32 size, GLuint adHocTexture) {
+    glGenBuffers(1, &m_VBO);
+
+    glGenVertexArrays(1, &m_VAO);
+    glBindVertexArray(m_VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+    glBufferData(GL_ARRAY_BUFFER, size, buffer, GL_STATIC_DRAW);
+
+    for (nxSizeType i = 0; i < size; i++) {
+        if (buffer[i].x < m_MinX) m_MinX = buffer[i].x;
+        if (buffer[i].y < m_MinY) m_MinY = buffer[i].y;
+        if (buffer[i].z < m_MinZ) m_MinZ = buffer[i].z;
+        if (buffer[i].x > m_MaxX) m_MaxX = buffer[i].x;
+        if (buffer[i].y > m_MaxY) m_MaxY = buffer[i].y;
+        if (buffer[i].z > m_MaxZ) m_MaxZ = buffer[i].z;
+    }
+
+    const auto l_VertexSize = sizeof(aiVector3D) + sizeof(aiVector2D);
+
+    m_NumMeshes = 1;
+    m_MeshStartIndices.push_back(0);
+    m_MeshSizes.push_back(size / 5);
+    m_AdHocTextureObject = adHocTexture;
+
+    // Vertex positions
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, l_VertexSize, 0);
+    // Texture coordinates
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, l_VertexSize, (void*)sizeof(aiVector3D));
+    // Normal vectors
+    //glEnableVertexAttribArray(2);
+    //glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 2 * sizeof(aiVector3D) + sizeof(aiVector2D), (void*)(sizeof(aiVector3D) + sizeof(aiVector2D)));
+
+    //Utils::GL::CheckGLState("VAOs");
+}
 
 void nxEntity::InitFromBuffer(glm::vec3* buffer, nxInt32 size, GLuint adHocTexture) {
 	glGenBuffers(1, &m_VBO);
@@ -77,7 +114,7 @@ void nxEntity::InitFromBuffer(glm::vec3* buffer, nxInt32 size, GLuint adHocTextu
 	glBindVertexArray(m_VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, size, buffer, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, size * 3 * 4, &buffer[0], GL_STATIC_DRAW);
 
 	for (nxSizeType i = 0; i < size; i++) {
 		if (buffer[i].x < m_MinX) m_MinX = buffer[i].x;
@@ -88,19 +125,19 @@ void nxEntity::InitFromBuffer(glm::vec3* buffer, nxInt32 size, GLuint adHocTextu
 		if (buffer[i].z > m_MaxZ) m_MaxZ = buffer[i].z;
 	}
 	
-	const auto l_VertexSize = sizeof(aiVector3D) + sizeof(aiVector2D);
+    const auto l_VertexSize = sizeof(aiVector3D);
 
 	m_NumMeshes = 1;
 	m_MeshStartIndices.push_back(0);
-	m_MeshSizes.push_back(size / 5);
+	m_MeshSizes.push_back(size);
 	m_AdHocTextureObject = adHocTexture;
 
 	// Vertex positions
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, l_VertexSize, 0);
 	// Texture coordinates
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, l_VertexSize, (void*)sizeof(aiVector3D));
+	//glEnableVertexAttribArray(1);
+	//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, l_VertexSize, (void*)sizeof(aiVector3D));
 	// Normal vectors
 	//glEnableVertexAttribArray(2);
 	//glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 2 * sizeof(aiVector3D) + sizeof(aiVector2D), (void*)(sizeof(aiVector3D) + sizeof(aiVector2D)));
@@ -419,7 +456,7 @@ bool nxGLPreviewAssetLoader::operator()(void* data) {
 	nxGLBufferedAssetLoaderBlob* blob = (nxGLBufferedAssetLoaderBlob*)data;
 
 	nxEntity* newEnt = new nxEntity();
-	newEnt->InitFromBuffer(blob->m_Buffer, blob->m_BSize, blob->m_TextureObject);
+	newEnt->InitPreviewFromBuffer(blob->m_Buffer, blob->m_BSize, blob->m_TextureObject);
 
 	blob->m_Engine->Scene()->AddPreviewEntity(newEnt);
 	//blob->m_Engine->Scene()->UpdateBounds(newEnt);

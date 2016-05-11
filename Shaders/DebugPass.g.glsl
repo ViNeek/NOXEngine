@@ -17,12 +17,12 @@ void main()
 	vec4 pos;
 	for(int i = 0; i < gl_VerticesIn; i++)
 	{
-		pos = gl_in[i].gl_Position;
-		pos = MVP * pos;
+		pos = MVP * gl_in[i].gl_Position;
+		//pos = MVP * pos;
 
 		//VertexOut.color = normalize(abs(gl_in[1].gl_Position - gl_in[0].gl_Position));
 		VertexOut.color = vec4(0,0,1,0);
-		VertexOut.color.w = 0.0f;
+		VertexOut.color.w = 1.0f;
 
 		gl_Position = pos;
 
