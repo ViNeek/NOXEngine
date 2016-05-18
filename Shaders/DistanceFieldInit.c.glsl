@@ -14,11 +14,13 @@ layout(std430, binding=3) writeonly buffer DistanceField {
 layout ( local_size_variable ) in;
 
 void setVoxelAt( float value, uint x, uint y, uint z ) {
-	field_data[x + u_Dim.x * y + u_Dim.x * u_Dim.y * z] = value;
+	//field_data[x + u_Dim.x * y + u_Dim.x * u_Dim.y * z] = value;
+	field_data[x * u_Dim.x * u_Dim.y + y * u_Dim.x + z] = value;
 }
 
 uint getVoxelAt( uint x, uint y, uint z ) {
-	return voxel_data[x + u_Dim.x * y + u_Dim.x * u_Dim.y * z];
+	//return voxel_data[x + u_Dim.x * y + u_Dim.x * u_Dim.y * z];
+	return voxel_data[x * u_Dim.x * u_Dim.y + y * u_Dim.x + z];
 }
 
 void calculateDistanceFieldAt(uint x, uint y, uint z) {

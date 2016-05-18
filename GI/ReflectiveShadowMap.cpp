@@ -138,7 +138,7 @@ bool nxRSMInitializer::operator()(void* data) {
 	nxGLBufferedAssetLoaderBlob* bufferData = new nxGLBufferedAssetLoaderBlob(blob->m_Engine, (glm::vec3*) buffer->data(), buffer->size(), blob->m_Engine->Renderer()->RSM()->FLuxMap());
 	blob->m_Engine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_PREVIEW_ASSET, bufferData));
 
-	float l_OffsetY = 0.6;
+	float l_OffsetY = 0.6f;
 	
 	buffer = new std::vector<nxByte>;
 	t_TempVec = glm::vec3(0.5, 0.8 - l_OffsetY, 0.01);
@@ -169,7 +169,7 @@ bool nxRSMInitializer::operator()(void* data) {
 	bufferData = new nxGLBufferedAssetLoaderBlob(blob->m_Engine, (glm::vec3*) buffer->data(), buffer->size(), blob->m_Engine->Renderer()->RSM()->NormalMap());
 	blob->m_Engine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_PREVIEW_ASSET, bufferData));
 
-	l_OffsetY = 1.2;
+	l_OffsetY = 1.2f;
 
 	buffer = new std::vector<nxByte>;
 	t_TempVec = glm::vec3(0.5, 0.8 - l_OffsetY, 0.01);

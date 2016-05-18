@@ -36,7 +36,7 @@ void main()
     float SpotFactor = dot(LightToPixel, lightDir);
 
     float visibility = 1;
-    if ( ApplyShadows ) {
+    if ( !ApplyShadows ) {
     vec3 ProjCoords = VertexIn.shadow_coords.xyz / VertexIn.shadow_coords.w;
     vec2 UVCoords;
     UVCoords.x = 0.5 * ProjCoords.x + 0.5;
@@ -50,12 +50,12 @@ void main()
             visibility = 0;
         }
 
-        out_color = MaterialAmbientColor + visibility * (vec4(texture( DiffuseTexture, VertexIn.uv ).rgb , 0.0f) + vec4(0.6,0.6, 0.6, 0));
+        out_color = visibility * (vec4(texture( DiffuseTexture, VertexIn.uv ).rgb , 0.0f) + vec4(0.5, 0.5 ,0.5, 0));
         out_color *= VertexIn.NdotL;
     //}
     } else {
         //out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb , 0.0f);
-        out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb , 0.0f);
+        out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb * 0.2 , 0.0f);
     }
     //out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb , 0.0f);
     //out_color += texture( ShadowTexture, VertexIn.shadow_coords.xy );

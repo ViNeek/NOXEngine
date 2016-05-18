@@ -31,6 +31,7 @@ nxRenderer::nxRenderer(wxGLCanvas* frame)
 	m_VHeight = 0;
 	m_FBO = -1;
 	m_ProgramIndex = 0;
+    m_DrawState = NOX_SIMPLE_PASS;
 } 
 
 nxRenderer::nxRenderer(nxEngine* eng) {
@@ -47,6 +48,8 @@ nxRenderer::nxRenderer(nxEngine* eng) {
 	m_DepthTexture = -1;
 	m_FBO = -1;
 	m_ProgramIndex = 0;
+    m_DrawState = NOX_SIMPLE_PASS;
+
 }
 
 void nxRenderer::UseProgram() {
@@ -117,8 +120,8 @@ void *nxRenderer::Entry()
 				printf("Capture \n");
 				Voxelizer()->SetCaptureGrid(false);
 				//Voxelizer()->PrintGridMesh(m_ssbo);
-				Voxelizer()->PrintGridMesh(Voxelizer()->VoxelBuffer());
-				//Voxelizer()->PrintGridMeshF(DistanceField()->DistanceFieldBuffer());
+				//Voxelizer()->PrintGridMesh(Voxelizer()->VoxelBuffer());
+				Voxelizer()->PrintGridMeshF(DistanceField()->DistanceFieldBuffer());
 				
 			}
 
@@ -201,13 +204,14 @@ void nxRenderer::RenderFrame() {
 
 	glViewport(0, 0, m_VWidth, m_VHeight);
 
-	if ( !IsVoxelizing() ) 
+    if ( (m_DrawState == NOX_SIMPLE_PASS) && !IsVoxelizing())
 		m_pEngine->Scene()->Draw();
-	else
+    else if ((m_DrawState == NOX_GI_PASS) && IsVoxelizing())
 		m_pEngine->Scene()->DrawVoxelized();
+    else
+        m_pEngine->Scene()->DrawPreviewVoxelized();
 
-
-	//if (error) Utils::GL::CheckGLState("Draw");
+    //if (error) Utils::GL::CheckGLState("Draw");
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);

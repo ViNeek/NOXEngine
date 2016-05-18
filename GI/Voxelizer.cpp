@@ -336,17 +336,20 @@ void nxVoxelizer::PrintGridMeshF(GLuint ssbo) {
 
 		std::cout << "place is : " << l_Indexes.x << ", " << l_Indexes.y << ", " << l_Indexes.z << std::endl;
 		std::cout << "distance at that place is : " << ip[l_Indexes.x][l_Indexes.y][l_Indexes.z] << std::endl;
+        printf("%g ", glm::length(l_Voxel));
 
 		for (int i = 0; i < m_dimensions.x; i++) {
 			for (int j = 0; j < m_dimensions.y; j++) {
 				for (int k = 0; k < m_dimensions.z; k++) {
-					if (ip[i][j][k]  < 1) {
+                    printf("%g %g\n", ip[i][j][k], glm::length(l_Voxel));
+                    if (ip[i][j][k] < 0.01) {
 						countVoxels++;
 						xCount++;
 						yCount++;
 						zCount++;
-						//printf("%g ", i * voxel.x);
-						//printf("%g ", j * voxel.y);
+                        //printf("%g ", ip[i][j][k]);
+                        //printf("%g ", i * voxel.x);
+                        //printf("%g ", j * voxel.y);
 						//printf("%g = %g\n", k * voxel.z, ip[i][j][k]);
 						fprintf(fp, "%g ", i * voxel.x);
 						fprintf(fp, "%g ", j * voxel.y);
@@ -359,7 +362,7 @@ void nxVoxelizer::PrintGridMeshF(GLuint ssbo) {
 		for (int i = 0; i < m_dimensions.x; i++) {
 			for (int j = 0; j < m_dimensions.y; j++) {
 				for (int k = 0; k < m_dimensions.z; k++) {
-					if (ip[i][j][k] > 1 && ip[i][j][k] < 2) {
+                    if (ip[i][j][k] > 0 && ip[i][j][k] < glm::length(l_Voxel)) {
 						countVoxels++;
 						xCount++;
 						yCount++;
@@ -375,7 +378,7 @@ void nxVoxelizer::PrintGridMeshF(GLuint ssbo) {
 		for (int i = 0; i < m_dimensions.x; i++) {
 			for (int j = 0; j < m_dimensions.y; j++) {
 				for (int k = 0; k < m_dimensions.z; k++) {
-					if (ip[i][j][k] > 2 && ip[i][j][k] < 3) {
+                    if (ip[i][j][k] >= glm::length(l_Voxel) && ip[i][j][k] < (glm::length(l_Voxel) * 2)) {
 						countVoxels++;
 						xCount++;
 						yCount++;
@@ -391,7 +394,7 @@ void nxVoxelizer::PrintGridMeshF(GLuint ssbo) {
 		for (int i = 0; i < m_dimensions.x; i++) {
 			for (int j = 0; j < m_dimensions.y; j++) {
 				for (int k = 0; k < m_dimensions.z; k++) {
-					if (ip[i][j][k] > 3 && ip[i][j][k] < 4) {
+                    if (ip[i][j][k] >(glm::length(l_Voxel) * 2) && ip[i][j][k] < (glm::length(l_Voxel) * 3)) {
 						countVoxels++;
 						xCount++;
 						yCount++;

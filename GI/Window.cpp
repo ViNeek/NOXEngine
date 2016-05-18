@@ -195,10 +195,19 @@ void nxFrame::OnProgramSwitch(wxCommandEvent& evt) {
 		if ( std::strcmp(progName.c_str(), m_pShaderMenu->GetMenuItems()[i]->GetText().c_str() ) == 0 ) {
 			m_pShaderMenu->GetMenuItems()[i]->Check(true);
 			m_EngineState->Renderer()->SetActiveProgramByName(progName.c_str().AsChar() );
-			if (progName.compare("Voxelize") == 0)
-				m_EngineState->Renderer()->SetVoxelizing(true);
-			else 
-				m_EngineState->Renderer()->SetVoxelizing(false);
+            if (progName.compare("Voxelize") == 0) {
+                m_EngineState->Renderer()->SetVoxelizing(true);
+                m_EngineState->Renderer()->SetDrawState(NOX_GI_PASS);
+            }
+            else if (progName.compare("Voxelize Preview") == 0) {
+                m_EngineState->Renderer()->SetActiveProgramByName("Voxelize");
+                m_EngineState->Renderer()->SetVoxelizing(true);
+                m_EngineState->Renderer()->SetDrawState(NOX_PREVIEW_VOXEL_GRID);
+            }
+            else {
+                m_EngineState->Renderer()->SetVoxelizing(false);
+                m_EngineState->Renderer()->SetDrawState(NOX_SIMPLE_PASS);
+            }
 		}
 		//std::cout << "\n\n" << m_pShaderMenu->GetMenuItems()[i]->GetText() << " " << progName << "\n\n" << std::endl;
 	}

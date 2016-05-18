@@ -189,7 +189,7 @@ void nxScene::Init() {
 		}
 
         pixels->clear();
-        pixels->push_back(glm::vec3(-2, 4.0f, -5.0f));
+        pixels->push_back(glm::vec3(-2, 4.0f, 13.0f));
         pixels->push_back(glm::vec3(100, -50.0f, -100.0f));
         nxGLBufferedAssetLoaderBlob* bufferDataP = new nxGLBufferedAssetLoaderBlob(m_pEngine, pixels->data(), pixels->size());
         m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, bufferDataP));
@@ -256,9 +256,9 @@ void nxScene::Init() {
 		);
 
 		nxLight* l_Light = new nxSpotlight(
-            glm::vec3(-2, 4.0f, -5.0f),
+            glm::vec3(-2, 4.0f, 13.0f),
             glm::lookAt(
-                glm::vec3(-2, 4, -5.0),
+                glm::vec3(-2, 4, 13.0),
                 glm::vec3(100, -50, -100),
                 glm::vec3(0, 1, 0)
 			));
@@ -628,9 +628,9 @@ void nxScene::DrawVoxelized() {
 
 	m_pEngine->Renderer()->GetActiveProgramByName("DistanceFieldStep")->Use();
 
-	//m_pEngine->Renderer()->GetActiveProgramByName("DistanceFieldStep")->SetUniform("u_Dim", m_pEngine->Renderer()->Voxelizer()->Dimesions());
-	//m_pEngine->Renderer()->GetActiveProgramByName("DistanceFieldStep")->SetUniform("u_VoxelSize", l_Voxel);
-	for (int i = 1; i < 1; i++) {
+	m_pEngine->Renderer()->GetActiveProgramByName("DistanceFieldStep")->SetUniform("u_Dim", m_pEngine->Renderer()->Voxelizer()->Dimesions());
+	m_pEngine->Renderer()->GetActiveProgramByName("DistanceFieldStep")->SetUniform("u_VoxelSize", l_Voxel);
+	for (int i = 1; i < 4; i++) {
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_pEngine->Renderer()->DistanceField()->DistanceFieldFrontBuffer());
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, m_pEngine->Renderer()->DistanceField()->DistanceFieldBackBuffer());
 
@@ -686,6 +686,15 @@ void nxScene::DrawVoxelized() {
 				//std::cout << "Grid Center is : " << ip[l_Indexes.x][l_Indexes.y][l_Indexes.z] << std::endl;
 
 			ClearDebugEntities();
+
+            std::vector<glm::vec3>* pixels2 = new std::vector<glm::vec3>;
+
+            pixels2->push_back(glm::vec3(64, 64, 63) * l_Voxel + l_GridMin);
+            pixels2->push_back(glm::vec3(65, 65, 64) * l_Voxel + l_GridMin);
+            pixels2->push_back(glm::vec3(64, 64, 64) * l_Voxel + l_Voxel*glm::vec3(0.5) + l_GridMin);
+            pixels2->push_back(glm::vec3(68, 68, 68) * l_Voxel + l_Voxel*glm::vec3(0.5) + l_GridMin);
+            nxGLBufferedAssetLoaderBlob* bufferDataA2 = new nxGLBufferedAssetLoaderBlob(m_pEngine, pixels2->data(), pixels2->size());
+            m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, bufferDataA2));
 
             std::vector<glm::vec3>* sphereHitC = new std::vector<glm::vec3>;
             //*sphereHitC = Utils::Shape::generateSphereMeshScaledAt(8, 8, 1.0f, glm::vec3(0, 10, 0));
@@ -885,6 +894,147 @@ void nxScene::DrawVoxelized() {
 
 	//errorGL = false;
 	*/
+}
+
+void nxScene::DrawPreviewVoxelized() {
+    if (CameraReady())
+        m_MState.m_RMatrix = Camera()->Update();
+    else
+        m_MState.m_RMatrix = glm::mat4();
+
+    m_MState.m_VMatrix = glm::mat4();
+
+    m_pEngine->Renderer()->UseProgram();
+
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
+
+    //if (errorGL) Utils::GL::CheckGLState("Voxelized Program USE");
+
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
+
+    if (m_pEngine->Renderer()->VoxelizerReady()) {
+        m_MState.m_PMatrix = m_pEngine->Renderer()->Voxelizer()->Projections()[2];
+        m_pEngine->Renderer()->Voxelizer()->CalculateViewProjection();
+        glViewportArrayv(0, 3, &m_pEngine->Renderer()->Voxelizer()->Viewports()[0][0]);
+    }
+    glm::vec3 l_Voxel = m_pEngine->Renderer()->Voxelizer()->GridSize() / glm::vec3(m_pEngine->Renderer()->Voxelizer()->Dimesions());
+    for (size_t i = 0; i < m_Entities.size(); i++) {
+        m_MState.m_VMatrix = glm::translate(View(),
+            m_Camera->Position());
+
+        m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
+        //m_MState.m_VMatrix *= m_MState.m_RMatrix;
+
+        //m_MState.m_MMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
+        //m_pEngine->Renderer()->Program()->SetUniform("NormalMatrix", Normal());
+
+        //if (errorGL) Utils::GL::CheckGLState("Set Normal");
+
+        //m_pEngine->Renderer()->Program()->SetUniform("ModelMatrix", glm::mat4());
+        //m_pEngine->Renderer()->Program()->SetUniform("ModelMatrix", glm::translate(glm::mat4(), m_Entities[i]->ModelTransform()));
+        //m_pEngine->Renderer()->Program()->SetUniform("MVP", m_MState.m_PMatrix*m_MState.m_VMatrix);
+        m_pEngine->Renderer()->Program()->SetUniform("GridSize", m_pEngine->Renderer()->Voxelizer()->Dimesions());
+        m_pEngine->Renderer()->Program()->SetUniform("GridMin", m_pEngine->Renderer()->Voxelizer()->GridMin());
+        m_pEngine->Renderer()->Program()->SetUniform("VoxelSize", l_Voxel);
+
+        m_pEngine->Renderer()->Program()->SetUniform("ViewProjMatrix", 3, m_pEngine->Renderer()->Voxelizer()->ViewProjections());
+
+        //m_pEngine->Renderer()->Program()->SetUniform("MVP", View());
+        //if (errorGL) Utils::GL::CheckGLState("Set MVP");
+
+        m_Entities[i]->Draw();
+        //if (errorGL) Utils::GL::CheckGLState("Draw : " + i);
+
+    }
+
+    m_pEngine->Renderer()->GetActiveProgramByName("DistanceFieldInit")->Use();
+
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_pEngine->Renderer()->DistanceField()->DistanceFieldFrontBuffer());
+    //glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, m_pEngine->Renderer()->DistanceField()->DistanceFieldBackBuffer());
+
+    m_pEngine->Renderer()->GetActiveProgramByName("DistanceFieldInit")->SetUniform("u_Dim", m_pEngine->Renderer()->Voxelizer()->Dimesions());
+    //m_pEngine->Renderer()->GetActiveProgramByName("DistanceField")->SetUniform("u_Truncation", 4);
+    m_pEngine->Renderer()->GetActiveProgramByName("DistanceFieldInit")->SetUniform("u_VoxelSize", l_Voxel);
+
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_pEngine->Renderer()->DistanceField()->DistanceFieldBuffer());
+
+    GLuint64 startTime, stopTime;
+    unsigned int queryID[2];
+    int stopTimerAvailable = 0;
+
+    // generate two queries
+    glGenQueries(2, queryID);
+
+    glQueryCounter(queryID[0], GL_TIMESTAMP);
+
+    m_pEngine->Renderer()->DistanceField()->Calculate(m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
+
+    m_pEngine->Renderer()->GetActiveProgramByName("DistanceFieldStep")->Use();
+
+    m_pEngine->Renderer()->GetActiveProgramByName("DistanceFieldStep")->SetUniform("u_Dim", m_pEngine->Renderer()->Voxelizer()->Dimesions());
+    m_pEngine->Renderer()->GetActiveProgramByName("DistanceFieldStep")->SetUniform("u_VoxelSize", l_Voxel);
+    for (int i = 1; i < 4; i++) {
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_pEngine->Renderer()->DistanceField()->DistanceFieldFrontBuffer());
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, m_pEngine->Renderer()->DistanceField()->DistanceFieldBackBuffer());
+
+        m_pEngine->Renderer()->DistanceField()->Calculate(m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
+
+        m_pEngine->Renderer()->DistanceField()->SwapBuffers();
+    }
+
+    glQueryCounter(queryID[1], GL_TIMESTAMP);
+
+    while (!stopTimerAvailable) {
+        glGetQueryObjectiv(queryID[1],
+            GL_QUERY_RESULT_AVAILABLE,
+            &stopTimerAvailable);
+    }
+
+    // get query results
+    glGetQueryObjectui64v(queryID[0], GL_QUERY_RESULT, &startTime);
+    glGetQueryObjectui64v(queryID[1], GL_QUERY_RESULT, &stopTime);
+
+    //printf("Time spent on the GPU: %f ms\n", (stopTime - startTime) / 1000000.0);
+
+    glViewport(0, 0, 1024, 1024);
+
+    nxProgram* l_Prog = m_pEngine->Renderer()->GetActiveProgramByName("Voxelize Preview");
+
+    //printf("Luda\n");
+
+    if (l_Prog) {
+
+        l_Prog->Use();
+
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
+
+        for (auto entity : m_Entities) {
+            //printf("Luda IN");
+            m_MState.m_VMatrix = glm::mat4();
+
+            m_MState.m_VMatrix = glm::translate(View(),
+                -m_Camera->Position());
+            //m_MState.m_VMatrix = m_Camera->ViewTransform();
+
+            m_MState.m_VMatrix *= m_MState.m_RMatrix;
+
+            //l_Prog->SetUniform("GridSize", m_pEngine->Renderer()->Voxelizer()->Dimesions());
+            l_Prog->SetUniform("u_Dim", m_pEngine->Renderer()->Voxelizer()->Dimesions());
+            l_Prog->SetUniform("GridMin", m_pEngine->Renderer()->Voxelizer()->GridMin());
+            l_Prog->SetUniform("VoxelSize", l_Voxel);
+            l_Prog->SetUniform("MVP", m_MState.m_PMatrix*m_MState.m_VMatrix);
+            //m_pEngine->Renderer()->Program()->SetUniform("MVP", View());
+            //if (errorGL) Utils::GL::CheckGLState("Set MVP");
+
+            entity->Draw();
+        }
+    }
+
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+    errorGL = false;
+   
 }
 
 void nxScene::UpdateBounds(nxEntity* ent) {

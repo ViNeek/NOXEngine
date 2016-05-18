@@ -75,6 +75,7 @@ public:
 
 	void						Draw();
 	void						DrawVoxelized();
+    void                        DrawPreviewVoxelized();
 
 	bool						CameraReady() { return m_Camera != NULL; }
 

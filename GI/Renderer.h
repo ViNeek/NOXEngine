@@ -11,6 +11,12 @@
 #include "wx/wx.h"
 #include "wx/glcanvas.h"
 
+enum {
+    NOX_GI_PASS,
+    NOX_PREVIEW_VOXEL_GRID,
+    NOX_SIMPLE_PASS
+};
+
 enum nxRendererState {
 	NX_RENDERER_OFF = (1 << 0),
 	NX_RENDERER_EXTENSIONS_READY = (1 << 1),
@@ -55,8 +61,9 @@ public:
 
 	bool									InitExtensions();
 	bool									VoxelizerReady() { return m_IsVoxelizerReady; };
-	void									SetVoxelizerReady(bool val) { m_IsVoxelizerReady = val; };
-	bool									IsVoxelizing() { return m_Voxelizing; };
+    void									SetVoxelizerReady(bool val) { m_IsVoxelizerReady = val; };
+    void									SetDrawState(int l_DrawState) { m_DrawState = l_DrawState; };
+    bool									IsVoxelizing() { return m_Voxelizing; };
 	void									SetVoxelizing(bool val) { m_Voxelizing = val; };
 
 	void									SetViewportSize(int w, int h) { m_VWidth = w; m_VHeight = h; };
@@ -101,6 +108,8 @@ private:
 	bool									m_IsActive;
 	bool									m_Voxelizing;
 	unsigned int							m_State;
+
+    int                                     m_DrawState;
 
 	int										m_VWidth;
 	int										m_VHeight;

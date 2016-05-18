@@ -63,7 +63,8 @@ float getBinaryVoxelAt( int x, int y, int z ) {
 }
 
 float getVoxelAt( int x, int y, int z ) {
-	return field_data[x + u_Dim.x * y + u_Dim.x * u_Dim.y * z];
+	//return field_data[x + u_Dim.x * y + u_Dim.x * u_Dim.y * z];
+	return field_data[x * u_Dim.x * u_Dim.y + u_Dim.x * y + z];
 }
 
 void setVoxelAt( float value, uint x, uint y, uint z ) {
@@ -72,7 +73,7 @@ void setVoxelAt( float value, uint x, uint y, uint z ) {
 
 void main() {
 	vec3 l_GlobalTestPosition = vec3(0, 7, 0);
-	float l_DistanceBound = length(u_VoxelSize);
+	float l_DistanceBound = length(u_VoxelSize) * (1 + 0.8);
 	//float l_DistanceBound = length(vec3(1, 1, 1)) * 1;
 	//float l_DistanceBound = 1;
 	vec2 l_PixelNDC;
@@ -88,8 +89,8 @@ void main() {
 	            ivec3 l_VoxelCoord = ivec3( l_PositionInGrid / u_VoxelSize );
 				vec3 l_Dir = cubeMapPixelToDirection(l_PixelNDC, f);
 				
-				//float l_Distance = getVoxelAt(l_VoxelCoord.x, l_VoxelCoord.y, l_VoxelCoord.z);
-				float l_Distance = 1 - getBinaryVoxelAt(l_VoxelCoord.x, l_VoxelCoord.y, l_VoxelCoord.z);
+				float l_Distance = getVoxelAt(l_VoxelCoord.x, l_VoxelCoord.y, l_VoxelCoord.z);
+				//float l_Distance = 1 - getBinaryVoxelAt(l_VoxelCoord.x, l_VoxelCoord.y, l_VoxelCoord.z);
 				float l_OriginalDistance = l_Distance;
 				float l_TotalDistance = 0;
 				//l_Distance = clamp(l_Distance, 0, l_DistanceBound);
@@ -101,7 +102,7 @@ void main() {
 				//march_data[f*6*u_VPort.x*u_VPort.y + i + j * u_VPort.y + 1] = clamp(l_Transform.y, 0, 11111);
 				//march_data[f*6*u_VPort.x*u_VPort.y + i + j * u_VPort.y + 2] = clamp(l_Transform.x, 0, 11111);
 				//float l_Distance = getVoxelAt(l_VoxelCoord.x, l_VoxelCoord.y, l_VoxelCoord.z);
-				while ( l_Counter < 100 && l_Distance == 1 ) {
+				while ( l_Counter < 3 && l_Distance > 0.0) {
 					//l_PositionInGrid = l_VoxelCoord * u_VoxelSize + l_Dir * l_Distance;
 					//l_GlobalTestPosition = l_GlobalTestPosition + l_Dir * l_Distance;
 					//l_PositionInGrid = l_GlobalTestPosition - u_GridMin;
@@ -112,13 +113,13 @@ void main() {
 					//march_data[f*6*u_VPort.x*u_VPort.y + i + j * u_VPort.y + 2] = float(l_VoxelCoord.z) * u_VoxelSize.z;
 					l_Counter++;
 					l_VoxelCoord = ivec3( (l_Transform - u_GridMin) / u_VoxelSize );
-					//l_Distance = getVoxelAt(l_VoxelCoord.x, l_VoxelCoord.y, l_VoxelCoord.z);
-					l_Distance = 1 - getBinaryVoxelAt(l_VoxelCoord.x, l_VoxelCoord.y, l_VoxelCoord.z);
-					l_TotalDistance += l_Distance;
+					l_Distance = getVoxelAt(l_VoxelCoord.x, l_VoxelCoord.y, l_VoxelCoord.z);
+					//l_Distance = 1 - getBinaryVoxelAt(l_VoxelCoord.x, l_VoxelCoord.y, l_VoxelCoord.z);
 					l_OriginalDistance = l_Distance;
-					//l_Distance = clamp(l_Distance, 0, l_DistanceBound);
+					l_Distance = clamp(l_Distance, 0, l_DistanceBound);
+					l_TotalDistance += l_Distance;
 					//l_Transform = ivec3(vec3(l_Transform) + ceil(l_Dir * l_Distance));
-					l_Transform = l_Transform + l_Dir * l_DistanceBound * 0.5;
+					l_Transform = l_Transform + l_Dir * l_Distance;
 					//l_Distance = getVoxelAt(l_VoxelCoord.x, l_VoxelCoord.y, l_VoxelCoord.z);
 					//l_Distance = clamp(l_Distance, 0, l_DistanceBound);
 				}
