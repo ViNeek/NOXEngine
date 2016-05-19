@@ -17,6 +17,8 @@
 #include <assimp/postprocess.h> 
 
 #include <boost/log/trivial.hpp>
+#include <boost/multi_array.hpp>
+#include <boost/log/trivial.hpp>
 
 #include "Texture.h"
 
@@ -105,6 +107,72 @@ void nxEntity::InitPreviewFromBuffer(glm::vec3* buffer, nxInt32 size, GLuint adH
     //glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 2 * sizeof(aiVector3D) + sizeof(aiVector2D), (void*)(sizeof(aiVector3D) + sizeof(aiVector2D)));
 
     //Utils::GL::CheckGLState("VAOs");
+}
+
+void nxEntity::UpdateFromVoxelizer(nxVoxelizer* voxel) {
+
+}
+
+void nxEntity::InitFromVoxelizer(nxVoxelizer* voxelizer) {
+    glm::vec3 size = voxelizer->GridSize();
+    glm::vec3 l_GridMin = voxelizer->GridMin();
+    glm::vec3 half_size = size * 0.5f;
+    glm::vec3 voxel = size / glm::vec3(voxelizer->Dimesions());
+    auto voxelCoords = new std::vector<glm::vec3>();
+
+    //printf("Grid Size %f %f %f\n", size.x, size.y, size.z);
+    //printf("Voxel Size %f %f %f\n", voxel.x, voxel.y, voxel.z);
+    //printf("Dims %d %d %d\n", m_dimensions.x, m_dimensions.y, m_dimensions.z);
+
+    const auto l_VertexSize = sizeof(aiVector3D);
+
+    m_NumMeshes = 1;
+    m_MeshStartIndices.push_back(0);
+    m_AdHocTextureObject = -1;
+
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, voxelizer->VoxelBuffer());
+
+    nxUInt32* p = (nxUInt32*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
+    //if (error) Utils::GL::CheckGLState("Frame");
+    int countVoxels = 0;
+    if (p) {
+        typedef boost::multi_array_ref<nxUInt32, 3> array_type;
+        typedef array_type::index index;
+        array_type ip(p, boost::extents[voxelizer->Dimesions().x][voxelizer->Dimesions().y][voxelizer->Dimesions().z]);
+
+        for (int i = 0; i < voxelizer->Dimesions().x; i++) {
+            for (int j = 0; j < voxelizer->Dimesions().y; j++) {
+                for (int k = 0; k < voxelizer->Dimesions().z; k++) {
+                    if (ip[i][j][k] == 1) {
+                        voxelCoords->push_back(
+                            glm::vec3(i, j, k) * voxel + l_GridMin
+                        );
+                        countVoxels++;
+                    }
+                }
+            }
+        }
+
+        printf("Voxel Count %d\n", countVoxels);
+
+    }
+    glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+
+    m_MeshSizes.push_back(countVoxels);
+
+    glGenBuffers(1, &m_VBO);
+
+    glGenVertexArrays(1, &m_VAO);
+    glBindVertexArray(m_VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+    glBufferData(GL_ARRAY_BUFFER, countVoxels * sizeof(glm::vec3), voxelCoords->data(), GL_DYNAMIC_DRAW);
+
+    // Vertex positions
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, l_VertexSize, 0);
+
+    Utils::GL::CheckGLState("VAOs");
 }
 
 void nxEntity::InitFromBuffer(glm::vec3* buffer, nxInt32 size, GLuint adHocTexture) {
@@ -341,6 +409,14 @@ void nxEntity::LineDraw() {
 	{
 		glDrawArrays(GL_LINES, m_MeshStartIndices[i], m_MeshSizes[i]);
 	}
+}
+
+void nxEntity::PointDraw() {
+    BindVAO();
+    for (size_t i = 0; i < m_NumMeshes; i++)
+    {
+        glDrawArrays(GL_POINTS, m_MeshStartIndices[i], m_MeshSizes[i]);
+    }
 }
 
 void nxEntity::Scale(nxFloat32 factor) {

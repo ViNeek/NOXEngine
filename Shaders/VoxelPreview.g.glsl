@@ -5,7 +5,7 @@ layout(std430, binding=2) readonly buffer VoxelData{
     uint voxel_data[];
 };
 
-layout(triangles) in;
+layout(points) in;
 
 layout(triangle_strip, max_vertices = 1048) out;
 
@@ -46,7 +46,7 @@ void sphere(int longitude_steps, int latitude_steps, vec4 position) {
 	if (longitude_steps < 2) longitude_steps = 2;
 	if (latitude_steps < 4) latitude_steps = 4;
 
-	float sphere_radius = length(VoxelSize);
+	float sphere_radius = length(VoxelSize * 0.4);
 	float phi_step = 2 * PI / float(latitude_steps);
 	float theta_step = PI / float(longitude_steps);
 	float phi = 0;
@@ -73,21 +73,25 @@ void sphere(int longitude_steps, int latitude_steps, vec4 position) {
 			top_left_vertex.x = sphere_radius * sintheta * cosphi;
 			top_left_vertex.z = sphere_radius * sintheta * sinphi;
 			top_left_vertex.y = sphere_radius * costheta;
+            top_left_vertex.w = 1;
 
 			vec4 top_right_vertex;
 			top_right_vertex.x = sphere_radius * sintheta * cosphi_plus_step;
 			top_right_vertex.z = sphere_radius * sintheta * sinphi_plus_step;
 			top_right_vertex.y = sphere_radius * costheta;
+            top_right_vertex.w = 1;
 
 			vec4 bottom_left_vertex;
 			bottom_left_vertex.x = sphere_radius * sintheta_plus_step * cosphi;
 			bottom_left_vertex.z = sphere_radius * sintheta_plus_step * sinphi;
 			bottom_left_vertex.y = sphere_radius * costheta_plus_step;
+            bottom_left_vertex.w = 1;
 
 			vec4 bottom_right_vertex;
 			bottom_right_vertex.x = sphere_radius * sintheta_plus_step * cosphi_plus_step;
 			bottom_right_vertex.z = sphere_radius * sintheta_plus_step * sinphi_plus_step;
 			bottom_right_vertex.y = sphere_radius * costheta_plus_step;
+            bottom_right_vertex.w = 1;
 
             // Emit Vertex
 
@@ -132,29 +136,35 @@ void sphere(int longitude_steps, int latitude_steps, vec4 position) {
 }
 
 void cube(vec4 position) {
-    gl_Position = MVP *  (position + vec4(0,0,1,0));
+    vec3 VoxelHalfSize = VoxelSize * 0.5;
+
+    gl_Position = MVP * (position + vec4(VoxelHalfSize.x, VoxelHalfSize.y, VoxelHalfSize.z,0));
 	//VertexOut.normal = vec3(normalize(bottom_left_vertex));
 	EmitVertex();
-    gl_Position = MVP *  ( position + (0,1,0,0));
+    //EndPrimitive();
+    gl_Position = MVP * (position + vec4(VoxelHalfSize.x, -VoxelHalfSize.y, VoxelHalfSize.z,0));
     //VertexOut.normal = vec3(normalize(bottom_right_vertex));
 	EmitVertex();
-    gl_Position = MVP *  ( position + vec4(1,0,0,0));
+    //EndPrimitive();
+    gl_Position = MVP * (position + vec4(-VoxelHalfSize.x, -VoxelHalfSize.y, VoxelHalfSize.z,0));
     //VertexOut.normal = vec3(normalize(top_right_vertex));
 	EmitVertex();
-
     EndPrimitive();
 
-    gl_Position = MVP *  (position + vec4(1,0,0,0));
+    gl_Position = MVP * (position + vec4(-VoxelHalfSize.x, -VoxelHalfSize.y, VoxelHalfSize.z,0));
     //VertexOut.normal = vec3(normalize(top_right_vertex));
 	EmitVertex();
-    gl_Position = MVP *  (position + vec4(1,0,1,0));
-    //VertexOut.normal = vec3(normalize(top_left_vertex));
+    //EndPrimitive();
+    gl_Position = MVP * (position + vec4(-VoxelHalfSize.x, VoxelHalfSize.y, VoxelHalfSize.z,0));
+    //VertexOut.normal = vec3(normalize(top_right_vertex));
 	EmitVertex();
-    gl_Position =  MVP * (position + vec4(0,1,1,0));
-    //VertexOut.normal = vec3(normalize(bottom_left_vertex));
+    //EndPrimitive();
+    gl_Position = MVP * (position + vec4(VoxelHalfSize.x, VoxelHalfSize.y, VoxelHalfSize.z,0));
+    //VertexOut.normal = vec3(normalize(top_right_vertex));
 	EmitVertex();
-
     EndPrimitive();
+    
+
 }
 
 void main()
@@ -170,15 +180,15 @@ void main()
         uint l_Occupied = getVoxelAt(VoxelGridCoord.x, VoxelGridCoord.y, VoxelGridCoord.z);
 
 
-        if ( l_Occupied == 0 ) {
-            //sphere(2, 4, vec4(VertexIn[i].worldcoord, 0));
-            cube(vec4(VertexIn[i].worldcoord, 0));
-        } else {
-		    VertexOut.normal = VertexIn[i].normal;
-		    gl_Position = pos;
+        //if ( l_Occupied > 0 ) {
+            sphere(4, 6, vec4(VertexIn[i].worldcoord, 0));
+            //cube(vec4(VertexIn[i].worldcoord, 1));
+       // } else {
+		    //VertexOut.normal = VertexIn[i].normal;
+		    //gl_Position = pos;
 
 		    //EmitVertex();
-       }
+       //}
 	}
 
 	//EndPrimitive();

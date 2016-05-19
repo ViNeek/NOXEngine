@@ -104,6 +104,9 @@ private:
 	std::vector<nxEntity*>		m_DebugEntities;
 	std::vector<nxEntity*>		m_PreviewEntities;
 
+    nxEntity*                   m_GridEntity;
+    bool                        m_GridEntityInited;
+
 	std::vector<nxLight*>		m_Lights;
 	boost::mutex				m_SceneGuard;
 

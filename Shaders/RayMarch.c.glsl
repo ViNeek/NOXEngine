@@ -73,7 +73,7 @@ void setVoxelAt( float value, uint x, uint y, uint z ) {
 
 void main() {
 	vec3 l_GlobalTestPosition = vec3(0, 7, 0);
-	float l_DistanceBound = length(u_VoxelSize) * (1 + 0.8);
+	float l_DistanceBound = length(u_VoxelSize) * (3 + 0.8);
 	//float l_DistanceBound = length(vec3(1, 1, 1)) * 1;
 	//float l_DistanceBound = 1;
 	vec2 l_PixelNDC;
@@ -102,7 +102,7 @@ void main() {
 				//march_data[f*6*u_VPort.x*u_VPort.y + i + j * u_VPort.y + 1] = clamp(l_Transform.y, 0, 11111);
 				//march_data[f*6*u_VPort.x*u_VPort.y + i + j * u_VPort.y + 2] = clamp(l_Transform.x, 0, 11111);
 				//float l_Distance = getVoxelAt(l_VoxelCoord.x, l_VoxelCoord.y, l_VoxelCoord.z);
-				while ( l_Counter < 3 && l_Distance > 0.0) {
+				while ( l_Counter < 100 && l_Distance > 0.0) {
 					//l_PositionInGrid = l_VoxelCoord * u_VoxelSize + l_Dir * l_Distance;
 					//l_GlobalTestPosition = l_GlobalTestPosition + l_Dir * l_Distance;
 					//l_PositionInGrid = l_GlobalTestPosition - u_GridMin;

@@ -11,13 +11,17 @@
 
 #include "Texture.h"
 
+class nxVoxelizer;
+
 class nxEntity {
 public:
 
 							nxEntity();
 							nxEntity(const std::string filename);
 	void					InitFromFile(const std::string& filename);
-	void					InitFromBuffer(glm::vec3* buffer, nxInt32 size, GLuint adHocTexture = -1);
+    void					InitFromBuffer(glm::vec3* buffer, nxInt32 size, GLuint adHocTexture = -1);
+    void					InitFromVoxelizer(nxVoxelizer* voxel);
+    void					UpdateFromVoxelizer(nxVoxelizer* voxel);
     void                    InitPreviewFromBuffer(glm::vec3* buffer, nxInt32 size, GLuint adHocTexture = -1);
 
 	void					ClearData();
@@ -42,7 +46,8 @@ public:
 
 	void					Scale(nxFloat32 factor);
 	void					Draw();
-	void					LineDraw();
+    void					LineDraw();
+    void					PointDraw();
 
     std::vector<nxTexture*>& Cache() { return m_TextureCache; }
     nxTexture* CachedAt(int p_Index) { return m_TextureCache[p_Index]; }

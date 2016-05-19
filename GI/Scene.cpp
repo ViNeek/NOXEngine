@@ -41,16 +41,20 @@ namespace pt = boost::property_tree;
 
 nxScene::nxScene(nxEngine* eng) {
 	m_pEngine = eng;
-	m_Camera = NULL;
+    m_Camera = nullptr;
+    m_GridEntity = nullptr;
+    m_GridEntityInited = false;
 
-	m_GMaxX = m_GMaxY = m_GMaxZ = -100000.0f;
+    m_GMaxX = m_GMaxY = m_GMaxZ = -100000.0f;
 	m_GMinX = m_GMinY = m_GMinZ = 100000.0f;
 
 }
 
 nxScene::nxScene(std::string& path) {
 	m_SceneFilename = path;
-	m_Camera = NULL;
+    m_Camera = nullptr;
+    m_GridEntity = nullptr;
+    m_GridEntityInited = false;
 }
 
 std::unordered_map<std::string, GLenum> gc_TypeMappings =
@@ -264,6 +268,8 @@ void nxScene::Init() {
 			));
 
 		m_Lights.push_back(l_Light);
+
+        m_GridEntity = new nxEntity();
 
 		//SetProjection(30.0f, 512.0f / 512, 1.0f, 1000.0f);
 	
@@ -569,6 +575,11 @@ void nxScene::DrawVoxelized() {
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
 
 	if (m_pEngine->Renderer()->VoxelizerReady()) {
+
+        if (m_GridEntity == nullptr) {
+            m_GridEntity = new nxEntity();
+        }
+
 		m_MState.m_PMatrix = m_pEngine->Renderer()->Voxelizer()->Projections()[2];
 		m_pEngine->Renderer()->Voxelizer()->CalculateViewProjection();
 		glViewportArrayv(0, 3, &m_pEngine->Renderer()->Voxelizer()->Viewports()[0][0]);
@@ -763,7 +774,7 @@ void nxScene::DrawVoxelized() {
 			glm::vec4* p = (glm::vec4*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
 
 			std::vector<glm::vec3>* pixels = new std::vector<glm::vec3>;
-			for (int f = 3; f < 4; f++) {
+			for (int f = 5; f < 6; f++) {
 				for (int i = 0; i < l_VPort.x; i++) {
 					for (int j = 0; j < l_VPort.y; j++) {
 						std::cout << "Face : " << f << " : " << p[f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].x << ", " << p[f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].y << ", " << p[f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].z << ", " << p[f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].w << std::endl;
@@ -913,6 +924,11 @@ void nxScene::DrawPreviewVoxelized() {
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
 
     if (m_pEngine->Renderer()->VoxelizerReady()) {
+
+        if (m_GridEntity == nullptr) {
+            m_GridEntity = new nxEntity();
+        }
+
         m_MState.m_PMatrix = m_pEngine->Renderer()->Voxelizer()->Projections()[2];
         m_pEngine->Renderer()->Voxelizer()->CalculateViewProjection();
         glViewportArrayv(0, 3, &m_pEngine->Renderer()->Voxelizer()->Viewports()[0][0]);
@@ -997,7 +1013,15 @@ void nxScene::DrawPreviewVoxelized() {
 
     //printf("Time spent on the GPU: %f ms\n", (stopTime - startTime) / 1000000.0);
 
-    glViewport(0, 0, 1024, 1024);
+
+    if (m_GridEntity != nullptr && !m_GridEntityInited ) {
+        //m_GridEntity = new nxEntity();
+
+        m_GridEntity->InitFromVoxelizer(m_pEngine->Renderer()->Voxelizer());
+        m_GridEntityInited = true;
+    }
+
+    glViewport(0, 0, m_pEngine->Renderer()->Width(), m_pEngine->Renderer()->Height());
 
     nxProgram* l_Prog = m_pEngine->Renderer()->GetActiveProgramByName("Voxelize Preview");
 
@@ -1009,7 +1033,10 @@ void nxScene::DrawPreviewVoxelized() {
 
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
 
-        for (auto entity : m_Entities) {
+        SetProjection(45.0f, (GLfloat)m_pEngine->Renderer()->Width() / (GLfloat)m_pEngine->Renderer()->Height(), 1.0f, 2000.0f);
+
+        //for (auto entity : m_Entities) {
+        if (m_GridEntity != nullptr) {
             //printf("Luda IN");
             m_MState.m_VMatrix = glm::mat4();
 
@@ -1019,15 +1046,17 @@ void nxScene::DrawPreviewVoxelized() {
 
             m_MState.m_VMatrix *= m_MState.m_RMatrix;
 
+            m_MState.m_MMatrix = glm::translate(glm::mat4(), m_GridEntity->ModelTransform());
+
             //l_Prog->SetUniform("GridSize", m_pEngine->Renderer()->Voxelizer()->Dimesions());
-            l_Prog->SetUniform("u_Dim", m_pEngine->Renderer()->Voxelizer()->Dimesions());
-            l_Prog->SetUniform("GridMin", m_pEngine->Renderer()->Voxelizer()->GridMin());
+            //l_Prog->SetUniform("u_Dim", m_pEngine->Renderer()->Voxelizer()->Dimesions());
+            //l_Prog->SetUniform("GridMin", m_pEngine->Renderer()->Voxelizer()->GridMin());
             l_Prog->SetUniform("VoxelSize", l_Voxel);
             l_Prog->SetUniform("MVP", m_MState.m_PMatrix*m_MState.m_VMatrix);
             //m_pEngine->Renderer()->Program()->SetUniform("MVP", View());
             //if (errorGL) Utils::GL::CheckGLState("Set MVP");
 
-            entity->Draw();
+            m_GridEntity->PointDraw();
         }
     }
 
