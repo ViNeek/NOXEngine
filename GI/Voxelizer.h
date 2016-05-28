@@ -52,6 +52,7 @@ public:
 	glm::mat4*							Projections() { return m_proj_axis; };
 	glm::mat4*							ViewProjections() { return m_view_proj_axis; };
 	void								CalculateViewProjection();
+    void                                CalculateViewProjection(glm::mat4 modelmatrix);
 	void								GeneratePreviewGrid();
 
 	glm::vec3							GridSize();

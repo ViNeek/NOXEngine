@@ -9,6 +9,7 @@ layout(triangle_strip, max_vertices = 7) out;
 uniform mat3 NormalMatrix;
 //uniform mat4 depthMVP;
 uniform mat4 MVP;
+uniform mat4 ViewMatrix;
 uniform mat4 ViewProjMatrix[3];
 uniform uvec3 GridSize;
 
@@ -112,10 +113,10 @@ void main()
 	// No more layered
 	//gl_Layer = index;
 	gl_ViewportIndex = index;
-	VertexOut.worldcoord = VertexIn[0].worldcoord;
+	VertexOut.worldcoord = vec3(ViewMatrix * vec4(VertexIn[0].worldcoord, 1));
 	depth = GridSize[index];
 	//factors = facts;
-	gl_Position = ViewProjMatrix[index] * gl_in[0].gl_Position;
+	gl_Position = ViewProjMatrix[index] * ViewMatrix * gl_in[0].gl_Position;
 	EmitVertex();
 	gl_ViewportIndex = index;
 	depth = GridSize[index];
@@ -123,8 +124,8 @@ void main()
 	//dX = GridSize.x;
 	//dY = GridSize.y;
 	//dZ = GridSize.z;
-	VertexOut.worldcoord = VertexIn[1].worldcoord;
-	gl_Position = ViewProjMatrix[index] * gl_in[1].gl_Position;
+	VertexOut.worldcoord = vec3(ViewMatrix * vec4(VertexIn[1].worldcoord, 1));
+	gl_Position = ViewProjMatrix[index] * ViewMatrix * gl_in[1].gl_Position;
 	EmitVertex();
 	gl_ViewportIndex = index;
 	depth = GridSize[index];
@@ -132,8 +133,8 @@ void main()
 	//dX = GridSize.x;
 	//dY = GridSize.y;
 	//dZ = GridSize.z;
-	VertexOut.worldcoord = VertexIn[2].worldcoord;
-	gl_Position = ViewProjMatrix[index] * gl_in[2].gl_Position;
+	VertexOut.worldcoord = vec3(ViewMatrix * vec4(VertexIn[2].worldcoord, 1));
+	gl_Position = ViewProjMatrix[index] * ViewMatrix * gl_in[2].gl_Position;
 	EmitVertex();
 
 	EndPrimitive();

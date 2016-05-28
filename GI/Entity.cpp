@@ -392,7 +392,8 @@ void nxEntity::Draw() {
 	{
 		if (m_MaterialIndices.size() > i) {
 			nxInt32 l_MatIndex = m_MaterialIndices[i];
-			m_TextureCache[l_MatIndex]->Bind();
+            if (l_MatIndex > 0 )
+			    m_TextureCache[l_MatIndex]->Bind();
 		}
 		else if (m_AdHocTextureObject >= 0) {
 			glActiveTexture(GL_TEXTURE0);
@@ -423,7 +424,7 @@ void nxEntity::Scale(nxFloat32 factor) {
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
 	nxInt32 l_Size = m_EntityData.size();
-	nxInt32 l_Skip = 2 * sizeof(aiVector3D) + sizeof(aiVector2D);
+	nxInt32 l_Skip = 4 * sizeof(aiVector3D) + sizeof(aiVector2D);
 
 	nxFloat32* p = (nxFloat32*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 	

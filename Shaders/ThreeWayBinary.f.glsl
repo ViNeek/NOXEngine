@@ -27,7 +27,7 @@ layout (std430, binding=2) writeonly buffer VoxelData
 	uint voxel_data[];
 };
 
-void setVoxelAt(unsigned int i,unsigned int j,unsigned int w) {
+void setVoxelAt(int i,int j,int w) {
 	//voxel_data[dX * ( i - offX ) + dY * ( j - offY ) + dZ * ( w - offZ )] = 1;
 	voxel_data[i * GridSize.x * GridSize.y + j * GridSize.x + w] = 1;
 }
@@ -44,7 +44,14 @@ void main()
 	ivec3 VoxelGridCoord = ivec3(VoxelWorldCoord);
 
 	//setVoxelAt(x, y, z);
-	setVoxelAt(VoxelGridCoord.x, VoxelGridCoord.y, VoxelGridCoord.z);
-	
+    /*for ( int f = -1; f < 1; f++ ) {
+		for ( int i = -1; i < 1; i++ ) {
+			for ( int j = -1; j < 1; j++ ) {
+	            setVoxelAt(VoxelGridCoord.x + f, VoxelGridCoord.y + i, VoxelGridCoord.z + j);
+	        }
+        }
+    }*/
+    setVoxelAt(VoxelGridCoord.x, VoxelGridCoord.y, VoxelGridCoord.z);
+
 	out_color = vec4(zf,zf,zf,0.0f);
 }

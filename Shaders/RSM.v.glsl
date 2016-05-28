@@ -6,7 +6,7 @@ layout (location = 2) in vec3 VertexNormal;
 
 out VertexData {
     vec3 normal;
-    vec3 worldpos;
+    vec4 worldpos;
     vec2 uv;
 } VertexOut;
 
@@ -16,7 +16,7 @@ void main()
 {
     VertexOut.normal = normalize(NormalMatrix * VertexNormal);
     VertexOut.uv = VertexTexCoord;
-    VertexOut.worldpos = vec3(VertexPosition);
+    VertexOut.worldpos = VertexPosition;
 
     gl_Position = vec4(VertexPosition)/VertexPosition.w;
 }

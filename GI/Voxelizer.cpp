@@ -249,6 +249,12 @@ void nxVoxelizer::CalculateViewProjection() {
 	m_view_proj_axis[2] = m_proj_axis[2] * m_view_axis[2];
 }
 
+void nxVoxelizer::CalculateViewProjection(glm::mat4 modelmatrix) {
+    m_view_proj_axis[0] = m_proj_axis[0] * modelmatrix * m_view_axis[0];
+    m_view_proj_axis[1] = m_proj_axis[1] * modelmatrix * m_view_axis[1];
+    m_view_proj_axis[2] = m_proj_axis[2] * modelmatrix * m_view_axis[2];
+}
+
 glm::vec3 nxVoxelizer::GridSize() {
 	if (m_pEngine->Scene()->GMaxX() > 0) {
 		return glm::vec3(

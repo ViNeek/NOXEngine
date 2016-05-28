@@ -6,6 +6,11 @@ uniform ivec2 u_VPort;
 uniform vec3 u_GridSize;
 uniform vec3 u_VoxelSize;
 uniform vec3 u_GridMin;
+uniform mat4 u_LightMVP;
+uniform uint u_Seed;
+
+layout (binding = 4) uniform sampler2D u_DepthTexture;
+layout (binding = 0) uniform sampler2D u_FluxTexture;
 
 layout(std430, binding=2) readonly buffer VoxelData {
     uint voxel_data[];
@@ -20,6 +25,21 @@ layout(std430, binding=5) writeonly buffer Marcher {
 };
 
 layout ( local_size_variable ) in;
+
+int random( vec2 p, int modulo )
+{
+  // We need irrationals for pseudo randomness.
+  // Most (all?) known transcendental numbers will (generally) work.
+  const vec2 r = vec2(
+    23.1406926327792690,  // e^pi (Gelfond's constant)
+     2.6651441426902251); // 2^sqrt(2) (Gelfond–Schneider constant)
+
+  float rndNum = fract( cos( mod( 123456789., 1e-7 + 256. * dot(p,r) ) ) );
+  int rndNumi = int( rndNum * 2048.0f );
+
+  return int(mod( rndNumi, modulo ));
+  //return 1;
+}
 
 vec3 cubeMapPixelToDirection(vec2 texcoord, int face)
 {
@@ -57,6 +77,9 @@ vec3 cubeMapPixelToDirection(vec2 texcoord, int face)
         return normalize(uv2);
 }
 
+float snoise(in vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
 
 float getBinaryVoxelAt( int x, int y, int z ) {
 	return voxel_data[x * u_Dim.x * u_Dim.y + u_Dim.x * y + z];
@@ -127,7 +150,32 @@ void main() {
 				march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].x = l_VoxelCoord.x;
 				march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].y = l_VoxelCoord.y;
 				march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].z = l_VoxelCoord.z;
-				march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = l_TotalDistance;
+
+                //vec4 shadow_coords = u_LightMVP * vec4(l_VoxelCoord,1);
+                vec4 shadow_coords = u_LightMVP * vec4(l_Transform,1);
+                vec4 shadow_coords_up = u_LightMVP * vec4(l_Transform + u_VoxelSize.y,1);
+                vec3 ProjCoords = shadow_coords.xyz / shadow_coords.w;
+                vec3 ProjCoords_up = shadow_coords_up.xyz / shadow_coords_up.w;
+                vec2 UVCoords;
+                vec2 UVCoords_up;
+                UVCoords.x = 0.5 * ProjCoords.x + 0.5;
+                UVCoords.y = 0.5 * ProjCoords.y + 0.5;
+                UVCoords_up.x = 0.5 * ProjCoords_up.x + 0.5;
+                UVCoords_up.y = 0.5 * ProjCoords_up.y + 0.5;
+                float z = 0.5 * ProjCoords.z + 0.5;
+                float z_up = 0.5 * ProjCoords_up.z + 0.5;
+                float rsm_depth = texture( u_DepthTexture, UVCoords ).x;
+
+				//march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = l_TotalDistance;
+				//march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = texture( u_DepthTexture, UVCoords ).x;
+				if ( rsm_depth < (max(z-0.01, 0.01)) )
+                    march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = 4;
+                else
+                    march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = 2;
+                //if ( texture( u_DepthTexture, UVCoords ).x > 0 )
+                //    march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = random(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f ));
+                //else
+                //    march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = texture( u_FluxTexture, UVCoords ).x;
 				/*march_data[f*4*u_VPort.x*u_VPort.y + i * u_VPort.y + j].x = l_Distance;
 				l_Distance = getVoxelAt(l_Transform.x, l_Transform.y, l_Transform.z);
 				l_Distance = clamp(l_Distance, 0, l_DistanceBound);

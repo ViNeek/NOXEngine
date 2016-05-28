@@ -310,7 +310,7 @@ void nxScene::CaptureRSM() {
             for (auto entity : m_Entities) {
                // m_MState.m_VMatrix = light->View();
 
-                glm::mat4 l_ProjRSM = glm::perspective(45.0f, 512.0f / 512.0f, 1.0f, 30.0f);
+                glm::mat4 l_ProjRSM = glm::perspective(45.0f, (float)m_pEngine->Renderer()->RSM()->Width() / (m_pEngine->Renderer()->RSM()->Height()), 1.0f, 20.0f);
                 glm::mat4 depthViewMatrix = light->View();
                 glm::mat4 depthModelMatrix = glm::translate(glm::mat4(), entity->ModelTransform());
                 glm::mat4 depthMVP = l_ProjRSM * depthViewMatrix * depthModelMatrix;
@@ -332,7 +332,7 @@ void nxScene::CaptureRSM() {
                 //l_Prog->SetUniform("MVP", l_ProjRSM*m_MState.m_VMatrix);
                 l_Prog->SetUniform("MVP", depthMVP);
                 l_Prog->SetUniform("DiffuseTexture", NOX_DIFFUSE_MAP);
-				//l_Prog->SetUniform("u_LightPos", NOX_DIFFUSE_MAP);
+                l_Prog->SetUniform("u_LightPos", Lights()[0]->Center());
 				//l_Prog->SetUniform("u_LightViewDir", NOX_DIFFUSE_MAP);
 				//l_Prog->SetUniform("u_LightFOV", 45);
 				//l_Prog->SetUniform("u_VPort", glm::ivec2(512,512));
@@ -342,26 +342,26 @@ void nxScene::CaptureRSM() {
 				entity->Draw();
             }
 			if (errorGL) {
-				nxFloat32* buffer = new nxFloat32[512 * 512];
+                nxFloat32* buffer = new nxFloat32[m_pEngine->Renderer()->RSM()->Width() * m_pEngine->Renderer()->RSM()->Height()];
 				glBindTexture(GL_TEXTURE_2D, m_pEngine->Renderer()->RSM()->ShadowMap());
-				glGetTextureImage(m_pEngine->Renderer()->RSM()->ShadowMap(), 0, GL_DEPTH_COMPONENT, GL_FLOAT, 512 * 512 * 4, buffer);
+                glGetTextureImage(m_pEngine->Renderer()->RSM()->ShadowMap(), 0, GL_DEPTH_COMPONENT, GL_FLOAT, m_pEngine->Renderer()->RSM()->Width() * m_pEngine->Renderer()->RSM()->Height() * 4, buffer);
 
-				FIBITMAP* Image = FreeImage_ConvertFromRawBitsEx(true, (BYTE*)buffer, FIT_FLOAT, 512, 512, 4 * 512, 32, 0, 0, 0, false);
+                FIBITMAP* Image = FreeImage_ConvertFromRawBitsEx(true, (BYTE*)buffer, FIT_FLOAT, m_pEngine->Renderer()->RSM()->Width(), m_pEngine->Renderer()->RSM()->Height(), 4 * m_pEngine->Renderer()->RSM()->Width(), 32, 0, 0, 0, false);
 				FreeImage_Save(FIF_TIFF, Image, "shadow_map.tiff", 0);
 				
-				FIBITMAP* bitmap = FreeImage_Allocate(512, 512, 24);
+                FIBITMAP* bitmap = FreeImage_Allocate(m_pEngine->Renderer()->RSM()->Width(), m_pEngine->Renderer()->RSM()->Height(), 24);
 				RGBQUAD color;
 
 				nxFloat32 l_DepthMax = buffer[0];
 				nxFloat32 l_DepthMin = buffer[0];
 				nxFloat32 l_DepthRange = 0.0f;
 
-				for (int i = 0; i < 512; i++) {
+                for (int i = 0; i < m_pEngine->Renderer()->RSM()->Width(); i++) {
 					if (buffer[i] > l_DepthMax)
 						l_DepthMax = buffer[i];
 				}
 
-				for (int i = 0; i < 512; i++) {
+                for (int i = 0; i < m_pEngine->Renderer()->RSM()->Height(); i++) {
 					if (buffer[i] < l_DepthMin)
 						l_DepthMin = buffer[i];
 				}
@@ -374,12 +374,12 @@ void nxScene::CaptureRSM() {
 				std::cout << "Depth Min " << l_DepthMin << std::endl;
 				std::cout << "Depth Range " << l_DepthRange << std::endl;
 
-				for (int i = 0; i < 512; i++) {
-					for (int j = 0; j < 512; j++) {
+                for (int i = 0; i < m_pEngine->Renderer()->RSM()->Width(); i++) {
+                    for (int j = 0; j < m_pEngine->Renderer()->RSM()->Height(); j++) {
 						//printf("   %f   ", buffer[i * 512 + j], buffer[i * 512 + j], buffer[i * 512 + j]);
-						color.rgbRed = ((buffer[i * 512 + j] - l_DepthMin) / (l_DepthRange)) * 255;
-						color.rgbGreen = ((buffer[i * 512 + j] - l_DepthMin) / (l_DepthRange)) * 255;
-						color.rgbBlue = ((buffer[i * 512 + j] - l_DepthMin) / (l_DepthRange)) * 255;
+                        color.rgbRed = ((buffer[i * m_pEngine->Renderer()->RSM()->Width() + j] - l_DepthMin) / (l_DepthRange)) * 255;
+                        color.rgbGreen = ((buffer[i * m_pEngine->Renderer()->RSM()->Width() + j] - l_DepthMin) / (l_DepthRange)) * 255;
+                        color.rgbBlue = ((buffer[i * m_pEngine->Renderer()->RSM()->Width() + j] - l_DepthMin) / (l_DepthRange)) * 255;
 						FreeImage_SetPixelColor(bitmap, j, i, &color);
 					}
 				}
@@ -392,17 +392,17 @@ void nxScene::CaptureRSM() {
 
 				FreeImage_Unload(Image);
 
-				Image = FreeImage_Allocate(512, 512, 24);
+                Image = FreeImage_Allocate(m_pEngine->Renderer()->RSM()->Width(), m_pEngine->Renderer()->RSM()->Height(), 24);
 
-				glm::u8vec3* bufferNorm = new glm::u8vec3[512 * 512];
+                glm::u8vec3* bufferNorm = new glm::u8vec3[m_pEngine->Renderer()->RSM()->Width() * m_pEngine->Renderer()->RSM()->Height()];
 
 				glBindTexture(GL_TEXTURE_2D, m_pEngine->Renderer()->RSM()->NormalMap());
-				glGetTextureImage(m_pEngine->Renderer()->RSM()->NormalMap(), 0, GL_RGB, GL_UNSIGNED_BYTE, 512 * 512 * 3, bufferNorm);
+                glGetTextureImage(m_pEngine->Renderer()->RSM()->NormalMap(), 0, GL_RGB, GL_UNSIGNED_BYTE, m_pEngine->Renderer()->RSM()->Width() * m_pEngine->Renderer()->RSM()->Height() * 3, bufferNorm);
 
-				for (int i = 0; i < 512; i++) {
-					for (int j = 0; j < 512; j++) {
+                for (int i = 0; i < m_pEngine->Renderer()->RSM()->Width(); i++) {
+                    for (int j = 0; j < m_pEngine->Renderer()->RSM()->Height(); j++) {
 						//printf("   %f   ", buffer[i * 512 + j], buffer[i * 512 + j], buffer[i * 512 + j]);
-						glm::u8vec3& current = bufferNorm[i * 512 + j];
+                        glm::u8vec3& current = bufferNorm[i * m_pEngine->Renderer()->RSM()->Width() + j];
 
 						color.rgbRed = current.x;
 						color.rgbGreen = current.y;
@@ -421,8 +421,8 @@ void nxScene::CaptureRSM() {
 
 				Utils::GL::CheckGLState("Program USE");
 				if (errorGL) {
-					for (int i = 0; i < 512; i++) {
-						for (int j = 0; j < 512; j++) {
+                    for (int i = 0; i < m_pEngine->Renderer()->RSM()->Width(); i++) {
+                        for (int j = 0; j < m_pEngine->Renderer()->RSM()->Height(); j++) {
 							//printf("   %f   ", buffer[i * 512 + j], buffer[i * 512 + j], buffer[i * 512 + j]);
 						}
 						//printf("\n");
@@ -461,7 +461,7 @@ void nxScene::Draw() {
        glm::mat4 lightMVP = glm::mat4();
 
        //glm::mat4 depthProjectionMatrix = glm::ortho<float>(-10, 10, -10, 10, -10, 20);
-       glm::mat4 l_ProjRSM = glm::perspective(45.0f, 512.0f / 512.0f, 1.0f, 30.0f);
+       glm::mat4 l_ProjRSM = glm::perspective(45.0f, (float)m_pEngine->Renderer()->RSM()->Width() / m_pEngine->Renderer()->RSM()->Height(), 1.0f, 20.0f);
        glm::mat4 depthViewMatrix = m_Lights[0]->View();
        glm::mat4 depthModelMatrix = glm::translate(glm::mat4(), m_Entities[i]->ModelTransform());
        glm::mat4 depthMVP = l_ProjRSM * depthViewMatrix * depthModelMatrix;
@@ -473,22 +473,22 @@ void nxScene::Draw() {
        //glm::mat4 l_ProjRSM = glm::perspective(45.0f, 512.0f / 512.0f, 2.0f, 300.0f);
        lightMVP = glm::translate(lightMVP, m_Entities[i]->ModelTransform());
 
-		m_MState.m_VMatrix = glm::translate(View(),
-			-m_Camera->Position());
-		//m_MState.m_VMatrix = m_Camera->ViewTransform();
-		m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
-		m_MState.m_VMatrix *= m_MState.m_RMatrix;
-
-		m_MState.m_MMatrix = glm::translate(glm::mat4(), m_Entities[i]->ModelTransform());
-
-		//m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
+	    //m_MState.m_VMatrix = m_Camera->ViewTransform();
+       m_MState.m_VMatrix = glm::translate(View(),
+           -m_Camera->Position());
+       m_MState.m_VMatrix = m_MState.m_RMatrix * m_MState.m_VMatrix;
+       m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
+        
+        m_MState.m_MMatrix = glm::translate(glm::mat4(), m_Entities[i]->ModelTransform());
+        //m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
         m_pEngine->Renderer()->Program()->SetUniform("NormalMatrix", Normal());
-        m_pEngine->Renderer()->Program()->SetUniform("LightPosition", m_Lights[0]->Center());
+        m_pEngine->Renderer()->Program()->SetUniform("LightPosition", m_MState.m_VMatrix * glm::vec4(m_Lights[0]->Center(), 1));
         //m_pEngine->Renderer()->Program()->SetUniform("LightPosition", m_Lights[0]->Center());
 
 		//if (errorGL) Utils::GL::CheckGLState("Set Normal");
 
         m_pEngine->Renderer()->Program()->SetUniform("MVP", m_MState.m_PMatrix*m_MState.m_VMatrix);
+        m_pEngine->Renderer()->Program()->SetUniform("ModelViewMatrix", m_MState.m_VMatrix);
         m_pEngine->Renderer()->Program()->SetUniform("lightMVP", depthMVP);
         m_pEngine->Renderer()->Program()->SetUniform("DiffuseTexture", NOX_DIFFUSE_MAP);
         m_pEngine->Renderer()->Program()->SetUniform("ApplyShadows", true);
@@ -513,13 +513,11 @@ void nxScene::Draw() {
 			//printf("Luda IN");
 			m_MState.m_VMatrix = glm::mat4();
 
-			m_MState.m_VMatrix = glm::translate(View(),
+            m_MState.m_VMatrix = glm::translate(View(),
 				-m_Camera->Position());
 			//m_MState.m_VMatrix = m_Camera->ViewTransform();
-
-			m_MState.m_VMatrix *= m_MState.m_RMatrix;
-
-			l_Prog->SetUniform("MVP", m_MState.m_PMatrix*m_MState.m_VMatrix);
+            m_MState.m_VMatrix *= m_MState.m_RMatrix;
+            l_Prog->SetUniform("MVP", m_MState.m_PMatrix*m_MState.m_VMatrix);
 			//m_pEngine->Renderer()->Program()->SetUniform("MVP", View());
 			//if (errorGL) Utils::GL::CheckGLState("Set MVP");
 
@@ -586,9 +584,9 @@ void nxScene::DrawVoxelized() {
 	}
 	glm::vec3 l_Voxel = m_pEngine->Renderer()->Voxelizer()->GridSize() / glm::vec3(m_pEngine->Renderer()->Voxelizer()->Dimesions());
 	for (size_t i = 0; i < m_Entities.size(); i++) {
-		m_MState.m_VMatrix = glm::translate(View(),
-			m_Camera->Position());
-
+		//m_MState.m_VMatrix = glm::translate(View(),
+		//	m_Camera->Position());
+        m_MState.m_VMatrix = glm::mat4();
 		m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
 		//m_MState.m_VMatrix *= m_MState.m_RMatrix;
 
@@ -603,8 +601,9 @@ void nxScene::DrawVoxelized() {
 		m_pEngine->Renderer()->Program()->SetUniform("GridSize", m_pEngine->Renderer()->Voxelizer()->Dimesions());
 		m_pEngine->Renderer()->Program()->SetUniform("GridMin", m_pEngine->Renderer()->Voxelizer()->GridMin());
 		m_pEngine->Renderer()->Program()->SetUniform("VoxelSize", l_Voxel);
-
-		m_pEngine->Renderer()->Program()->SetUniform("ViewProjMatrix", 3, m_pEngine->Renderer()->Voxelizer()->ViewProjections());
+        //m_pEngine->Renderer()->Program()->SetUniform("ViewMatrix", m_MState.m_VMatrix);
+        m_pEngine->Renderer()->Program()->SetUniform("ViewMatrix", glm::mat4());
+        m_pEngine->Renderer()->Program()->SetUniform("ViewProjMatrix", 3, m_pEngine->Renderer()->Voxelizer()->ViewProjections());
 
 		//m_pEngine->Renderer()->Program()->SetUniform("MVP", View());
 		//if (errorGL) Utils::GL::CheckGLState("Set MVP");
@@ -666,12 +665,27 @@ void nxScene::DrawVoxelized() {
 	
 	m_pEngine->Renderer()->GetActiveProgramByName("RayMarch")->Use();
 
+    glm::mat4 l_ProjRSM = glm::perspective(45.0f, (float)m_pEngine->Renderer()->RSM()->Width() / m_pEngine->Renderer()->RSM()->Height(), 1.0f, 20.0f);
+    glm::mat4 depthViewMatrix = Lights()[0]->View();
+    //glm::mat4 depthModelMatrix = glm::translate(glm::mat4(), entity->ModelTransform());
+    glm::mat4 depthMVP = l_ProjRSM * depthViewMatrix;
+
 	m_pEngine->Renderer()->GetActiveProgramByName("RayMarch")->SetUniform("u_VPort", m_pEngine->Renderer()->RayMarcher()->VPort());
 	m_pEngine->Renderer()->GetActiveProgramByName("RayMarch")->SetUniform("u_Dim", m_pEngine->Renderer()->Voxelizer()->Dimesions());
 	l_Voxel = m_pEngine->Renderer()->Voxelizer()->GridSize() / glm::vec3(m_pEngine->Renderer()->Voxelizer()->Dimesions());
 	m_pEngine->Renderer()->GetActiveProgramByName("RayMarch")->SetUniform("u_VoxelSize", l_Voxel);
-	m_pEngine->Renderer()->GetActiveProgramByName("RayMarch")->SetUniform("u_GridMin", m_pEngine->Renderer()->Voxelizer()->GridMin());
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
+    m_pEngine->Renderer()->GetActiveProgramByName("RayMarch")->SetUniform("u_GridMin", m_pEngine->Renderer()->Voxelizer()->GridMin());
+    m_pEngine->Renderer()->GetActiveProgramByName("RayMarch")->SetUniform("u_LightMVP", depthMVP);
+
+    glActiveTexture(GL_TEXTURE0 + NOX_DEPTH_MAP);
+    glBindTexture(GL_TEXTURE_2D, m_pEngine->Renderer()->RSM()->ShadowMap());
+    m_pEngine->Renderer()->Program()->SetUniform("u_DepthTexture", NOX_DEPTH_MAP);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_pEngine->Renderer()->RSM()->NormalMap());
+    m_pEngine->Renderer()->Program()->SetUniform("u_FluxTexture", 0);
+
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_pEngine->Renderer()->DistanceField()->DistanceFieldFrontBuffer());
 	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, m_pEngine->Renderer()->DistanceField()->DistanceFieldBackBuffer());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, m_pEngine->Renderer()->RayMarcher()->Buffer());
@@ -705,7 +719,7 @@ void nxScene::DrawVoxelized() {
             pixels2->push_back(glm::vec3(64, 64, 64) * l_Voxel + l_Voxel*glm::vec3(0.5) + l_GridMin);
             pixels2->push_back(glm::vec3(68, 68, 68) * l_Voxel + l_Voxel*glm::vec3(0.5) + l_GridMin);
             nxGLBufferedAssetLoaderBlob* bufferDataA2 = new nxGLBufferedAssetLoaderBlob(m_pEngine, pixels2->data(), pixels2->size());
-            m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, bufferDataA2));
+            //m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, bufferDataA2));
 
             std::vector<glm::vec3>* sphereHitC = new std::vector<glm::vec3>;
             //*sphereHitC = Utils::Shape::generateSphereMeshScaledAt(8, 8, 1.0f, glm::vec3(0, 10, 0));
@@ -777,7 +791,7 @@ void nxScene::DrawVoxelized() {
 			for (int f = 5; f < 6; f++) {
 				for (int i = 0; i < l_VPort.x; i++) {
 					for (int j = 0; j < l_VPort.y; j++) {
-						std::cout << "Face : " << f << " : " << p[f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].x << ", " << p[f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].y << ", " << p[f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].z << ", " << p[f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].w << std::endl;
+                        std::cout << "Face : " << f << " : " << p[f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].x << ", " << p[f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].y << ", " << p[f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].z << ", " << p[f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].w << std::endl;
 						//glm::vec3 target = glm::vec3(p[f * l_VPort.x * l_VPort.y + i * l_VPort.y + j]);
 						glm::vec3 target = glm::vec3(p[f * l_VPort.x * l_VPort.y + i * l_VPort.y + j]) * l_Voxel + m_pEngine->Renderer()->Voxelizer()->GridMin();
 						//glm::vec3 orient = glm::vec3(target, jump - uv.y * offseting, uv.x * offseting);
@@ -794,10 +808,12 @@ void nxScene::DrawVoxelized() {
 						
 						nxGLBufferedAssetLoaderBlob* bufferDataHit = new nxGLBufferedAssetLoaderBlob(m_pEngine, sphereHit->data(), sphereHit->size());
 						//m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, bufferDataHit));
-
-					}
+					
+                    }
 				}
 			}
+
+        loop_done:
 
 			//std::cout << "Number of lines " << pixels->size() << std::endl;
 			//std::cout << "Marcher Port " << m_pEngine->Renderer()->RayMarcher()->VPort().x << std::endl;
@@ -935,10 +951,13 @@ void nxScene::DrawPreviewVoxelized() {
     }
     glm::vec3 l_Voxel = m_pEngine->Renderer()->Voxelizer()->GridSize() / glm::vec3(m_pEngine->Renderer()->Voxelizer()->Dimesions());
     for (size_t i = 0; i < m_Entities.size(); i++) {
-        m_MState.m_VMatrix = glm::translate(View(),
-            m_Camera->Position());
-
+        //m_MState.m_VMatrix = glm::translate(View(),
+        //    m_Camera->Position());
+        printf("Inside %d", i);
+        m_MState.m_VMatrix = glm::mat4();
         m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
+        m_pEngine->Renderer()->Voxelizer()->CalculateViewProjection(m_MState.m_VMatrix);
+        //m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
         //m_MState.m_VMatrix *= m_MState.m_RMatrix;
 
         //m_MState.m_MMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
@@ -952,7 +971,8 @@ void nxScene::DrawPreviewVoxelized() {
         m_pEngine->Renderer()->Program()->SetUniform("GridSize", m_pEngine->Renderer()->Voxelizer()->Dimesions());
         m_pEngine->Renderer()->Program()->SetUniform("GridMin", m_pEngine->Renderer()->Voxelizer()->GridMin());
         m_pEngine->Renderer()->Program()->SetUniform("VoxelSize", l_Voxel);
-
+        m_pEngine->Renderer()->Program()->SetUniform("ViewMatrix", m_MState.m_VMatrix);
+        //m_pEngine->Renderer()->Program()->SetUniform("ViewMatrix", glm::mat4());
         m_pEngine->Renderer()->Program()->SetUniform("ViewProjMatrix", 3, m_pEngine->Renderer()->Voxelizer()->ViewProjections());
 
         //m_pEngine->Renderer()->Program()->SetUniform("MVP", View());

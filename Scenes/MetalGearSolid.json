@@ -18,8 +18,8 @@
             "VDimY": 4
         },
 		"RSM": {
-            "DimX": 512,
-            "DimY": 512
+            "DimX": 2048,
+            "DimY": 2048
         },
 		"Lights": [
             {
@@ -39,6 +39,14 @@
                 "CenterY": 0,
                 "CenterZ": 0,
                 "Scale": 1
+            },
+            {
+                "ModelName": "Models/table/Table_pistolesi_tavolinoovale_art241 N230913rz",
+                "ModelType": ".3DS",
+                "CenterX": 1.4,
+                "CenterY": 1,
+                "CenterZ": 0,
+                "Scale": 14
             }
         ],
         "Programs": [

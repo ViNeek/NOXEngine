@@ -16,11 +16,11 @@ uniform sampler2D DiffuseTexture;
 
 const float pi = 3.1415926535897932384626433832795;
 
-const vec3 lightColor = vec3(1.0, 1, 1);
+const vec3 lightColor = vec3(0.5, 0.5, 0.5);
 
 in VertexData {
     vec3 normal;
-	vec3 worldpos;
+	vec4 worldpos;
 	//flat in uint depth;
 	//flat in uvec3 factors;
     vec2 uv;
@@ -43,9 +43,21 @@ void main()
 	vec3 l_ViewDir = normalize(worldpos - u_LightPos);
 	vec3 l_PlaneDir = normalize(u_LightViewDir);
     */
+
+    vec3 l_Dir = normalize(VertexIn.worldpos.xyz - u_LightPos);
+    float l_Distance = length(VertexIn.worldpos.xyz - u_LightPos);
+    vec3 n = normalize(VertexIn.normal);
+    float NdotL = dot(n, -l_Dir);
+
+    float sa = 0;
+    if ( NdotL > 0 ) 
+        sa = ( pow(cos(NdotL), 3) ) / ( 2 * pow(pi, 1) * pow(l_Distance, 2));
+
 	//out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb*gl_FragCoord.z,0.0f);
 	//out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb,0.0f);
-	out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb * 0.7 + lightColor * 0.3,0.0f);
-	out_color2 = vec4(VertexIn.normal, 1.0f);
+	//out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb * 0.7 + lightColor * 0.3,0.0f);
+	out_color2 = vec4((sa*10) * lightColor * 0.3 + texture( DiffuseTexture, VertexIn.uv ).rgb * 0.7, 0.0f);
+	//out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb * 0.7 + lightColor * 0.3,0.0f);
+	out_color = vec4(VertexIn.normal, 1.0f);
 
 }

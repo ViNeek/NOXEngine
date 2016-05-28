@@ -63,7 +63,8 @@ public:
 	glm::mat4&					View(){ return m_MState.m_VMatrix; };
 	glm::mat3&					Normal();
 	glm::mat4&					Rotation(){ return m_MState.m_RMatrix; };
-	glm::mat4&					Modelview(){ return m_MState.m_MMatrix; };
+    glm::mat4&					Modelview(){ return m_MState.m_MMatrix; };
+    const std::vector<nxLight*> const &		Lights(){ return m_Lights; };
 
 	void						SetProjection(float angle, float fov, float zNear, float zFar);
 	void						SetProjection(glm::mat4& proj);

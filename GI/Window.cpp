@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "Scene.h"
 #include "Renderer.h"
+#include "Light.h"
 #include "Scheduler.h"
 #include "Engine.h"
 #include "Voxelizer.h"
@@ -158,15 +159,25 @@ void nxFrame::OnKeyDown(wxKeyEvent& evt) {
 	}
 	else // No Unicode equivalent.
 	{
+        const static float l_Step = 0.5f;
 		//wxLogMessage("You pressed other");
 		// It's a special key, deal with all the known ones:
 		switch (evt.GetKeyCode())
 		{
 		case WXK_LEFT:
+            m_EngineState->Scene()->Lights()[0]->CenterX(m_EngineState->Scene()->Lights()[0]->Center().x + l_Step);
+            break;
 		case WXK_RIGHT:
-				break;
+            m_EngineState->Scene()->Lights()[0]->CenterX(m_EngineState->Scene()->Lights()[0]->Center().x - l_Step);
+            break;
+        case WXK_UP:
+            m_EngineState->Scene()->Lights()[0]->CenterY(m_EngineState->Scene()->Lights()[0]->Center().y + l_Step);
+            break;
+        case WXK_DOWN:
+            m_EngineState->Scene()->Lights()[0]->CenterY(m_EngineState->Scene()->Lights()[0]->Center().y - l_Step);
+            break;
 		case WXK_F1:
-				break;
+			break;
 		}
 	}
 }
@@ -260,15 +271,22 @@ void nxGLPanel::OnLeftClickReleased(wxMouseEvent& evt) {
 }
 
 void nxGLPanel::OnMouseWheelRolled(wxMouseEvent& evt) {
-	//wxMessageBox("mouse roll");
-	if (m_pEngine->Scene()->CameraReady()) {
-		float moved = (float)evt.GetWheelDelta() / 80;
-		
-		if (evt.GetWheelRotation() < 0)
-			m_pEngine->Scene()->Camera()->SetZ(m_pEngine->Scene()->Camera()->Position().z - moved);
-		else
-			m_pEngine->Scene()->Camera()->SetZ(m_pEngine->Scene()->Camera()->Position().z + moved);
-	}
+    //wxMessageBox("mouse roll");
+    if (m_pEngine->Scene()->CameraReady()) {
+        float moved = (float)evt.GetWheelDelta() / 80;
+
+        if (!evt.ControlDown()) {
+            if (evt.GetWheelRotation() < 0)
+                m_pEngine->Scene()->Camera()->SetZ(m_pEngine->Scene()->Camera()->Position().z - moved);
+            else
+                m_pEngine->Scene()->Camera()->SetZ(m_pEngine->Scene()->Camera()->Position().z + moved);
+        } else {
+            if (evt.GetWheelRotation() < 0)
+                m_pEngine->Scene()->Lights()[0]->CenterZ(m_pEngine->Scene()->Lights()[0]->Center().z - moved);
+            else
+                m_pEngine->Scene()->Lights()[0]->CenterZ(m_pEngine->Scene()->Lights()[0]->Center().z + moved);
+        }
+    }
 }
 
 void nxGLPanel::OnMouseMoved(wxMouseEvent& evt) {
