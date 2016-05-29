@@ -953,7 +953,7 @@ void nxScene::DrawPreviewVoxelized() {
     for (size_t i = 0; i < m_Entities.size(); i++) {
         //m_MState.m_VMatrix = glm::translate(View(),
         //    m_Camera->Position());
-        printf("Inside %d", i);
+        //printf("Inside %d", i);
         m_MState.m_VMatrix = glm::mat4();
         m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
         m_pEngine->Renderer()->Voxelizer()->CalculateViewProjection(m_MState.m_VMatrix);
@@ -982,6 +982,31 @@ void nxScene::DrawPreviewVoxelized() {
         //if (errorGL) Utils::GL::CheckGLState("Draw : " + i);
 
     }
+
+    GLuint *l_VoxelCounter;
+    glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, m_pEngine->Renderer()->Voxelizer()->VoxelCountBuffer());
+    // map the buffer, userCounters will point to the buffers data
+
+    l_VoxelCounter = (GLuint*)glMapBufferRange(GL_ATOMIC_COUNTER_BUFFER,
+        0,
+        sizeof(GLuint) * 2,
+        GL_MAP_READ_BIT
+    );
+    printf("Voxel Count %d\n", l_VoxelCounter[0]);
+
+    glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
+
+    l_VoxelCounter = (GLuint*)glMapBufferRange(GL_ATOMIC_COUNTER_BUFFER,
+        0,
+        sizeof(GLuint) * 2,
+        GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_UNSYNCHRONIZED_BIT
+        );
+    // set the memory to zeros, resetting the values in the buffer
+    //memset(userCounters, 0, sizeof(GLuint) * 3);
+    //printf("Voxel Count %d\n", *l_VoxelCounter);
+    *l_VoxelCounter = 0;
+    // unmap the buffer
+    glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
 
     m_pEngine->Renderer()->GetActiveProgramByName("DistanceFieldInit")->Use();
 

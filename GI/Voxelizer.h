@@ -60,7 +60,8 @@ public:
 	glm::vec3							GridMax();
 	glm::vec3							GridMin();
 
-	GLuint								VoxelizerFramebuffer() { return m_fbo_3_axis; };
+    GLuint								VoxelizerFramebuffer() { return m_fbo_3_axis; };
+    GLuint								VoxelCountBuffer() { return m_VoxelCount; };
 
 	void								PrintGrid();
 	void								PrintGridMesh(GLuint ssbo);
@@ -74,7 +75,8 @@ private:
 	GLuint								m_fbo_3_axis;
 	GLuint								m_ssbo;
 	GLuint								m_DistanceFieldBuffer;
-	GLuint								m_DummyLayeredBuffer;
+    GLuint								m_DummyLayeredBuffer;
+    GLuint								m_VoxelCount;
 
 	glm::vec4							m_viewport[3];
 	glm::mat4							m_view_proj_axis[3];

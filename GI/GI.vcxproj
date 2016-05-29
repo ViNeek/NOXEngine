@@ -106,7 +106,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>boost_log_setup-vc120-mt-gd-1_59.lib;boost_log-vc120-mt-gd-1_59.lib;boost_date_time-vc120-mt-gd-1_59.lib;boost_timer-vc120-mt-gd-1_59.lib;boost_system-vc120-mt-gd-1_59.lib;boost_thread-vc120-mt-gd-1_59.lib;wxmsw30ud_core.lib;wxbase30ud.lib;wxmsw30ud_gl.lib;assimpd.lib;opengl32.lib;glew32d.lib;FreeImaged.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>boost_log_setup-vc120-mt-gd-1_59.lib;boost_log-vc120-mt-gd-1_59.lib;boost_date_time-vc120-mt-gd-1_59.lib;boost_timer-vc120-mt-gd-1_59.lib;boost_system-vc120-mt-gd-1_59.lib;boost_thread-vc120-mt-gd-1_59.lib;boost_filesystem-vc120-mt-gd-1_59.lib;wxmsw30ud_core.lib;wxbase30ud.lib;wxmsw30ud_gl.lib;assimpd.lib;opengl32.lib;glew32d.lib;FreeImaged.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

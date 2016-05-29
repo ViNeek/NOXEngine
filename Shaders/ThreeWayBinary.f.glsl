@@ -22,14 +22,24 @@ flat in int offX;
 flat in int offY;
 flat in int offZ;
 
-layout (std430, binding=2) writeonly buffer VoxelData
+layout (std430, binding=2) buffer VoxelData
 {
 	uint voxel_data[];
 };
 
+layout (binding = 1, offset = 0) uniform atomic_uint VoxelCount;
+
 void setVoxelAt(int i,int j,int w) {
 	//voxel_data[dX * ( i - offX ) + dY * ( j - offY ) + dZ * ( w - offZ )] = 1;
-	voxel_data[i * GridSize.x * GridSize.y + j * GridSize.x + w] = 1;
+
+    //memoryBarrierAtomicCounter();
+    //memoryBarrier();
+    if ( atomicCompSwap(voxel_data[i * GridSize.x * GridSize.y + j * GridSize.x + w], 0 , 1) == 0 )
+        atomicCounterIncrement(VoxelCount);
+
+    //atomicCompSwap(voxel_data[i * GridSize.x * GridSize.y + j * GridSize.x + w], 0 , 1);
+	//voxel_data[i * GridSize.x * GridSize.y + j * GridSize.x + w] = 1;
+    //memoryBarrier();
 }
 
 void main()

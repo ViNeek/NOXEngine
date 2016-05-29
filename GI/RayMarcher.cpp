@@ -14,7 +14,8 @@ void nxRayMarcher::Init() {
 	glGenBuffers(1, m_Buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_Buffer);
 	//glBufferData(GL_SHADER_STORAGE_BUFFER, l_Dims.x * l_Dims.y * l_Dims.z * sizeof(GLfloat), NULL, GL_DYNAMIC_DRAW);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, l_BufferSize, NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, l_Dims.x * l_Dims.y * l_Dims.z * l_BufferSize, NULL, GL_DYNAMIC_DRAW);
+    //glBufferData(GL_SHADER_STORAGE_BUFFER, l_BufferSize, NULL, GL_DYNAMIC_DRAW);
 
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, m_Buffer);
 
@@ -43,8 +44,9 @@ void nxRayMarcher::Calculate() {
 	//std::cout << "Group : " << l_GroupSize.x << ", " << l_GroupSize.y << ", " << l_GroupSize.z << std::endl;
 	//std::cout << "Dims : " << m_DimX << ", " << m_DimY << ", " << m_DimZ << std::endl;
 
-	glDispatchComputeGroupSizeARB(l_GroupSize.x, l_GroupSize.y, l_GroupSize.z, g_WorkGroupSize, g_WorkGroupSize, g_WorkGroupSize);
-	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+    //glDispatchComputeGroupSizeARB(l_GroupSize.x, l_GroupSize.y, l_GroupSize.z, g_WorkGroupSize, g_WorkGroupSize, g_WorkGroupSize);
+    glDispatchComputeGroupSizeARB(l_GroupSize.x, l_GroupSize.y, l_GroupSize.z, g_WorkGroupSize, g_WorkGroupSize, g_WorkGroupSize);
+    glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 }
 
 bool nxRayMarcherInitializer::operator()(void* data) {

@@ -9,13 +9,13 @@
             "PositionZ": 0
         },
         "Voxelizer": {
-            "DimX": 128,
-            "DimY": 128,
-            "DimZ": 128
+            "DimX": 96,
+            "DimY": 96,
+            "DimZ": 96
         },
 		"RayMarcher": {
-            "VDimX": 4,
-            "VDimY": 4
+            "VDimX": 8,
+            "VDimY": 8
         },
 		"RSM": {
             "DimX": 2048,
@@ -41,8 +41,8 @@
                 "Scale": 1
             },
             {
-                "ModelName": "Models/table/Table_pistolesi_tavolinoovale_art241 N230913rz",
-                "ModelType": ".3DS",
+                "ModelName": "Models/table/table",
+                "ModelType": ".obj",
                 "CenterX": 1.4,
                 "CenterY": 1,
                 "CenterZ": 0,

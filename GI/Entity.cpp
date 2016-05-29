@@ -347,7 +347,10 @@ void nxEntity::InitFromFile(const std::string& path) {
         nxInt32 l_OldIndex = m_MaterialIndices[i];
         std::cout << "Old : " << l_OldIndex << std::endl;
         std::cout << "I : " << i << std::endl;
-        m_MaterialIndices[i] = l_MaterialsRemap[l_OldIndex];
+        if (l_MaterialsRemap[l_OldIndex] < 0)
+            m_MaterialIndices[i] = 0;
+        else
+            m_MaterialIndices[i] = l_MaterialsRemap[l_OldIndex];
     }
 
 	//m_NumMaterials = scene->mNumMaterials;
@@ -392,8 +395,8 @@ void nxEntity::Draw() {
 	{
 		if (m_MaterialIndices.size() > i) {
 			nxInt32 l_MatIndex = m_MaterialIndices[i];
-            if (l_MatIndex > 0 )
-			    m_TextureCache[l_MatIndex]->Bind();
+            //if (l_MatIndex > 0 )
+            m_TextureCache[l_MatIndex]->Bind();
 		}
 		else if (m_AdHocTextureObject >= 0) {
 			glActiveTexture(GL_TEXTURE0);

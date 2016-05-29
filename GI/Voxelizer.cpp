@@ -66,6 +66,18 @@ bool nxVoxelizer::Init() {
 
 	Utils::GL::CheckGLState("SSBO Attach");
 
+    glGenBuffers(1, &m_VoxelCount);
+    // bind the buffer and define its initial storage capacity
+    glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, m_VoxelCount);
+    glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * 2, NULL, GL_DYNAMIC_DRAW);
+
+    glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 1, m_VoxelCount);
+
+    // unbind the buffer 
+    glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+
+    Utils::GL::CheckGLState("SSBO Voxel Counter");
+
 	glGenBuffers(1, &m_ssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, m_resolution * m_resolution * m_resolution * 4, NULL, GL_DYNAMIC_COPY);
@@ -347,7 +359,7 @@ void nxVoxelizer::PrintGridMeshF(GLuint ssbo) {
 		for (int i = 0; i < m_dimensions.x; i++) {
 			for (int j = 0; j < m_dimensions.y; j++) {
 				for (int k = 0; k < m_dimensions.z; k++) {
-                    printf("%g %g\n", ip[i][j][k], glm::length(l_Voxel));
+                    //printf("%g %g\n", ip[i][j][k], glm::length(l_Voxel));
                     if (ip[i][j][k] < 0.01) {
 						countVoxels++;
 						xCount++;

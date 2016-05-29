@@ -120,8 +120,8 @@ void *nxRenderer::Entry()
 				printf("Capture \n");
 				Voxelizer()->SetCaptureGrid(false);
 				//Voxelizer()->PrintGridMesh(m_ssbo);
-				//Voxelizer()->PrintGridMesh(Voxelizer()->VoxelBuffer());
-				Voxelizer()->PrintGridMeshF(DistanceField()->DistanceFieldBuffer());
+				Voxelizer()->PrintGridMesh(Voxelizer()->VoxelBuffer());
+				//Voxelizer()->PrintGridMeshF(DistanceField()->DistanceFieldBuffer());
 				
 			}
 

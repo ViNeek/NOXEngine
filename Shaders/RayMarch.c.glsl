@@ -24,6 +24,8 @@ layout(std430, binding=5) writeonly buffer Marcher {
     vec4 march_data[];
 };
 
+layout (binding = 1, offset = 4) uniform atomic_uint VoxelCount;
+
 layout ( local_size_variable ) in;
 
 int random( vec2 p, int modulo )
@@ -95,6 +97,13 @@ void setVoxelAt( float value, uint x, uint y, uint z ) {
 }
 
 void main() {
+
+    bvec3 l_OutOfBounds = greaterThanEqual(gl_GlobalInvocationID, u_Dim);
+
+    if ( any(l_OutOfBounds) ) {
+		return;
+	}
+
 	vec3 l_GlobalTestPosition = vec3(0, 7, 0);
 	float l_DistanceBound = length(u_VoxelSize) * (3 + 0.8);
 	//float l_DistanceBound = length(vec3(1, 1, 1)) * 1;
