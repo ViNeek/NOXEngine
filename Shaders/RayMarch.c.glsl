@@ -103,7 +103,7 @@ void setVoxelAt( float value, uint x, uint y, uint z ) {
 }
 
 void setIndexAt( int value, uint x, uint y, uint z ) {
-	index_data[x + u_Dim.x * y + u_Dim.x * u_Dim.y * z] = value;
+	index_data[x * u_Dim.x * u_Dim.y + u_Dim.x * y + z] = value;
 }
 
 void main() {
@@ -132,13 +132,14 @@ void main() {
 	vec3 l_VoxelCenter = vec3(l_iVoxelCoords) * u_VoxelSize + u_VoxelSize * 0.5;
 
 	vec3 l_GlobalTestPosition = vec3(10, 0, 0);
+	float l_SingleStep = length(u_VoxelSize) * (1+0.8);
 	float l_DistanceBound = length(u_VoxelSize) * (3 + 0.8);
 	//float l_DistanceBound = length(vec3(1, 1, 1)) * 1;
 	//float l_DistanceBound = 1;
 	vec2 l_PixelNDC;
 
 	//vec3 l_PositionInGrid = l_GlobalTestPosition - u_GridMin;
-	vec3 l_PositionInGrid = l_VoxelCenter - u_GridMin;
+	vec3 l_PositionInGrid = l_VoxelCenter;
 
 	for ( int f = 0; f < 6; f++ ) {
 		for ( int i = 0; i < u_VPort.x; i++ ) {
@@ -146,8 +147,9 @@ void main() {
 			for ( int j = 0; j < u_VPort.y; j++ ) {
 				l_PixelNDC.y = ( float(j) + 0.5) / float(u_VPort.y);
 				int l_Counter = 0;
-	            ivec3 l_VoxelCoord = ivec3( l_PositionInGrid / u_VoxelSize );
 				vec3 l_Dir = cubeMapPixelToDirection(l_PixelNDC, f);
+	            //ivec3 l_VoxelCoord = ivec3( (l_PositionInGrid + l_Dir * l_SingleStep) / u_VoxelSize );
+	            ivec3 l_VoxelCoord = ivec3( (l_PositionInGrid + l_Dir * l_SingleStep) / u_VoxelSize );
 				
 				float l_Distance = getVoxelAt(l_VoxelCoord.x, l_VoxelCoord.y, l_VoxelCoord.z);
 				//float l_Distance = 1 - getBinaryVoxelAt(l_VoxelCoord.x, l_VoxelCoord.y, l_VoxelCoord.z);
