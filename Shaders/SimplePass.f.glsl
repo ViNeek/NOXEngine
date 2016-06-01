@@ -66,7 +66,7 @@ void main()
                 NdotHV = max(dot(n,halfVec),0.0);
 
                 out_color = visibility * (vec4(texture( DiffuseTexture, VertexIn.uv ).rgb , 0.0f) + vec4(0.8, 0.8 ,0.8, 0));
-                out_color *= att * pow(NdotHV, 10);
+                out_color *= att * pow(NdotHV, 2);
 
             } else {
                 out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb * 0.1 , 0.0f);

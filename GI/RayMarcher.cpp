@@ -11,18 +11,52 @@ void nxRayMarcher::Init() {
 	nxInt32 l_BufferSize = m_VDimX * m_VDimY * 6 * sizeof(glm::vec4);
 	glm::uvec3 l_Dims = m_Voxelizer->Dimesions();
 
-	glGenBuffers(1, m_Buffer);
+    m_Buffer = -1;
+
+	/*glGenBuffers(1, m_Buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_Buffer);
 	//glBufferData(GL_SHADER_STORAGE_BUFFER, l_Dims.x * l_Dims.y * l_Dims.z * sizeof(GLfloat), NULL, GL_DYNAMIC_DRAW);
     glBufferData(GL_SHADER_STORAGE_BUFFER, l_Dims.x * l_Dims.y * l_Dims.z * l_BufferSize, NULL, GL_DYNAMIC_DRAW);
     //glBufferData(GL_SHADER_STORAGE_BUFFER, l_BufferSize, NULL, GL_DYNAMIC_DRAW);
 
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, m_Buffer);
+    */
 
+    auto l_IndexBufferSize = l_Dims.x * l_Dims.y * l_Dims.z * sizeof(int);
+    glGenBuffers(1, m_IndexBuffer);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_IndexBuffer);
+    //glBufferData(GL_SHADER_STORAGE_BUFFER, l_Dims.x * l_Dims.y * l_Dims.z * sizeof(GLfloat), NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, l_IndexBufferSize, NULL, GL_DYNAMIC_DRAW);
+
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, m_IndexBuffer);
+}
+
+void nxRayMarcher::Reserve(int p_NewLength) {
+    if (p_NewLength <= m_BufferCapacity )
+        return;
+
+    //m_BufferCapacity = p_NewLength;
+
+    nxInt32 l_BufferSize = m_VDimX * m_VDimY * 6 * sizeof(glm::vec4) * p_NewLength;
+    printf("Buffer Size : %d %d", l_BufferSize, p_NewLength);
+
+    if ( m_Buffer < 0 )
+        glGenBuffers(1, m_Buffer);
+    Utils::GL::CheckGLState("SSBO Create");
+
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_Buffer);
+    Utils::GL::CheckGLState("SSBO Bind");
+
+    glBufferData(GL_SHADER_STORAGE_BUFFER, l_BufferSize, NULL, GL_DYNAMIC_DRAW);
+    Utils::GL::CheckGLState("SSBO Storage Alloc");
+
+
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, m_Buffer);
 }
 
 void nxRayMarcher::Bind() {
-
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, m_Buffer);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, m_IndexBuffer);
 }
 
 static const int g_WorkGroupSize = 8;

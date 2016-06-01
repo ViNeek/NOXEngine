@@ -19,13 +19,17 @@ public:
 	glm::ivec2 VPort() { return glm::ivec2(m_VDimX, m_VDimY); }
 	void Bind();
 	void Calculate();
-	nxStorageBufferObject Buffer() { return m_Buffer; }
+    nxStorageBufferObject Buffer() { return m_Buffer; }
+    nxStorageBufferObject IndexBuffer() { return m_IndexBuffer; }
+    void Reserve(int p_NewLength);
 
 private:
 
-	nxInt32						m_VDimX, m_VDimY;
-	nxStorageBufferObject		m_Buffer;
-	nxVoxelizer*				m_Voxelizer;
+    nxInt32						m_VDimX, m_VDimY;
+    nxInt32						m_BufferCapacity;
+    nxStorageBufferObject		m_Buffer;
+    nxStorageBufferObject		m_IndexBuffer;
+    nxVoxelizer*				m_Voxelizer;
 	nxDistanceField*			m_DistanceField;
 
 };

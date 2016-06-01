@@ -18,6 +18,7 @@ void main()
 	for(int i = 0; i < gl_VerticesIn; i++)
 	{
 		pos = MVP * gl_in[i].gl_Position;
+        //pos = pos / pos.w;
 		//pos = MVP * pos;
 
 		//VertexOut.color = normalize(abs(gl_in[1].gl_Position - gl_in[0].gl_Position));

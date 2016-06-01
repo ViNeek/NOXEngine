@@ -180,7 +180,7 @@ void main()
         uint l_Occupied = getVoxelAt(VoxelGridCoord.x, VoxelGridCoord.y, VoxelGridCoord.z);
 
 
-        //if ( l_Occupied > 0 ) {
+        //if ( l_Occupied == 0 ) {
             sphere(4, 6, vec4(VertexIn[i].worldcoord, 0));
             //cube(vec4(VertexIn[i].worldcoord, 1));
        // } else {
