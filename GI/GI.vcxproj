@@ -202,29 +202,33 @@
     <ClInclude Include="Worker.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\Shaders\Shaders.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\Scenes\MetalGearSolid.json" />
     <None Include="..\Scenes\Simple.json" />
-    <None Include="..\Shaders\DebugPass.f.glsl" />
-    <None Include="..\Shaders\DebugPass.g.glsl" />
-    <None Include="..\Shaders\DebugPass.v.glsl" />
-    <None Include="..\Shaders\DistanceFieldInit.c.glsl" />
-    <None Include="..\Shaders\DistanceFieldStep.c.glsl" />
-    <None Include="..\Shaders\RayMarch.c.glsl" />
-    <None Include="..\Shaders\RSM.f.glsl" />
-    <None Include="..\Shaders\RSM.g.glsl" />
-    <None Include="..\Shaders\RSM.v.glsl" />
-    <None Include="..\Shaders\SimplePass.f.glsl" />
-    <None Include="..\Shaders\SimplePass.g.glsl" />
-    <None Include="..\Shaders\SimplePass.v.glsl" />
-    <None Include="..\Shaders\ThreeWayBinary.f.glsl" />
-    <None Include="..\Shaders\ThreeWayBinary.g.glsl" />
-    <None Include="..\Shaders\ThreeWayBinary.v.glsl" />
-    <None Include="..\Shaders\VoxelPreview.f.glsl" />
-    <None Include="..\Shaders\VoxelPreview.g.glsl" />
-    <None Include="..\Shaders\VoxelPreview.v.glsl" />
+    <None Include="Shaders\DebugPass.f.glsl" />
+    <None Include="Shaders\DebugPass.g.glsl" />
+    <None Include="Shaders\DebugPass.v.glsl" />
+    <None Include="Shaders\DistanceField.c.glsl" />
+    <None Include="Shaders\DistanceFieldInit.c.glsl" />
+    <None Include="Shaders\DistanceFieldStep.c.glsl" />
+    <None Include="Shaders\RayMarch.c.glsl" />
+    <None Include="Shaders\RSM.f.glsl" />
+    <None Include="Shaders\RSM.g.glsl" />
+    <None Include="Shaders\RSM.v.glsl" />
+    <None Include="Shaders\SimpleOrthoPass.f.glsl" />
+    <None Include="Shaders\SimpleOrthoPass.g.glsl" />
+    <None Include="Shaders\SimpleOrthoPass.v.glsl" />
+    <None Include="Shaders\SimplePass.f.glsl" />
+    <None Include="Shaders\SimplePass.g.glsl" />
+    <None Include="Shaders\SimplePass.v.glsl" />
+    <None Include="Shaders\ThreeWayBinary.f.glsl" />
+    <None Include="Shaders\ThreeWayBinary.g.glsl" />
+    <None Include="Shaders\ThreeWayBinary.v.glsl" />
+    <None Include="Shaders\VoxelPreview.f.glsl" />
+    <None Include="Shaders\VoxelPreview.g.glsl" />
+    <None Include="Shaders\VoxelPreview.v.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Shaders\Shaders.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

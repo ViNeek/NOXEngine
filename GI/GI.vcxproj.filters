@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Resource Files\Shaders">
-      <UniqueIdentifier>{865b6b65-aaa3-4727-b38b-9c6e2abfdd62}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files\Scenes">
       <UniqueIdentifier>{637fa78d-eb89-4944-837f-e4bd59478566}</UniqueIdentifier>
     </Filter>
@@ -193,70 +190,82 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\Shaders\Shaders.txt">
-      <Filter>Resource Files\Shaders</Filter>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\Shaders\SimplePass.f.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="..\Shaders\SimplePass.g.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="..\Shaders\SimplePass.v.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="..\Shaders\ThreeWayBinary.f.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="..\Shaders\ThreeWayBinary.g.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="..\Shaders\ThreeWayBinary.v.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="..\Shaders\VoxelPreview.f.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="..\Shaders\VoxelPreview.g.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="..\Shaders\VoxelPreview.v.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
     <None Include="..\Scenes\Simple.json">
       <Filter>Resource Files\Scenes</Filter>
     </None>
     <None Include="..\Scenes\MetalGearSolid.json">
       <Filter>Resource Files\Scenes</Filter>
     </None>
-    <None Include="..\Shaders\DistanceFieldInit.c.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="Shaders\DebugPass.f.glsl">
+      <Filter>Resource Files\Scenes</Filter>
     </None>
-    <None Include="..\Shaders\DistanceFieldStep.c.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="Shaders\DebugPass.g.glsl">
+      <Filter>Resource Files\Scenes</Filter>
     </None>
-    <None Include="..\Shaders\RSM.f.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="Shaders\DebugPass.v.glsl">
+      <Filter>Resource Files\Scenes</Filter>
     </None>
-    <None Include="..\Shaders\RSM.g.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="Shaders\DistanceField.c.glsl">
+      <Filter>Resource Files\Scenes</Filter>
     </None>
-    <None Include="..\Shaders\RSM.v.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="Shaders\DistanceFieldInit.c.glsl">
+      <Filter>Resource Files\Scenes</Filter>
     </None>
-    <None Include="..\Shaders\DebugPass.f.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="Shaders\DistanceFieldStep.c.glsl">
+      <Filter>Resource Files\Scenes</Filter>
     </None>
-    <None Include="..\Shaders\DebugPass.g.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="Shaders\RayMarch.c.glsl">
+      <Filter>Resource Files\Scenes</Filter>
     </None>
-    <None Include="..\Shaders\DebugPass.v.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="Shaders\RSM.f.glsl">
+      <Filter>Resource Files\Scenes</Filter>
     </None>
-    <None Include="..\Shaders\RayMarch.c.glsl">
-      <Filter>Resource Files\Shaders</Filter>
+    <None Include="Shaders\RSM.g.glsl">
+      <Filter>Resource Files\Scenes</Filter>
     </None>
+    <None Include="Shaders\RSM.v.glsl">
+      <Filter>Resource Files\Scenes</Filter>
+    </None>
+    <None Include="Shaders\SimpleOrthoPass.f.glsl">
+      <Filter>Resource Files\Scenes</Filter>
+    </None>
+    <None Include="Shaders\SimpleOrthoPass.g.glsl">
+      <Filter>Resource Files\Scenes</Filter>
+    </None>
+    <None Include="Shaders\SimpleOrthoPass.v.glsl">
+      <Filter>Resource Files\Scenes</Filter>
+    </None>
+    <None Include="Shaders\SimplePass.f.glsl">
+      <Filter>Resource Files\Scenes</Filter>
+    </None>
+    <None Include="Shaders\SimplePass.g.glsl">
+      <Filter>Resource Files\Scenes</Filter>
+    </None>
+    <None Include="Shaders\SimplePass.v.glsl">
+      <Filter>Resource Files\Scenes</Filter>
+    </None>
+    <None Include="Shaders\ThreeWayBinary.f.glsl">
+      <Filter>Resource Files\Scenes</Filter>
+    </None>
+    <None Include="Shaders\ThreeWayBinary.g.glsl">
+      <Filter>Resource Files\Scenes</Filter>
+    </None>
+    <None Include="Shaders\ThreeWayBinary.v.glsl">
+      <Filter>Resource Files\Scenes</Filter>
+    </None>
+    <None Include="Shaders\VoxelPreview.f.glsl">
+      <Filter>Resource Files\Scenes</Filter>
+    </None>
+    <None Include="Shaders\VoxelPreview.g.glsl">
+      <Filter>Resource Files\Scenes</Filter>
+    </None>
+    <None Include="Shaders\VoxelPreview.v.glsl">
+      <Filter>Resource Files\Scenes</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Shaders\Shaders.txt">
+      <Filter>Resource Files\Scenes</Filter>
+    </Text>
   </ItemGroup>
 </Project>

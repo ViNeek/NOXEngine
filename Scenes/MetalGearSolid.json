@@ -54,13 +54,13 @@
                 "Name":  "Simple Pass",
                 "Shaders": [
                     {
-                        "Fragment": "../Shaders/SimplePass.f.glsl"
+                        "Fragment": "Shaders/SimplePass.f.glsl"
                     },
                     {
-                        "Vertex": "../Shaders/SimplePass.v.glsl"
+                        "Vertex": "Shaders/SimplePass.v.glsl"
                     },
                     {
-                        "Geometry": "../Shaders/SimplePass.g.glsl"
+                        "Geometry": "Shaders/SimplePass.g.glsl"
                     }
                 ]
             },
@@ -68,13 +68,13 @@
                 "Name":  "Voxelize",
                 "Shaders": [
                     {
-                        "Fragment": "../Shaders/ThreeWayBinary.f.glsl"
+                        "Fragment": "Shaders/ThreeWayBinary.f.glsl"
                     },
                     {
-                        "Vertex": "../Shaders/ThreeWayBinary.v.glsl"
+                        "Vertex": "Shaders/ThreeWayBinary.v.glsl"
                     },
                     {
-                        "Geometry": "../Shaders/ThreeWayBinary.g.glsl"
+                        "Geometry": "Shaders/ThreeWayBinary.g.glsl"
                     }
                 ]
             },
@@ -82,13 +82,13 @@
                 "Name":  "RSM",
                 "Shaders": [
                     {
-                        "Fragment": "../Shaders/RSM.f.glsl"
+                        "Fragment": "Shaders/RSM.f.glsl"
                     },
                     {
-                        "Vertex": "../Shaders/RSM.v.glsl"
+                        "Vertex": "Shaders/RSM.v.glsl"
                     },
                     {
-                        "Geometry": "../Shaders/RSM.g.glsl"
+                        "Geometry": "Shaders/RSM.g.glsl"
                     }
                 ]
             },
@@ -96,13 +96,13 @@
                 "Name":  "Debug",
                 "Shaders": [
                     {
-                        "Fragment": "../Shaders/DebugPass.f.glsl"
+                        "Fragment": "Shaders/DebugPass.f.glsl"
                     },
                     {
-                        "Vertex": "../Shaders/DebugPass.v.glsl"
+                        "Vertex": "Shaders/DebugPass.v.glsl"
                     },
                     {
-                        "Geometry": "../Shaders/DebugPass.g.glsl"
+                        "Geometry": "Shaders/DebugPass.g.glsl"
                     }
                 ]
             },
@@ -110,13 +110,13 @@
                 "Name":  "Voxelize Preview",
                 "Shaders": [
                     {
-                        "Fragment": "../Shaders/VoxelPreview.f.glsl"
+                        "Fragment": "Shaders/VoxelPreview.f.glsl"
                     },
                     {
-                        "Vertex": "../Shaders/VoxelPreview.v.glsl"
+                        "Vertex": "Shaders/VoxelPreview.v.glsl"
                     },
                     {
-                        "Geometry": "../Shaders/VoxelPreview.g.glsl"
+                        "Geometry": "Shaders/VoxelPreview.g.glsl"
                     }
                 ]
             },
@@ -124,7 +124,7 @@
                 "Name":  "DistanceFieldInit",
                 "Shaders": [
 					{
-                        "Compute": "../Shaders/DistanceFieldInit.c.glsl"
+                        "Compute": "Shaders/DistanceFieldInit.c.glsl"
 					}
                 ]
             },
@@ -132,7 +132,7 @@
                 "Name":  "DistanceFieldStep",
                 "Shaders": [
 					{
-                        "Compute": "../Shaders/DistanceFieldStep.c.glsl"
+                        "Compute": "Shaders/DistanceFieldStep.c.glsl"
 					}
                 ]
             },
@@ -140,7 +140,7 @@
                 "Name":  "RayMarch",
                 "Shaders": [
 					{
-                        "Compute": "../Shaders/RayMarch.c.glsl"
+                        "Compute": "Shaders/RayMarch.c.glsl"
 					}
                 ]
             }

@@ -131,8 +131,8 @@ void main() {
 	ivec3 l_iVoxelCoords = ivec3(int(gl_GlobalInvocationID.x), int(gl_GlobalInvocationID.y), int(gl_GlobalInvocationID.z));
 	vec3 l_VoxelCenter = vec3(l_iVoxelCoords) * u_VoxelSize + u_VoxelSize * 0.5;
 
-	vec3 l_GlobalTestPosition = vec3(10, 0, 0);
-	float l_SingleStep = length(u_VoxelSize) * (1+0.8);
+	vec3 l_GlobalTestPosition = vec3(0, 3.5, 0);
+	float l_SingleStep = length(u_VoxelSize) * (0.8);
 	float l_DistanceBound = length(u_VoxelSize) * (3 + 0.8);
 	//float l_DistanceBound = length(vec3(1, 1, 1)) * 1;
 	//float l_DistanceBound = 1;
@@ -140,6 +140,8 @@ void main() {
 
 	//vec3 l_PositionInGrid = l_GlobalTestPosition - u_GridMin;
 	vec3 l_PositionInGrid = l_VoxelCenter;
+	//vec3 l_PositionInGrid = glm::vec3(63,21,64) * u_VoxelSize + u_VoxelSize * 0.5;
+	//vec3 l_PositionInGrid = glm::vec3(64,64,64) * u_VoxelSize + u_VoxelSize * 0.5;
 
 	for ( int f = 0; f < 6; f++ ) {
 		for ( int i = 0; i < u_VPort.x; i++ ) {
@@ -158,13 +160,9 @@ void main() {
 				//l_Distance = clamp(l_Distance, 0, l_DistanceBound);
 				//ivec3 l_Transform = ivec3(vec3(l_VoxelCoord) + l_Dir * l_DistanceBound);
 				//vec3 l_Transform = l_GlobalTestPosition + l_Dir * l_Distance;
-				//vec3 l_Transform = l_GlobalTestPosition;
-				vec3 l_Transform = l_VoxelCenter;
-				//march_data[f*6*u_VPort.x*u_VPort.y + i + j * u_VPort.y] = clamp(l_Distance, 0, 6);
-				//march_data[f*6*u_VPort.x*u_VPort.y + i + j * u_VPort.y] = clamp(l_Transform.x, 0, 11111);
-				//march_data[f*6*u_VPort.x*u_VPort.y + i + j * u_VPort.y + 1] = clamp(l_Transform.y, 0, 11111);
-				//march_data[f*6*u_VPort.x*u_VPort.y + i + j * u_VPort.y + 2] = clamp(l_Transform.x, 0, 11111);
-				//float l_Distance = getVoxelAt(l_VoxelCoord.x, l_VoxelCoord.y, l_VoxelCoord.z);
+				vec3 l_Transform = l_PositionInGrid;
+				//vec3 l_Transform = l_VoxelCenter;
+				//vec3 l_Transform = l_VoxelCenter + u_GridMin;
 				while ( l_Counter < 100 && l_Distance > 0.0) {
 					//l_PositionInGrid = l_VoxelCoord * u_VoxelSize + l_Dir * l_Distance;
 					//l_GlobalTestPosition = l_GlobalTestPosition + l_Dir * l_Distance;
@@ -175,14 +173,24 @@ void main() {
 					//march_data[f*6*u_VPort.x*u_VPort.y + i + j * u_VPort.y + 1] = float(l_VoxelCoord.y) * u_VoxelSize.y;
 					//march_data[f*6*u_VPort.x*u_VPort.y + i + j * u_VPort.y + 2] = float(l_VoxelCoord.z) * u_VoxelSize.z;
 					l_Counter++;
-					l_VoxelCoord = ivec3( (l_Transform - u_GridMin) / u_VoxelSize );
-					l_Distance = getVoxelAt(l_VoxelCoord.x, l_VoxelCoord.y, l_VoxelCoord.z);
-					//l_Distance = 1 - getBinaryVoxelAt(l_VoxelCoord.x, l_VoxelCoord.y, l_VoxelCoord.z);
-					l_OriginalDistance = l_Distance;
+
 					l_Distance = clamp(l_Distance, 0, l_DistanceBound);
-					l_TotalDistance += l_Distance;
 					//l_Transform = ivec3(vec3(l_Transform) + ceil(l_Dir * l_Distance));
 					l_Transform = l_Transform + l_Dir * l_Distance;
+
+					//l_VoxelCoord = ivec3( (l_Transform - u_GridMin) / u_VoxelSize );
+					l_VoxelCoord = ivec3( (l_Transform + l_Dir * l_SingleStep) / u_VoxelSize );
+					bvec3 l_OutOfBoundsVoxel = greaterThanEqual(gl_GlobalInvocationID, u_Dim);
+
+					if ( any(l_OutOfBoundsVoxel) ) {
+						break;
+					}
+
+					l_TotalDistance += l_Distance;
+					l_Distance = getVoxelAt(l_VoxelCoord.x, l_VoxelCoord.y, l_VoxelCoord.z);
+					//l_Distance = 1 - getBinaryVoxelAt(l_VoxelCoord.x, l_VoxelCoord.y, l_VoxelCoord.z);
+					//l_OriginalDistance = l_Distance;
+					
 					//l_Distance = getVoxelAt(l_VoxelCoord.x, l_VoxelCoord.y, l_VoxelCoord.z);
 					//l_Distance = clamp(l_Distance, 0, l_DistanceBound);
 				}
@@ -209,9 +217,9 @@ void main() {
 				//march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = l_TotalDistance;
 				//march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = texture( u_DepthTexture, UVCoords ).x;
 				if ( rsm_depth < (max(z-0.01, 0.01)) )
-                    march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = l_Index;
+                    march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = l_Counter;
                 else
-                    march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = l_Index;
+                    march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = l_Counter;
                 //if ( texture( u_DepthTexture, UVCoords ).x > 0 )
                 //    march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = random(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f ));
                 //else

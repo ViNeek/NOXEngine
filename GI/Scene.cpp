@@ -842,13 +842,15 @@ void nxScene::DrawVoxelized() {
 
             int* l_Indices = (int*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
 
-            int l_CustomIndex = l_Indices[64 * 96 * 96 + 31 * 96 + 44];
-            glm::vec3 l_CustomCenter = glm::vec3(64, 31, 44);
-            for (int i = 45; i < 70; i++) {
+			glm::vec3 l_CustomCenter = glm::vec3(63, 21, 64);
+			int l_CustomIndex = l_Indices[(int)l_CustomCenter.x * 128 * 128 + (int)l_CustomCenter.y * 128 + (int)l_CustomCenter.z];
+			//int l_CustomIndex = 0;
+			//glm::vec3 l_CustomCenter = glm::vec3(0, 7, 0);
+			for (int i = 45; i < 70; i++) {
                 for (int j = 30; j < 70; j++) {
                     for (int k = 20; k < 70; k++) {
-                        if (l_Indices[i * 96 * 96 + j * 96 + k] >= 0)
-                            printf("Indexed at (%d, %d, %d) : %d\n", i, j, k, l_Indices[i * 96 * 96 + j * 96 + k]);
+						//if (l_Indices[i * 128 * 128 + j * 128 + k] >= 0)
+                            //printf("Indexed at (%d, %d, %d) : %d\n", i, j, k, l_Indices[i * 128 * 128 + j * 128 + k]);
                     }
                 }
             }
@@ -868,7 +870,7 @@ void nxScene::DrawVoxelized() {
             if ( p )
                 printf("P is NULL %d\n", p == NULL);
 
-            static const int l_BuffOff = 4 * 4 * 6 * l_CustomIndex;
+			static const int l_BuffOff = l_VPort.x * l_VPort.y * 6 * l_CustomIndex;
             printf("size %d", l_VPort.x);
             printf("size %d", l_BuffOff + 5 * l_VPort.x * l_VPort.y + 2 * l_VPort.y + 2);
             printf("size %d", (l_BuffOff + 5 * l_VPort.x * l_VPort.y + 2 * l_VPort.y + 2) * sizeof(glm::vec4));
@@ -878,11 +880,17 @@ void nxScene::DrawVoxelized() {
 			for (int f = 0; f < 6; f++) {
 				for (int i = 0; i < l_VPort.x; i++) {
 					for (int j = 0; j < l_VPort.y; j++) {
-                        std::cout << "Face : " << f << " : " << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].x << ", " << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].y << ", " << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].z << ", " << (int)p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].w << std::endl;
+						//std::cout << "Face : " << f << " : " << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].x << ", " << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].y << ", " << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].z << ", " << (int)p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].w << std::endl;
+						std::cout << "Face : " << f << " : " << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].x << ", " << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].y << ", " << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].z << ", " << (float)p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].w << std::endl;
 						//glm::vec3 target = glm::vec3(p[f * l_VPort.x * l_VPort.y + i * l_VPort.y + j]);
                         glm::vec3 target = glm::vec3(p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j]) * l_Voxel + m_pEngine->Renderer()->Voxelizer()->GridMin();
 						//glm::vec3 orient = glm::vec3(target, jump - uv.y * offseting, uv.x * offseting);
-                        pixels->push_back(l_CustomCenter * l_Voxel + m_pEngine->Renderer()->Voxelizer()->GridMin());
+						pixels->push_back(l_CustomCenter * l_Voxel + m_pEngine->Renderer()->Voxelizer()->GridMin());
+						//pixels->push_back(l_CustomCenter);
+						glm::vec3 l_TestVoxel = (glm::vec3(0, 2.5f, 0) - m_pEngine->Renderer()->Voxelizer()->GridMin()) / l_Voxel;
+						//printf("%g %g %g \n", l_TestVoxel.x, l_TestVoxel.y, l_TestVoxel.z);
+						//pixels->push_back(glm::vec3(64,64,64) * l_Voxel + m_pEngine->Renderer()->Voxelizer()->GridMin());
+						//pixels->push_back(target + glm::vec3(0.1));
 						pixels->push_back(target);
 
 						std::vector<glm::vec3>* sphereHit = new std::vector<glm::vec3>;
