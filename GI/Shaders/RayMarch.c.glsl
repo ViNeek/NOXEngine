@@ -180,10 +180,10 @@ void main() {
 
 					//l_VoxelCoord = ivec3( (l_Transform - u_GridMin) / u_VoxelSize );
 					l_VoxelCoord = ivec3( (l_Transform + l_Dir * l_SingleStep) / u_VoxelSize );
-					bvec3 l_OutOfBoundsVoxel = greaterThanEqual(gl_GlobalInvocationID, u_Dim);
+					bvec3 l_OutOfBoundsVoxel = greaterThanEqual(l_VoxelCoord, u_Dim);
 
 					if ( any(l_OutOfBoundsVoxel) ) {
-						break;
+						//break;
 					}
 
 					l_TotalDistance += l_Distance;
@@ -200,8 +200,8 @@ void main() {
 				march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].z = l_VoxelCoord.z;
 
                 //vec4 shadow_coords = u_LightMVP * vec4(l_VoxelCoord,1);
-                vec4 shadow_coords = u_LightMVP * vec4(l_Transform,1);
-                vec4 shadow_coords_up = u_LightMVP * vec4(l_Transform + u_VoxelSize.y,1);
+                vec4 shadow_coords = u_LightMVP * vec4(l_Transform + u_GridMin,1);
+                vec4 shadow_coords_up = u_LightMVP * vec4(l_Transform + u_GridMin + u_VoxelSize.y,1);
                 vec3 ProjCoords = shadow_coords.xyz / shadow_coords.w;
                 vec3 ProjCoords_up = shadow_coords_up.xyz / shadow_coords_up.w;
                 vec2 UVCoords;
@@ -216,10 +216,11 @@ void main() {
 
 				//march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = l_TotalDistance;
 				//march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = texture( u_DepthTexture, UVCoords ).x;
-				if ( rsm_depth < (max(z-0.01, 0.01)) )
-                    march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = l_Counter;
-                else
-                    march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = l_Counter;
+				if ( rsm_depth < (max(z-0.01, 0.01)) ) {
+                    march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = 2;
+                } else {
+                    march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = 1;
+                }
                 //if ( texture( u_DepthTexture, UVCoords ).x > 0 )
                 //    march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = random(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f ));
                 //else

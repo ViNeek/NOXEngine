@@ -728,14 +728,18 @@ void nxScene::DrawVoxelized() {
     glBindTexture(GL_TEXTURE_2D, m_pEngine->Renderer()->RSM()->NormalMap());
     //m_pEngine->Renderer()->Program()->SetUniform("u_FluxTexture", 0);
 
+    glActiveTexture(GL_TEXTURE0 + 7);
+    glBindTexture(GL_TEXTURE_2D, m_pEngine->Renderer()->RSM()->FLuxMap());
+    //m_pEngine->Renderer()->Program()->SetUniform("u_FluxTexture", 0);
+
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_pEngine->Renderer()->DistanceField()->DistanceFieldFrontBuffer());
 	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, m_pEngine->Renderer()->DistanceField()->DistanceFieldBackBuffer());
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, m_pEngine->Renderer()->RayMarcher()->Buffer());
 
 
-	if (m_pEngine->Renderer()->VoxelizerReady()) {
-		m_pEngine->Renderer()->RayMarcher()->Calculate();
+    if (m_pEngine->Renderer()->VoxelizerReady()) {
+        m_pEngine->Renderer()->RayMarcher()->Calculate();
 
 
         l_VoxelCounter = (GLuint*)glMapBufferRange(GL_ATOMIC_COUNTER_BUFFER,
@@ -842,15 +846,15 @@ void nxScene::DrawVoxelized() {
 
             int* l_Indices = (int*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
 
-			glm::vec3 l_CustomCenter = glm::vec3(63, 21, 64);
-			int l_CustomIndex = l_Indices[(int)l_CustomCenter.x * 128 * 128 + (int)l_CustomCenter.y * 128 + (int)l_CustomCenter.z];
-			//int l_CustomIndex = 0;
-			//glm::vec3 l_CustomCenter = glm::vec3(0, 7, 0);
-			for (int i = 45; i < 70; i++) {
+            glm::vec3 l_CustomCenter = glm::vec3(63, 21, 64);
+            int l_CustomIndex = l_Indices[(int)l_CustomCenter.x * m_pEngine->Renderer()->Voxelizer()->Dimesions().x * m_pEngine->Renderer()->Voxelizer()->Dimesions().y + (int)l_CustomCenter.y * m_pEngine->Renderer()->Voxelizer()->Dimesions().x + (int)l_CustomCenter.z];
+            //int l_CustomIndex = 0;
+            //glm::vec3 l_CustomCenter = glm::vec3(0, 7, 0);
+            for (int i = 45; i < 70; i++) {
                 for (int j = 30; j < 70; j++) {
                     for (int k = 20; k < 70; k++) {
-						//if (l_Indices[i * 128 * 128 + j * 128 + k] >= 0)
-                            //printf("Indexed at (%d, %d, %d) : %d\n", i, j, k, l_Indices[i * 128 * 128 + j * 128 + k]);
+                        //if (l_Indices[i * 128 * 128 + j * 128 + k] >= 0)
+                        //printf("Indexed at (%d, %d, %d) : %d\n", i, j, k, l_Indices[i * 128 * 128 + j * 128 + k]);
                     }
                 }
             }
@@ -862,106 +866,110 @@ void nxScene::DrawVoxelized() {
             glm::vec4* p = (glm::vec4*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
 
             //if (!p) {
-                //glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+            //glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-                //return;
+            //return; 
             //}
 
-            if ( p )
+            if (p) {
                 printf("P is NULL %d\n", p == NULL);
 
-			static const int l_BuffOff = l_VPort.x * l_VPort.y * 6 * l_CustomIndex;
-            printf("size %d", l_VPort.x);
-            printf("size %d", l_BuffOff + 5 * l_VPort.x * l_VPort.y + 2 * l_VPort.y + 2);
-            printf("size %d", (l_BuffOff + 5 * l_VPort.x * l_VPort.y + 2 * l_VPort.y + 2) * sizeof(glm::vec4));
-            printf("size %d", l_BuffOff);
+                static const unsigned int l_BuffOff = l_VPort.x * l_VPort.y * 6 * l_CustomIndex;
+                printf("size %d\n", l_VPort.x);
+                printf("size %d\n", l_BuffOff + 5 * l_VPort.x * l_VPort.y + 2 * l_VPort.y + 2);
+                printf("size %d\n", (l_BuffOff + 5 * l_VPort.x * l_VPort.y + 2 * l_VPort.y + 2) * sizeof(glm::vec4));
+                printf("size %d\n", l_BuffOff);
 
-            std::vector<glm::vec3>* pixels = new std::vector<glm::vec3>;
-			for (int f = 0; f < 6; f++) {
-				for (int i = 0; i < l_VPort.x; i++) {
-					for (int j = 0; j < l_VPort.y; j++) {
-						//std::cout << "Face : " << f << " : " << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].x << ", " << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].y << ", " << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].z << ", " << (int)p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].w << std::endl;
-						std::cout << "Face : " << f << " : " << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].x << ", " << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].y << ", " << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].z << ", " << (float)p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].w << std::endl;
-						//glm::vec3 target = glm::vec3(p[f * l_VPort.x * l_VPort.y + i * l_VPort.y + j]);
-                        glm::vec3 target = glm::vec3(p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j]) * l_Voxel + m_pEngine->Renderer()->Voxelizer()->GridMin();
-						//glm::vec3 orient = glm::vec3(target, jump - uv.y * offseting, uv.x * offseting);
-						pixels->push_back(l_CustomCenter * l_Voxel + m_pEngine->Renderer()->Voxelizer()->GridMin());
-						//pixels->push_back(l_CustomCenter);
-						glm::vec3 l_TestVoxel = (glm::vec3(0, 2.5f, 0) - m_pEngine->Renderer()->Voxelizer()->GridMin()) / l_Voxel;
-						//printf("%g %g %g \n", l_TestVoxel.x, l_TestVoxel.y, l_TestVoxel.z);
-						//pixels->push_back(glm::vec3(64,64,64) * l_Voxel + m_pEngine->Renderer()->Voxelizer()->GridMin());
-						//pixels->push_back(target + glm::vec3(0.1));
-						pixels->push_back(target);
+                std::vector<glm::vec3>* pixels = new std::vector < glm::vec3 > ;
+                for (int f = 0; f < 6; f++) {
+                    for (int i = 0; i < l_VPort.x; i++) {
+                        for (int j = 0; j < l_VPort.y; j++) {
+                            //std::cout << "Face : " << f << " : " << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].x << ", " << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].y << ", " << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].z << ", " << (int)p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].w << std::endl;
+                            std::cout << "Face : " << f << " : ";
+                            std::cout << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].x;
+                            std::cout << ", " << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].y;
+                            std::cout << ", " << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].z; 
+                            std::cout << ", " << p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j].w << std::endl;
+                            //glm::vec3 target = glm::vec3(p[f * l_VPort.x * l_VPort.y + i * l_VPort.y + j]);
+                            glm::vec3 target = glm::vec3(p[l_BuffOff + f * l_VPort.x * l_VPort.y + i * l_VPort.y + j]) * l_Voxel + m_pEngine->Renderer()->Voxelizer()->GridMin();
+                            //glm::vec3 orient = glm::vec3(target, jump - uv.y * offseting, uv.x * offseting);
+                            pixels->push_back(l_CustomCenter * l_Voxel + m_pEngine->Renderer()->Voxelizer()->GridMin());
+                            //pixels->push_back(l_CustomCenter);
+                            glm::vec3 l_TestVoxel = (glm::vec3(0, 2.5f, 0) - m_pEngine->Renderer()->Voxelizer()->GridMin()) / l_Voxel;
+                            //printf("%g %g %g \n", l_TestVoxel.x, l_TestVoxel.y, l_TestVoxel.z);
+                            //pixels->push_back(glm::vec3(64,64,64) * l_Voxel + m_pEngine->Renderer()->Voxelizer()->GridMin());
+                            //pixels->push_back(target + glm::vec3(0.1));
+                            pixels->push_back(target);
 
-						std::vector<glm::vec3>* sphereHit = new std::vector<glm::vec3>;
-						//*sphere = Utils::Shape::generateSphereMesh(8, 8);
-						glm::ivec3 l_VoxelCoordHit = glm::ivec3(target / l_Voxel);
-						glm::vec3 l_FinalPosHit = glm::vec3(l_VoxelCoordHit) * l_Voxel;
-						//*sphereHit = Utils::Shape::generateSphereMeshAt(8, 8, target);
-						//*sphereHit = Utils::Shape::generateSphereMeshAt(8, 8, l_FinalPosHit);
-						*sphereHit = Utils::Shape::generateSphereMeshScaledAt(8, 8, 1.0f / l_Voxel.x, l_FinalPosHit);
-						
-						nxGLBufferedAssetLoaderBlob* bufferDataHit = new nxGLBufferedAssetLoaderBlob(m_pEngine, sphereHit->data(), sphereHit->size());
-						//m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, bufferDataHit));
-					
+                            std::vector<glm::vec3>* sphereHit = new std::vector < glm::vec3 > ;
+                            //*sphere = Utils::Shape::generateSphereMesh(8, 8);
+                            glm::ivec3 l_VoxelCoordHit = glm::ivec3(target / l_Voxel);
+                            glm::vec3 l_FinalPosHit = glm::vec3(l_VoxelCoordHit) * l_Voxel;
+                            //*sphereHit = Utils::Shape::generateSphereMeshAt(8, 8, target);
+                            //*sphereHit = Utils::Shape::generateSphereMeshAt(8, 8, l_FinalPosHit);
+                            *sphereHit = Utils::Shape::generateSphereMeshScaledAt(8, 8, 1.0f / l_Voxel.x, l_FinalPosHit);
+
+                            nxGLBufferedAssetLoaderBlob* bufferDataHit = new nxGLBufferedAssetLoaderBlob(m_pEngine, sphereHit->data(), sphereHit->size());
+                            //m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, bufferDataHit));
+
+                        }
                     }
-				}
-			}
+                }
 
-        loop_done:
+            loop_done:
 
-			//std::cout << "Number of lines " << pixels->size() << std::endl;
-			//std::cout << "Marcher Port " << m_pEngine->Renderer()->RayMarcher()->VPort().x << std::endl;
-			//std::cout << "Marcher Port " << m_pEngine->Renderer()->RayMarcher()->VPort().y << std::endl;
+                //std::cout << "Number of lines " << pixels->size() << std::endl;
+                //std::cout << "Marcher Port " << m_pEngine->Renderer()->RayMarcher()->VPort().x << std::endl;
+                //std::cout << "Marcher Port " << m_pEngine->Renderer()->RayMarcher()->VPort().y << std::endl;
 
-			nxGLBufferedAssetLoaderBlob* bufferDataA = new nxGLBufferedAssetLoaderBlob(m_pEngine, pixels->data(), pixels->size());
-			m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, bufferDataA));
+                nxGLBufferedAssetLoaderBlob* bufferDataA = new nxGLBufferedAssetLoaderBlob(m_pEngine, pixels->data(), pixels->size());
+                m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, bufferDataA));
 
-			std::vector<glm::vec3>* sphere = new std::vector<glm::vec3>;
-			//*sphere = Utils::Shape::generateSphereMesh(8, 8);
-			l_TestPositionB -= l_GridMin;
-			l_TestPositionB = l_TestPositionB / l_Voxel;
-			glm::ivec3 l_VoxelCoord = glm::ivec3(l_TestPositionB);
-			glm::vec3 l_FinalPos = glm::vec3(l_VoxelCoord) * l_Voxel + l_GridMin;
-			*sphere = Utils::Shape::generateSphereMeshAt(8, 8, l_FinalPos);
+                std::vector<glm::vec3>* sphere = new std::vector < glm::vec3 > ;
+                //*sphere = Utils::Shape::generateSphereMesh(8, 8);
+                l_TestPositionB -= l_GridMin;
+                l_TestPositionB = l_TestPositionB / l_Voxel;
+                glm::ivec3 l_VoxelCoord = glm::ivec3(l_TestPositionB);
+                glm::vec3 l_FinalPos = glm::vec3(l_VoxelCoord) * l_Voxel + l_GridMin;
+                *sphere = Utils::Shape::generateSphereMeshAt(8, 8, l_FinalPos);
 
-			nxGLBufferedAssetLoaderBlob* bufferData = new nxGLBufferedAssetLoaderBlob(m_pEngine, sphere->data(), sphere->size());
-			//m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, bufferData));
-			//m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, &pixels->at(0)));
+                nxGLBufferedAssetLoaderBlob* bufferData = new nxGLBufferedAssetLoaderBlob(m_pEngine, sphere->data(), sphere->size());
+                //m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, bufferData));
+                //m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, &pixels->at(0)));
 
 
-			glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+                glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 
-			//m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, &pixels->at(0)));
-			//print_dists = false;
+                //m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_DEBUG_ASSET, &pixels->at(0)));
+                //print_dists = false;
 
-			//std::cout << "Pass " << p[0].x << ", " << p[0].y << ", " << p[0].z << ", " << p[0].w << std::endl;
-			//std::cout << "Pass " << p[4] << ", " << p[5] << ", " << p[6] << std::endl;
-			//std::cout << "Pass " << p[8] << ", " << p[9] << ", " << p[10] << std::endl;
-            /*
-			auto sphere = new std::vector<glm::vec3>;
-			auto sphere2 = new std::vector<glm::vec3>;
-			auto sphere3 = new std::vector<glm::vec3>;
-			auto sphere4 = new std::vector<glm::vec3>;
-			*sphere = Utils::Shape::generateSphereMeshAt(8, 8, glm::vec3(glm::vec3(p[0]) * l_Voxel + m_pEngine->Renderer()->Voxelizer()->GridMin()));
-			*sphere2 = Utils::Shape::generateSphereMeshAt(8, 8, glm::vec3(glm::vec3(p[1]) * l_Voxel + m_pEngine->Renderer()->Voxelizer()->GridMin()));
-			*sphere3 = Utils::Shape::generateSphereMeshAt(8, 8, glm::vec3(glm::vec3(p[257]) * l_Voxel + m_pEngine->Renderer()->Voxelizer()->GridMin()));
-			*sphere4 = Utils::Shape::generateSphereMeshAt(8, 8, glm::vec3(p[3].x, p[3].y, p[3].z));
-			//*sphere = Utils::Shape::generateSphereMeshAt(8, 8, glm::vec3(0, 10, 0));
-            
-			nxGLBufferedAssetLoaderBlob* bufferData = new nxGLBufferedAssetLoaderBlob(m_pEngine, sphere->data(), sphere->size());
-			//m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_BUFF_ASSET, bufferData));
-			nxGLBufferedAssetLoaderBlob* bufferData2 = new nxGLBufferedAssetLoaderBlob(m_pEngine, sphere2->data(), sphere2->size());
-			//m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_BUFF_ASSET, bufferData2));
-			nxGLBufferedAssetLoaderBlob* bufferData3 = new nxGLBufferedAssetLoaderBlob(m_pEngine, sphere3->data(), sphere3->size());
-			//m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_BUFF_ASSET, bufferData3));
-			nxGLBufferedAssetLoaderBlob* bufferData4 = new nxGLBufferedAssetLoaderBlob(m_pEngine, sphere4->data(), sphere4->size());
-			//m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_BUFF_ASSET, bufferData4));
-            */
-		}
-		
-	}
+                //std::cout << "Pass " << p[0].x << ", " << p[0].y << ", " << p[0].z << ", " << p[0].w << std::endl;
+                //std::cout << "Pass " << p[4] << ", " << p[5] << ", " << p[6] << std::endl;
+                //std::cout << "Pass " << p[8] << ", " << p[9] << ", " << p[10] << std::endl;
+                /*
+                auto sphere = new std::vector<glm::vec3>;
+                auto sphere2 = new std::vector<glm::vec3>;
+                auto sphere3 = new std::vector<glm::vec3>;
+                auto sphere4 = new std::vector<glm::vec3>;
+                *sphere = Utils::Shape::generateSphereMeshAt(8, 8, glm::vec3(glm::vec3(p[0]) * l_Voxel + m_pEngine->Renderer()->Voxelizer()->GridMin()));
+                *sphere2 = Utils::Shape::generateSphereMeshAt(8, 8, glm::vec3(glm::vec3(p[1]) * l_Voxel + m_pEngine->Renderer()->Voxelizer()->GridMin()));
+                *sphere3 = Utils::Shape::generateSphereMeshAt(8, 8, glm::vec3(glm::vec3(p[257]) * l_Voxel + m_pEngine->Renderer()->Voxelizer()->GridMin()));
+                *sphere4 = Utils::Shape::generateSphereMeshAt(8, 8, glm::vec3(p[3].x, p[3].y, p[3].z));
+                //*sphere = Utils::Shape::generateSphereMeshAt(8, 8, glm::vec3(0, 10, 0));
 
+                nxGLBufferedAssetLoaderBlob* bufferData = new nxGLBufferedAssetLoaderBlob(m_pEngine, sphere->data(), sphere->size());
+                //m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_BUFF_ASSET, bufferData));
+                nxGLBufferedAssetLoaderBlob* bufferData2 = new nxGLBufferedAssetLoaderBlob(m_pEngine, sphere2->data(), sphere2->size());
+                //m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_BUFF_ASSET, bufferData2));
+                nxGLBufferedAssetLoaderBlob* bufferData3 = new nxGLBufferedAssetLoaderBlob(m_pEngine, sphere3->data(), sphere3->size());
+                //m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_BUFF_ASSET, bufferData3));
+                nxGLBufferedAssetLoaderBlob* bufferData4 = new nxGLBufferedAssetLoaderBlob(m_pEngine, sphere4->data(), sphere4->size());
+                //m_pEngine->Renderer()->ScheduleGLJob((nxGLJob*)nxJobFactory::CreateJob(NX_GL_JOB_LOAD_BUFF_ASSET, bufferData4));
+                */
+            }
+
+        }
+    }
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	
 	errorGL = false;

@@ -35,10 +35,12 @@ void nxRayMarcher::Reserve(int p_NewLength) {
     if (p_NewLength <= m_BufferCapacity )
         return;
 
-    //m_BufferCapacity = p_NewLength;
+    m_BufferCapacity = p_NewLength;
 
-    nxInt32 l_BufferSize = m_VDimX * m_VDimY * 6 * sizeof(glm::vec4) * p_NewLength;
-    printf("Buffer Size : %d %d", l_BufferSize, p_NewLength);
+    GLsizeiptr l_BufferSize = m_VDimX * m_VDimY * 6 * sizeof(glm::vec4) * p_NewLength;
+    std::cout << "Buffer Size : " << l_BufferSize << " " << p_NewLength;
+    std::cout << "Buffer Size : " << l_BufferSize << " " << sizeof(glm::vec4);
+    //printf("Buffer Size : %d %d", m_VDimX, sizeof(glm::vec4));
 
     if ( m_Buffer < 0 )
         glGenBuffers(1, m_Buffer);
