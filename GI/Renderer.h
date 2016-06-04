@@ -53,8 +53,9 @@ public:
 	void									UseProgram();
 	//nxProgram*							Program() { return m_ShaderPrograms[m_ProgramIndex]; }
 	//nxProgram*							Program() { return m_ShaderPrograms[m_ProgramName]; }
-	nxProgram*								Program() { return m_pActiveProgram; }
-	nxVoxelizer*							Voxelizer() { return m_Voxelizer; }
+    GLuint								    Framebuffer() { return m_FBO; }
+    nxProgram*								Program() { return m_pActiveProgram; }
+    nxVoxelizer*							Voxelizer() { return m_Voxelizer; }
 	nxDistanceField*						DistanceField() { return m_DistanceField; }
 	nxRayMarcher*							RayMarcher() { return m_RayMarcher; }
 	nxRSM*									RSM() { return m_RSM; }

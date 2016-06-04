@@ -132,7 +132,7 @@ void main() {
 	vec3 l_VoxelCenter = vec3(l_iVoxelCoords) * u_VoxelSize + u_VoxelSize * 0.5;
 
 	vec3 l_GlobalTestPosition = vec3(0, 3.5, 0);
-	float l_SingleStep = length(u_VoxelSize) * (0.8);
+	float l_SingleStep = length(u_VoxelSize) * (1 + 0.8);
 	float l_DistanceBound = length(u_VoxelSize) * (3 + 0.8);
 	//float l_DistanceBound = length(vec3(1, 1, 1)) * 1;
 	//float l_DistanceBound = 1;
@@ -217,9 +217,11 @@ void main() {
 				//march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = l_TotalDistance;
 				//march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = texture( u_DepthTexture, UVCoords ).x;
 				if ( rsm_depth < (max(z-0.01, 0.01)) ) {
-                    march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = 2;
-                } else {
+                    //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = random(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f) );
                     march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = 1;
+                } else {
+                    //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = random(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f) );
+                    march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = int((UVCoords_up.y - UVCoords.y) * 2048.0f);
                 }
                 //if ( texture( u_DepthTexture, UVCoords ).x > 0 )
                 //    march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = random(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f ));

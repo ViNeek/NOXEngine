@@ -210,6 +210,9 @@
     <None Include="Shaders\DistanceField.c.glsl" />
     <None Include="Shaders\DistanceFieldInit.c.glsl" />
     <None Include="Shaders\DistanceFieldStep.c.glsl" />
+    <None Include="Shaders\GI.f.glsl" />
+    <None Include="Shaders\GI.g.glsl" />
+    <None Include="Shaders\GI.v.glsl" />
     <None Include="Shaders\RayMarch.c.glsl" />
     <None Include="Shaders\RSM.f.glsl" />
     <None Include="Shaders\RSM.g.glsl" />

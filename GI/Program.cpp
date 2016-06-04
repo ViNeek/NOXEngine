@@ -139,7 +139,7 @@ void nxProgram::SetUniform(const char *name, nxUInt32 val)
 }
 void nxProgram::SetUniform(const char *name, bool val)
 {
-    glUniform1ui(GetUniformLocation(name), val);
+    glUniform1i(GetUniformLocation(name), val);
 }
 
 void nxProgram::ShowActiveAttributes()

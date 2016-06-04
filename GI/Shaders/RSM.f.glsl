@@ -81,6 +81,6 @@ void main()
 	//out_color2 = vec4((A*100) * lightColor * 0.999 + texture( DiffuseTexture, VertexIn.uv ).rgb * 0.001, 0.0f);
 	out_color2 = vec4(radiosity * texture( DiffuseTexture, VertexIn.uv ).rgb, 1.0f);
 	//out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb * 0.7 + lightColor * 0.3,0.0f);
-	out_color = vec4(VertexIn.normal + 2, 1.0f);
+	out_color = vec4(VertexIn.normal, 1.0f);
 
 }

@@ -63,5 +63,5 @@ void main()
     }*/
     setVoxelAt(VoxelGridCoord.x, VoxelGridCoord.y, VoxelGridCoord.z);
 
-	out_color = vec4(zf,zf,zf,0.0f);
+	//out_color = vec4(zf,zf,zf,0.0f);
 }
