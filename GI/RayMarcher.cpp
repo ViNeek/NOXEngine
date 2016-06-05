@@ -57,7 +57,9 @@ void nxRayMarcher::Reserve(int p_NewLength) {
 }
 
 void nxRayMarcher::Bind() {
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_Buffer);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, m_Buffer);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_IndexBuffer);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, m_IndexBuffer);
 }
 

@@ -5,6 +5,37 @@ layout(location = 0) out vec4 out_color;
 uniform sampler2D DiffuseTexture;
 uniform sampler2D ShadowTexture;
 uniform bool ApplyShadows;
+uniform uvec3 u_Dim;
+uniform ivec2 u_VPort;
+uniform vec3 u_GridSize;
+uniform vec3 u_VoxelSize;
+uniform vec3 u_GridMin;
+
+layout(std430, binding=5) readonly buffer Marcher {
+    vec4 march_data[];
+};
+
+layout(std430, binding=6) readonly buffer Index {
+    int index_data[];
+};
+
+
+vec4 mc_integrate(int p_Index) {
+    vec4 result = vec4(0,0,0,0);
+    //uint l_BufferOffset = u_VPort.x * u_VPort.y * 6 * l_Index;
+    uint l_BufferOffset = 4 * 4 * 6 * p_Index;
+
+    for ( int f = 0; f < 6; f++ ) {
+		for ( int i = 0; i < 4; i++ ) {
+			for ( int j = 0; j < 4; j++ ) {
+	            //setVoxelAt(VoxelGridCoord.x + f, VoxelGridCoord.y + i, VoxelGridCoord.z + j);
+                result += march_data[l_BufferOffset + f*4*4 + i * 4 + j];
+	        }
+        }
+    } 
+
+    return result;
+}
 
 in VertexData {
     vec3 world_pos;
@@ -24,10 +55,18 @@ uniform vec3 CameraPosition;
 const vec4 MaterialAmbientColor  = vec4(0.1, 0.1, 0.1, 0);
 const vec3 lightPos = vec3(0,3,0);
 
+int getIndexAt( int x, int y, int z ) {
+	//return field_data[x + u_Dim.x * y + u_Dim.x * u_Dim.y * z];
+	return index_data[x * u_Dim.x * u_Dim.y + u_Dim.x * y + z];
+}
+
 void main()
 {	
     
 	//out_color = vec4(VertexIn.normal,0.0f);
+
+    vec3 VoxelWorldCoord = ( VertexIn.world_pos - u_GridMin ) / u_VoxelSize;
+	ivec3 VoxelGridCoord = ivec3(VoxelWorldCoord);
 
     vec3 n = normalize(VertexIn.normal);
     vec3 lightDir = vec3(LightPosition-VertexIn.ecPos);
@@ -83,5 +122,8 @@ void main()
         out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb , 0.0f);
     }
     //out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb , 0.0f);
-    //out_color += texture( ShadowTexture, VertexIn.shadow_coords.xy );
+    int aIdx = getIndexAt(VoxelGridCoord.x, VoxelGridCoord.y, VoxelGridCoord.z);
+
+    if ( aIdx > 0 )
+        out_color += mc_integrate(aIdx);
 }

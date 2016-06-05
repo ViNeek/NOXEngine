@@ -51,8 +51,8 @@ void main()
 	int z = int(floor(zf*depth));
 
 	vec3 VoxelWorldCoord = ( VertexIn.worldcoord - GridMin ) / VoxelSize;
-	ivec3 VoxelGridCoord = ivec3(VoxelWorldCoord);
-
+	ivec3 VoxelGridCoord = ivec3(floor(VoxelWorldCoord));
+    //VoxelGridCoord.y+=15;
 	//setVoxelAt(x, y, z);
     /*for ( int f = -1; f < 1; f++ ) {
 		for ( int i = -1; i < 1; i++ ) {
@@ -61,7 +61,14 @@ void main()
 	        }
         }
     }*/
-    setVoxelAt(VoxelGridCoord.x, VoxelGridCoord.y, VoxelGridCoord.z);
-
+    //setVoxelAt(VoxelGridCoord.x, VoxelGridCoord.y, VoxelGridCoord.z);
+    setVoxelAt(VoxelGridCoord.x+1, VoxelGridCoord.y, VoxelGridCoord.z);
+    setVoxelAt(VoxelGridCoord.x-1, VoxelGridCoord.y, VoxelGridCoord.z);
+    setVoxelAt(VoxelGridCoord.x, VoxelGridCoord.y+1, VoxelGridCoord.z);
+    setVoxelAt(VoxelGridCoord.x, VoxelGridCoord.y-1, VoxelGridCoord.z);
+    //setVoxelAt(VoxelGridCoord.x+1, VoxelGridCoord.y+1, VoxelGridCoord.z);
+    //setVoxelAt(VoxelGridCoord.x-1, VoxelGridCoord.y-1, VoxelGridCoord.z);
+    setVoxelAt(VoxelGridCoord.x, VoxelGridCoord.y, VoxelGridCoord.z-1);
+    setVoxelAt(VoxelGridCoord.x, VoxelGridCoord.y, VoxelGridCoord.z+1);
 	//out_color = vec4(zf,zf,zf,0.0f);
 }

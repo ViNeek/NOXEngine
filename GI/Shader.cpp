@@ -117,7 +117,7 @@ bool nxShaderReloader::operator()(void* data) {
 
     nxShader* newShader = new nxShader(blob->m_Source, blob->m_Type);
 
-    std::cout << "about to reload\n";
+    //std::cout << "about to reload\n";
 
     nxShaderCompilerBlob* newData =
         new nxShaderCompilerBlob(blob->m_Engine, blob->m_Prog, newShader, blob->m_Index, false);

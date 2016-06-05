@@ -18,6 +18,7 @@ out VertexData {
 
 uniform mat3 NormalMatrix;
 uniform mat4 ModelViewMatrix;
+uniform mat4 ModelMatrix;
 uniform vec4 LightPosition;
 uniform vec3 CameraPosition;
 
@@ -30,7 +31,8 @@ void main()
     VertexOut.uv = VertexTexCoord;
     VertexOut.shadow_coords = VertexPosition;
     VertexOut.ecPos = VertexPosition;
-    VertexOut.world_pos = vec3(vec4(VertexPosition)/VertexPosition.w);
+    VertexOut.world_pos = vec3(ModelMatrix * VertexPosition);
+    //VertexOut.world_pos = vec3(vec4(VertexPosition)/VertexPosition.w);
 
     gl_Position = vec4(VertexPosition);
 }

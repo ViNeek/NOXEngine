@@ -580,7 +580,7 @@ void nxScene::DrawVoxelized() {
 	if (m_pEngine->Renderer()->VoxelizerReady()) {
 
         if (m_GridEntity == nullptr) {
-            m_GridEntity = new nxEntity();
+            //m_GridEntity = new nxEntity();
         }
 
 		m_MState.m_PMatrix = m_pEngine->Renderer()->Voxelizer()->Projections()[2];
@@ -986,10 +986,12 @@ void nxScene::DrawVoxelized() {
 
     if (l_ProgGI) {
 
+        m_pEngine->Renderer()->RayMarcher()->Bind();
+
         l_ProgGI->Use();
 
         SetProjection(45.0f, (GLfloat)m_pEngine->Renderer()->Width() / (GLfloat)m_pEngine->Renderer()->Height(), 1.0f, 2000.0f);
-        
+
         for (size_t i = 0; i < m_Entities.size(); i++) {
             m_MState.m_VMatrix = glm::mat4();
 
@@ -1009,7 +1011,7 @@ void nxScene::DrawVoxelized() {
             lightMVP = glm::translate(lightMVP, m_Entities[i]->ModelTransform());
 
             m_MState.m_VMatrix = glm::translate(glm::mat4(), -m_Camera->Position()) * m_MState.m_RMatrix * glm::translate(glm::mat4(), m_Entities[i]->ModelTransform());
-
+            //m_MState.m_VMatrix = glm::translate(glm::mat4(), m_Entities[i]->ModelTransform());
             //m_MState.m_VMatrix = m_Camera->ViewTransform();
             //m_MState.m_VMatrix = glm::translate(View(),
             //   -m_Camera->Position());
@@ -1024,8 +1026,12 @@ void nxScene::DrawVoxelized() {
 
             //if (errorGL) Utils::GL::CheckGLState("Set Normal");
 
+            l_ProgGI->SetUniform("u_Dim", m_pEngine->Renderer()->Voxelizer()->Dimesions());
+            l_ProgGI->SetUniform("u_VoxelSize", l_Voxel);
+            l_ProgGI->SetUniform("u_GridMin", m_pEngine->Renderer()->Voxelizer()->GridMin());
             l_ProgGI->SetUniform("MVP", m_MState.m_PMatrix*m_MState.m_VMatrix);
             l_ProgGI->SetUniform("ModelViewMatrix", m_MState.m_VMatrix);
+            l_ProgGI->SetUniform("ModelMatrix", glm::translate(glm::mat4(), m_Entities[i]->ModelTransform()));
             l_ProgGI->SetUniform("lightMVP", depthMVP);
             l_ProgGI->SetUniform("DiffuseTexture", NOX_DIFFUSE_MAP);
             l_ProgGI->SetUniform("ApplyShadows", true);
@@ -1079,10 +1085,36 @@ void nxScene::DrawPreviewVoxelized() {
         //m_MState.m_VMatrix = glm::translate(View(),
         //    m_Camera->Position());
         //printf("Inside %d", i);
-        m_MState.m_VMatrix = glm::mat4();
+        /*m_MState.m_VMatrix = glm::mat4();
         m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
         //m_pEngine->Renderer()->Voxelizer()->CalculateViewProjection(m_MState.m_VMatrix);
         //m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
+        //m_MState.m_VMatrix *= m_MState.m_RMatrix;
+
+        //m_MState.m_MMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
+        //m_pEngine->Renderer()->Program()->SetUniform("NormalMatrix", Normal());
+
+        //if (errorGL) Utils::GL::CheckGLState("Set Normal");
+
+        //m_pEngine->Renderer()->Program()->SetUniform("ModelMatrix", glm::mat4());
+        //m_pEngine->Renderer()->Program()->SetUniform("ModelMatrix", glm::translate(glm::mat4(), m_Entities[i]->ModelTransform()));
+        //m_pEngine->Renderer()->Program()->SetUniform("MVP", m_MState.m_PMatrix*m_MState.m_VMatrix);
+        m_pEngine->Renderer()->Program()->SetUniform("GridSize", m_pEngine->Renderer()->Voxelizer()->Dimesions());
+        m_pEngine->Renderer()->Program()->SetUniform("GridMin", m_pEngine->Renderer()->Voxelizer()->GridMin());
+        m_pEngine->Renderer()->Program()->SetUniform("VoxelSize", l_Voxel);
+        m_pEngine->Renderer()->Program()->SetUniform("ViewMatrix", m_MState.m_VMatrix);
+        //m_pEngine->Renderer()->Program()->SetUniform("ViewMatrix", glm::mat4());
+        m_pEngine->Renderer()->Program()->SetUniform("ViewProjMatrix", 3, m_pEngine->Renderer()->Voxelizer()->ViewProjections());
+
+
+        //m_pEngine->Renderer()->Program()->SetUniform("MVP", View());
+        //if (errorGL) Utils::GL::CheckGLState("Set MVP");
+
+        m_Entities[i]->Draw();
+        //if (errorGL) Utils::GL::CheckGLState("Draw : " + i);
+        */
+        m_MState.m_VMatrix = glm::mat4();
+        m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
         //m_MState.m_VMatrix *= m_MState.m_RMatrix;
 
         //m_MState.m_MMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
@@ -1117,7 +1149,7 @@ void nxScene::DrawPreviewVoxelized() {
         sizeof(GLuint) * 2,
         GL_MAP_READ_BIT
     );
-    printf("Voxel Count %d\n", l_VoxelCounter[0]);
+    //printf("Voxel Count %d\n", l_VoxelCounter[0]);
 
     glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
 

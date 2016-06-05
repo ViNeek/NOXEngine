@@ -76,12 +76,11 @@ void nxProgram::Attach() {
 
 }
 
-
 int nxProgram::GetUniformLocation(const char *name){
 	GLint loc;
 	loc = glGetUniformLocation(m_ProgramID, name);
-	if (loc == -1)
-		printf("No such uniform named \"%s\"\n", name);
+	//if (loc == -1)
+		//printf("No such uniform named \"%s\"\n", name);
 
 	return loc;
 }

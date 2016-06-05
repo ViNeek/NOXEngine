@@ -145,7 +145,7 @@ void nxEntity::InitFromVoxelizer(nxVoxelizer* voxelizer) {
                 for (int k = 0; k < voxelizer->Dimesions().z; k++) {
                     if (ip[i][j][k] == 1) {
                         voxelCoords->push_back(
-                            glm::vec3(i, j, k) * voxel + l_GridMin
+                            glm::vec3(i, j, k) * voxel + voxel * glm::vec3(0.5) + l_GridMin
                         );
                         countVoxels++;
                     }

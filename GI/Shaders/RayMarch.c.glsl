@@ -106,6 +106,21 @@ void setIndexAt( int value, uint x, uint y, uint z ) {
 	index_data[x * u_Dim.x * u_Dim.y + u_Dim.x * y + z] = value;
 }
 
+vec4 SampleAt(vec2 coords, int offset) {
+    int rndVal = random(coords, offset );
+    float rndValF = float(rndVal) / 2048.0;
+
+    vec3 contrib = vec3(0,0,0);
+
+    contrib = texture( u_FluxTexture, vec2(coords.x, coords.y) ).xyz;
+    contrib *= texture( u_FluxTexture, vec2(coords.x + rndValF, coords.y + rndValF) ).xyz;
+    contrib *= texture( u_FluxTexture, vec2(coords.x + rndValF, coords.y - rndValF) ).xyz;
+    contrib *= texture( u_FluxTexture, vec2(coords.x - rndValF, coords.y + rndValF) ).xyz;
+    contrib *= texture( u_FluxTexture, vec2(coords.x - rndValF, coords.y - rndValF) ).xyz;
+    
+    return vec4(contrib, 1);
+}
+
 void main() {
 
     bvec3 l_OutOfBounds = greaterThanEqual(gl_GlobalInvocationID, u_Dim);
@@ -115,7 +130,7 @@ void main() {
 	}
 
     if ( getBinaryVoxelAt(int(gl_GlobalInvocationID.x), int(gl_GlobalInvocationID.y), int(gl_GlobalInvocationID.z)) == 0 ) {
-        setIndexAt(-1, gl_GlobalInvocationID.x, gl_GlobalInvocationID.y, gl_GlobalInvocationID.z);
+        setIndexAt(1, gl_GlobalInvocationID.x, gl_GlobalInvocationID.y, gl_GlobalInvocationID.z);
         return;
     }
 
@@ -195,9 +210,10 @@ void main() {
 					//l_Distance = clamp(l_Distance, 0, l_DistanceBound);
 				}
 
-				march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].x = l_VoxelCoord.x;
-				march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].y = l_VoxelCoord.y;
-				march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].z = l_VoxelCoord.z;
+				//march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].x = l_VoxelCoord.x;
+				//march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].y = l_VoxelCoord.y;
+				//march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].z = l_VoxelCoord.z;
+                //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].xyz = l_VoxelCoord.z;
 
                 //vec4 shadow_coords = u_LightMVP * vec4(l_VoxelCoord,1);
                 vec4 shadow_coords = u_LightMVP * vec4(l_Transform + u_GridMin,1);
@@ -218,10 +234,14 @@ void main() {
 				//march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = texture( u_DepthTexture, UVCoords ).x;
 				if ( rsm_depth < (max(z-0.01, 0.01)) ) {
                     //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = random(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f) );
-                    march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = 1;
+                    //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = 1;
+                    //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = SampleAt(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f));
+                    march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = vec4(0,0,0,1);
                 } else {
                     //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = random(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f) );
-                    march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = int((UVCoords_up.y - UVCoords.y) * 2048.0f);
+                    //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = int((UVCoords_up.y - UVCoords.y) * 2048.0f);
+                    //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = vec4(0,0,0,1);
+                    march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = SampleAt(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f));
                 }
                 //if ( texture( u_DepthTexture, UVCoords ).x > 0 )
                 //    march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = random(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f ));
