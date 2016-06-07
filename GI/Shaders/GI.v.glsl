@@ -18,6 +18,7 @@ out VertexData {
 
 uniform mat3 NormalMatrix;
 uniform mat4 ModelViewMatrix;
+uniform mat4 RotationMatrix;
 uniform mat4 ModelMatrix;
 uniform vec4 LightPosition;
 uniform vec3 CameraPosition;

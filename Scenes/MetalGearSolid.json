@@ -9,13 +9,13 @@
             "PositionZ": 0
         },
         "Voxelizer": {
-            "DimX": 128,
-            "DimY": 128,
-            "DimZ": 128
+            "DimX": 64,
+            "DimY": 64,
+            "DimZ": 64
         },
 		"RayMarcher": {
-            "VDimX": 4,
-            "VDimY": 4
+            "VDimX": 8,
+            "VDimY": 8
         },
 		"RSM": {
             "DimX": 2048,

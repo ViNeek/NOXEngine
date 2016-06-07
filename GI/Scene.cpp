@@ -267,6 +267,9 @@ void nxScene::Init() {
                 glm::vec3(0, 1, 0)
 			));
 
+		//l_Light->LightDir(glm::vec3(100, -50, -100) - glm::vec3(-2, 4, 13.0));
+		l_Light->LightDir(glm::vec3(100, -50, -100) - glm::vec3(-2, 4, 13.0));
+
 		m_Lights.push_back(l_Light);
 
         m_GridEntity = new nxEntity();
@@ -279,8 +282,16 @@ void nxScene::Init() {
 	}
 }
 
+glm::mat3& nxScene::Normal(glm::mat4& parameter) {
+	m_MState.m_NMatrix = glm::mat3(parameter);
+	m_MState.m_NMatrix = glm::inverse(m_MState.m_NMatrix);
+	m_MState.m_NMatrix = glm::transpose(m_MState.m_NMatrix);
+
+	return m_MState.m_NMatrix;
+}
+
 glm::mat3& nxScene::Normal() {
-	m_MState.m_NMatrix = glm::mat3(m_MState.m_VMatrix);
+		m_MState.m_NMatrix = glm::mat3(m_MState.m_VMatrix);
 	m_MState.m_NMatrix = glm::inverse(m_MState.m_NMatrix);
 	m_MState.m_NMatrix = glm::transpose(m_MState.m_NMatrix);
 
@@ -483,7 +494,8 @@ void nxScene::Draw() {
 
        m_MState.m_MMatrix = glm::translate(glm::mat4(), m_Entities[i]->ModelTransform());
         //m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
-        m_pEngine->Renderer()->Program()->SetUniform("NormalMatrix", Normal());
+        //m_pEngine->Renderer()->Program()->SetUniform("NormalMatrix", Normal());
+		m_pEngine->Renderer()->Program()->SetUniform("NormalMatrix", Normal(m_MState.m_MMatrix));
         m_pEngine->Renderer()->Program()->SetUniform("LightPosition", m_MState.m_VMatrix * glm::vec4(m_Lights[0]->Center(), 1));
         //m_pEngine->Renderer()->Program()->SetUniform("LightPosition", m_Lights[0]->Center());
 
@@ -737,19 +749,19 @@ void nxScene::DrawVoxelized() {
     if (m_pEngine->Renderer()->VoxelizerReady()) {
         m_pEngine->Renderer()->RayMarcher()->Calculate();
 
-        /*
+        
         l_VoxelCounter = (GLuint*)glMapBufferRange(GL_ATOMIC_COUNTER_BUFFER,
             0,
             sizeof(GLuint) * 2,
             GL_MAP_READ_BIT
             );
 
-        printf("Voxel Count %d\n", l_VoxelCounter[0]);
-        printf("Voxel Count %d\n", l_VoxelCounter[1]);
+        //printf("Voxel Count %d\n", l_VoxelCounter[0]);
+        //printf("Voxel Count %d\n", l_VoxelCounter[1]);
 
         glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
 
-        */
+        
 
         print_dists = false;
         if (print_dists) {
@@ -1018,24 +1030,31 @@ void nxScene::DrawVoxelized() {
             //m_MState.m_VMatrix = m_MState.m_VMatrix * m_MState.m_RMatrix;
             //m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
 
-            m_MState.m_MMatrix = glm::translate(glm::mat4(), m_Entities[i]->ModelTransform());
+			m_MState.m_MMatrix = glm::translate(glm::mat4(), m_Entities[i]->ModelTransform());
+			//m_MState.m_MMatrix = glm::translate(glm::mat4(), m_Entities[i]->ModelTransform());
             //m_MState.m_VMatrix = glm::translate(View(), m_Entities[i]->ModelTransform());
-            l_ProgGI->SetUniform("NormalMatrix", Normal());
-            l_ProgGI->SetUniform("LightPosition", m_MState.m_VMatrix * glm::vec4(m_Lights[0]->Center(), 1));
-            //m_pEngine->Renderer()->Program()->SetUniform("LightPosition", m_Lights[0]->Center());
+            //l_ProgGI->SetUniform("NormalMatrix", Normal());
+			l_ProgGI->SetUniform("NormalMatrix", Normal(m_MState.m_MMatrix));
+			m_MState.m_MMatrix = m_MState.m_RMatrix * glm::translate(glm::mat4(), m_Entities[i]->ModelTransform());
+			l_ProgGI->SetUniform("RotationMatrix", Normal(m_MState.m_MMatrix));
+			//l_ProgGI->SetUniform("LightPosition", m_MState.m_VMatrix * glm::vec4(m_Lights[0]->Center(), 1));
+			l_ProgGI->SetUniform("LightPosition", glm::translate(glm::mat4(), -m_Camera->Position()) * m_MState.m_RMatrix * glm::vec4(m_Lights[0]->Center(), 1));
+			//m_pEngine->Renderer()->Program()->SetUniform("LightPosition", m_Lights[0]->Center());
 
             //if (errorGL) Utils::GL::CheckGLState("Set Normal");
 
             l_ProgGI->SetUniform("u_Dim", m_pEngine->Renderer()->Voxelizer()->Dimesions());
             l_ProgGI->SetUniform("u_VoxelSize", l_Voxel);
-            l_ProgGI->SetUniform("u_GridMin", m_pEngine->Renderer()->Voxelizer()->GridMin());
-            l_ProgGI->SetUniform("MVP", m_MState.m_PMatrix*m_MState.m_VMatrix);
+			l_ProgGI->SetUniform("u_GridMin", m_pEngine->Renderer()->Voxelizer()->GridMin());
+			l_ProgGI->SetUniform("u_GridSize", m_pEngine->Renderer()->Voxelizer()->GridSize());
+			l_ProgGI->SetUniform("MVP", m_MState.m_PMatrix*m_MState.m_VMatrix);
             l_ProgGI->SetUniform("ModelViewMatrix", m_MState.m_VMatrix);
             l_ProgGI->SetUniform("ModelMatrix", glm::translate(glm::mat4(), m_Entities[i]->ModelTransform()));
             l_ProgGI->SetUniform("lightMVP", depthMVP);
             l_ProgGI->SetUniform("DiffuseTexture", NOX_DIFFUSE_MAP);
-            l_ProgGI->SetUniform("ApplyShadows", true);
-
+			l_ProgGI->SetUniform("ApplyShadows", true);
+			l_ProgGI->SetUniform("u_LightDirection", m_Lights[0]->LightDir());
+			
             glActiveTexture(GL_TEXTURE0 + NOX_DEPTH_MAP);
             glBindTexture(GL_TEXTURE_2D, m_pEngine->Renderer()->RSM()->ShadowMap());
             l_ProgGI->SetUniform("ShadowTexture", NOX_DEPTH_MAP);

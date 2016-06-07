@@ -16,7 +16,7 @@ uniform sampler2D DiffuseTexture;
 
 const float pi = 3.1415926535897932384626433832795;
 
-const vec3 lightColor = vec3(30, 30, 30);
+const vec3 lightColor = vec3(150, 150, 150);
 
 in VertexData {
     vec3 normal;
@@ -69,7 +69,7 @@ void main()
 	//simplified:
 
 	float A = (A_texel * l_Distance * l_Distance) / (d_ij * d_ij );
-	vec3 radiosity = ( d_ij * d_ij * lightColor.rgb ) / (l_Distance * l_Distance * 3.14159 * 3.14159 * 2 );   
+	vec3 radiosity = 10 * ( d_ij * d_ij * lightColor.rgb ) / (l_Distance * l_Distance * 3.14159 * 3.14159 * 2 );   
 
     float sa = 0;
     if ( NdotL > 0 ) 

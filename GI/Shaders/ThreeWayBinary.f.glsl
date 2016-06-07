@@ -61,7 +61,7 @@ void main()
 	        }
         }
     }*/
-    //setVoxelAt(VoxelGridCoord.x, VoxelGridCoord.y, VoxelGridCoord.z);
+    setVoxelAt(VoxelGridCoord.x, VoxelGridCoord.y, VoxelGridCoord.z);
     setVoxelAt(VoxelGridCoord.x+1, VoxelGridCoord.y, VoxelGridCoord.z);
     setVoxelAt(VoxelGridCoord.x-1, VoxelGridCoord.y, VoxelGridCoord.z);
     setVoxelAt(VoxelGridCoord.x, VoxelGridCoord.y+1, VoxelGridCoord.z);

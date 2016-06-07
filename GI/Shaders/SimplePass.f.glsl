@@ -54,7 +54,7 @@ void main()
         float NdotHV = 0;
         float spotEffect = 0;
         if (NdotL > 0.0) {
-            vec3 lightPosition = NormalMatrix * vec3(LightPosition - vec4(100000, -50000.0f, -100000.0f, 0));
+            vec3 lightPosition = vec3(LightPosition - vec4(100000, -50000.0f, -100000.0f, 0));
             spotEffect = dot(normalize( vec4(lightPosition,0) ),normalize(vec4(lightDir, 0)));
             if (spotEffect > cos(30 * 3.14159265359 / 180) && visibility > 0) {
                 spotEffect = pow(spotEffect, 1);

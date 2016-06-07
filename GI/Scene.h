@@ -62,6 +62,7 @@ public:
 	glm::mat4&					Projection(){ return m_MState.m_PMatrix; };
 	glm::mat4&					View(){ return m_MState.m_VMatrix; };
 	glm::mat3&					Normal();
+	glm::mat3&					Normal(glm::mat4& parameter);
 	glm::mat4&					Rotation(){ return m_MState.m_RMatrix; };
     glm::mat4&					Modelview(){ return m_MState.m_MMatrix; };
     const std::vector<nxLight*> const &		Lights(){ return m_Lights; };

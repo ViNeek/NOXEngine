@@ -113,12 +113,12 @@ vec4 SampleAt(vec2 coords, int offset) {
     vec3 contrib = vec3(0,0,0);
 
     contrib = texture( u_FluxTexture, vec2(coords.x, coords.y) ).xyz;
-    contrib *= texture( u_FluxTexture, vec2(coords.x + rndValF, coords.y + rndValF) ).xyz;
-    contrib *= texture( u_FluxTexture, vec2(coords.x + rndValF, coords.y - rndValF) ).xyz;
-    contrib *= texture( u_FluxTexture, vec2(coords.x - rndValF, coords.y + rndValF) ).xyz;
-    contrib *= texture( u_FluxTexture, vec2(coords.x - rndValF, coords.y - rndValF) ).xyz;
+    contrib += texture( u_FluxTexture, vec2(coords.x + rndValF, coords.y + rndValF) ).xyz;
+    contrib += texture( u_FluxTexture, vec2(coords.x + rndValF, coords.y - rndValF) ).xyz;
+    contrib += texture( u_FluxTexture, vec2(coords.x - rndValF, coords.y + rndValF) ).xyz;
+    contrib += texture( u_FluxTexture, vec2(coords.x - rndValF, coords.y - rndValF) ).xyz;
     
-    return vec4(contrib, 1);
+    return vec4(contrib / 5, 1);
 }
 
 void main() {
@@ -217,7 +217,7 @@ void main() {
 
                 //vec4 shadow_coords = u_LightMVP * vec4(l_VoxelCoord,1);
                 vec4 shadow_coords = u_LightMVP * vec4(l_Transform + u_GridMin,1);
-                vec4 shadow_coords_up = u_LightMVP * vec4(l_Transform + u_GridMin + u_VoxelSize.y,1);
+                vec4 shadow_coords_up = u_LightMVP * vec4(l_Transform + u_GridMin + u_VoxelSize.y * 0.5,1);
                 vec3 ProjCoords = shadow_coords.xyz / shadow_coords.w;
                 vec3 ProjCoords_up = shadow_coords_up.xyz / shadow_coords_up.w;
                 vec2 UVCoords;
@@ -230,9 +230,15 @@ void main() {
                 float z_up = 0.5 * ProjCoords_up.z + 0.5;
                 float rsm_depth = texture( u_DepthTexture, UVCoords ).x;
 
+				vec3 texNorm = texture( u_NormTexture, UVCoords ).xyz;
+
+				float LtoT = max(-dot(texNorm, l_Dir), 0);
+
+				//if ( LtoT > 0 ) {
+
 				//march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = l_TotalDistance;
 				//march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = texture( u_DepthTexture, UVCoords ).x;
-				if ( rsm_depth < (max(z-0.01, 0.01)) ) {
+				if ( rsm_depth < (max(z-0.0001, 0.01)) ) {
                     //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = random(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f) );
                     //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = 1;
                     //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = SampleAt(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f));
@@ -241,30 +247,9 @@ void main() {
                     //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = random(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f) );
                     //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = int((UVCoords_up.y - UVCoords.y) * 2048.0f);
                     //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = vec4(0,0,0,1);
-                    march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = SampleAt(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f));
+                    march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = SampleAt(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f)) * sign(LtoT);
                 }
-                //if ( texture( u_DepthTexture, UVCoords ).x > 0 )
-                //    march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = random(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f ));
-                //else
-                //    march_data[f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = texture( u_FluxTexture, UVCoords ).x;
-				/*march_data[f*4*u_VPort.x*u_VPort.y + i * u_VPort.y + j].x = l_Distance;
-				l_Distance = getVoxelAt(l_Transform.x, l_Transform.y, l_Transform.z);
-				l_Distance = clamp(l_Distance, 0, l_DistanceBound);
-				l_Transform = ivec3(vec3(l_Transform) + ceil(l_Dir * l_Distance));
-				
-				march_data[f*4*u_VPort.x*u_VPort.y + i * u_VPort.y + j].y = l_Distance;
-				l_Distance = getVoxelAt(l_Transform.x, l_Transform.y, l_Transform.z);
-				l_Distance = clamp(l_Distance, 0, l_DistanceBound);
-				l_Transform = ivec3(vec3(l_Transform) + ceil(l_Dir * l_Distance));
-
-				march_data[f*4*u_VPort.x*u_VPort.y + i * u_VPort.y + j].z =  l_Distance;
-				l_Distance = getVoxelAt(l_Transform.x, l_Transform.y, l_Transform.z);
-				l_Distance = clamp(l_Distance, 0, l_DistanceBound);
-				l_Transform = ivec3(vec3(l_Transform) + ceil(l_Dir * l_Distance));
-
-				march_data[f*4*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = getVoxelAt(l_Transform.x, l_Transform.y, l_Transform.z);;
-				*/			
-				//march_data[l_Counter] = l_Distance;	
+				//}
 			}
 		}
 	}
