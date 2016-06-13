@@ -48,6 +48,8 @@ bool nxVoxelizer::Init() {
 	glFramebufferParameteri(GL_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_LAYERS, 3);
 	Utils::GL::CheckGLState("Layers Framebuffer Creation");
 
+	glFramebufferParameteri(GL_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_SAMPLES, 4);
+	Utils::GL::CheckGLState("Layers Framebuffer Creation");
 
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	Utils::GL::CheckGLState("Dummy Framebuffer Creation");
@@ -135,6 +137,8 @@ bool nxVoxelizer::Init() {
 		BOOST_LOG_TRIVIAL(error) << "Voxel Layered FBO Incomplete ";
 		break;
 	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, m_DummyLayeredBuffer);
 
 	return true;
 }
