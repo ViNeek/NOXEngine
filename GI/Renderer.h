@@ -44,6 +44,8 @@ public:
 
 	void*									Entry();
 
+    void                                    GenerateRandomTexture();
+
 	void									ScheduleGLJob(nxGLJob* job) { m_pGLCommandQueue->push(job); };
 	void									SetDrawingCanvas(wxGLCanvas* frame) { m_pParent = frame; }
 	bool									IsFramebufferReady() { return m_FBOInited; }
@@ -103,6 +105,7 @@ private:
 	GLuint									m_FBO;
 	GLuint									m_RBO;
 	GLuint									m_DepthTexture;
+    GLuint                                  m_RandomTexture;
 
 	bool									m_FBOInited;
 	bool									m_IsVoxelizerReady;

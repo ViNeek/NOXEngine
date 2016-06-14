@@ -16,6 +16,9 @@
 #include "Engine.h"
 #include "Scene.h"
 
+#include <chrono>
+#include <random>
+
 #include <boost/multi_array.hpp>
 
 nxRenderer::nxRenderer(wxGLCanvas* frame)
@@ -69,6 +72,8 @@ void *nxRenderer::Entry()
 	nxGLJob* currentJob;
 	m_pParent->SetCurrent(*m_pGLCtx);
 	
+    //GenerateRandomTexture();
+
 	while ( m_IsActive ) {
 
 		while ( m_pGLCommandQueue->pop(currentJob) )
@@ -127,6 +132,9 @@ void *nxRenderer::Entry()
 
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_pEngine->Renderer()->Voxelizer()->VoxelBuffer());
 			glClearBufferData(GL_SHADER_STORAGE_BUFFER, GL_RGBA32I, GL_RGBA, GL_UNSIGNED_INT, NULL);
+
+            glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_pEngine->Renderer()->Voxelizer()->VoxelBufferCubes());
+            glClearBufferData(GL_SHADER_STORAGE_BUFFER, GL_RGBA32I, GL_RGBA, GL_UNSIGNED_INT, NULL);
 		}
 		
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
@@ -281,6 +289,51 @@ void nxRenderer::Init() {
 		std::cout << "Context Inited";
 }
 
+void nxRenderer::GenerateRandomTexture() {
+    std::random_device rd;
+    printf("Generate buffer\n");
+    glm::vec4* rndBuffer = new glm::vec4[1024 * 1024];
+    //
+    // Engines 
+    //
+    std::mt19937 gen(rd());
+    //std::knuth_b e2(rd());
+    //std::default_random_engine e2(rd()) ;
+
+    //
+    // Distribtuions
+    //
+    std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+    //std::normal_distribution<> dist(2, 2);
+    //std::student_t_distribution<> dist(5);
+    //std::poisson_distribution<> dist(2);
+    //std::extreme_value_distribution<> dist(0,2);
+
+    for (auto i = 0; i < (1024 * 1024); i++) {
+        rndBuffer[i].x = dist(gen);
+        rndBuffer[i].y = dist(gen);
+        rndBuffer[i].z = dist(gen);
+        rndBuffer[i].w = dist(gen);
+        //printf("%g %g %g %g\n", rndBuffer[i].x, rndBuffer[i].y, rndBuffer[i].z, rndBuffer[i].w);
+    }
+
+    //upload to texture
+    glActiveTexture(GL_TEXTURE20);
+
+    glGenTextures(1, &m_RandomTexture);
+    glBindTexture(GL_TEXTURE_2D, m_RandomTexture);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, 1024, 1024, 0, GL_RGBA, GL_FLOAT, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, 1024, 1024, 0, GL_RGBA, GL_FLOAT, (void*)rndBuffer);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_RGBA, GL_FLOAT, (void*)rndBuffer);
+
+    Utils::GL::CheckGLState("Random Buffer Check");
+}
+
 bool nxRenderer::InitExtensions() {
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
@@ -299,6 +352,8 @@ bool nxRenderer::InitExtensions() {
 
 void nxRenderer::InitFramebuffer() {
 	
+    GenerateRandomTexture();
+
 	/* TEMPORARY init a a test Shader Storage Buffer object */
 	glGenBuffers(1, &m_ssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);

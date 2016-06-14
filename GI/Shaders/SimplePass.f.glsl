@@ -4,6 +4,7 @@ layout(location = 0) out vec4 out_color;
 
 uniform sampler2D DiffuseTexture;
 uniform sampler2D ShadowTexture;
+uniform sampler2D RandomTexture;
 uniform bool ApplyShadows;
 
 in VertexData {
@@ -18,8 +19,11 @@ in VertexData {
 
 uniform mat4 ModelViewMatrix;
 uniform mat3 NormalMatrix;
+uniform mat3 RotationMatrix;
 uniform vec4 LightPosition;
 uniform vec3 CameraPosition;
+
+const vec3 lightColor = vec3(150, 150, 150);
 
 const vec4 MaterialAmbientColor  = vec4(0.1, 0.1, 0.1, 0);
 const vec3 lightPos = vec3(0,3,0);
@@ -30,7 +34,7 @@ void main()
 	//out_color = vec4(VertexIn.normal,0.0f);
 
     vec3 n = normalize(VertexIn.normal);
-    vec3 lightDir = vec3(LightPosition-VertexIn.ecPos);
+    vec3 lightDir =  vec3(LightPosition-VertexIn.ecPos);
     vec3 viewDir = vec3(-VertexIn.ecPos);
     float dist = length(lightDir);
 
@@ -54,22 +58,38 @@ void main()
         float NdotHV = 0;
         float spotEffect = 0;
         if (NdotL > 0.0) {
-            vec3 lightPosition = vec3(LightPosition - vec4(100000, -50000.0f, -100000.0f, 0));
+            vec3 lightPosition = NormalMatrix * vec3(LightPosition - vec4(100000, -50000.0f, -100000.0f, 0));
             spotEffect = dot(normalize( vec4(lightPosition,0) ),normalize(vec4(lightDir, 0)));
             if (spotEffect > cos(30 * 3.14159265359 / 180) && visibility > 0) {
-                spotEffect = pow(spotEffect, 1);
+                spotEffect = pow(spotEffect, 0.11);
                 float att = spotEffect / (1 +
                     0.01 * dist +
                     0.01  * dist * dist);
+                
+                float fH = tan( 45.0 / 360.0 * 3.14159 ) * 1;
+				float fW = fH;
+
+				float fW_Inv = ( 2 * fW );
+				float fH_Inv = ( 2 * fH );
+				float A_texel = fW_Inv * fH_Inv;
+
+				//vec2 o = (tan_phi_2/float(2048)) * vec2(1.0 + 2 * gl_FragCoord.x - 2048, 1.0 + 2 * gl_FragCoord.y - 2048);
+				//float d_ij = sqrt(5);
+				float d_ij = sqrt(1);
+				//float A = dot(pecs,pecs) * A_texel / (d_ij * d_ij * d_ij * (0.01+ndotl));
+				//simplified:
+
+				float A = (A_texel * dist * dist) / (d_ij * d_ij );
+				vec3 radiosity = ( d_ij * d_ij * lightColor.rgb ) / ( dist * dist * 3.14159 * 3.14159 * 2 );   
                  
                 vec3 halfVec = normalize(lightDir + viewDir);
                 NdotHV = max(dot(n,halfVec),0.0);
 
-                out_color = visibility * (vec4(texture( DiffuseTexture, VertexIn.uv ).rgb , 0.0f) + vec4(0.8, 0.8 ,0.8, 0));
+                out_color = visibility * (vec4(texture( DiffuseTexture, VertexIn.uv ).rgb * (radiosity * 5 ), 0.0f) );
                 out_color *= att * pow(NdotHV, 2);
 
             } else {
-                out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb * 0.1 , 0.0f);
+                out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb * 0 , 0.0f);
                 out_color *= NdotL;
             }
         } else {
@@ -84,4 +104,5 @@ void main()
     }
     //out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb , 0.0f);
     //out_color += texture( ShadowTexture, VertexIn.shadow_coords.xy );
+    //out_color = vec4(texture( DiffuseTexture, texture( RandomTexture, VertexIn.uv ).xy ).rgb , 0.0f);
 }

@@ -9,7 +9,8 @@
 void nxRayMarcher::Init() {
 	//nxInt32 l_BufferSize = m_VDimX * m_VDimY * 6 * sizeof(glm::vec4);
 	nxInt32 l_BufferSize = m_VDimX * m_VDimY * 6 * sizeof(glm::vec4);
-	glm::uvec3 l_Dims = m_Voxelizer->Dimesions();
+    //glm::uvec3 l_Dims = m_Voxelizer->Dimesions();
+    glm::uvec3 l_Dims = m_Voxelizer->DimesionsCubes();
 
     m_Buffer = -1;
 
@@ -64,12 +65,18 @@ void nxRayMarcher::Bind() {
 }
 
 static const int g_WorkGroupSize = 8;
+static const glm::uvec3 g_WorkGroupSizeVec(8, 8, 8);
 void nxRayMarcher::Calculate() {
 	glm::uvec3 l_GroupSize(
-		(m_Voxelizer->Dimesions().x - 1) / g_WorkGroupSize + 1,
-		(m_Voxelizer->Dimesions().y - 1) / g_WorkGroupSize + 1,
-		(m_Voxelizer->Dimesions().z - 1) / g_WorkGroupSize + 1
+        (m_Voxelizer->Dimesions().x - 1) / g_WorkGroupSizeVec.x + 1,
+        (m_Voxelizer->Dimesions().y - 1) / g_WorkGroupSizeVec.y + 1,
+        (m_Voxelizer->Dimesions().z - 1) / g_WorkGroupSizeVec.z + 1
 	);
+    glm::uvec3 l_GroupSizeCubes(
+        (m_Voxelizer->DimesionsCubes().x - 1) / g_WorkGroupSizeVec.x + 1,
+        (m_Voxelizer->DimesionsCubes().y - 1) / g_WorkGroupSizeVec.y + 1,
+        (m_Voxelizer->DimesionsCubes().z - 1) / g_WorkGroupSizeVec.z + 1
+        );
 	//glm::uvec3 l_OldGroupSize(
 	//	m_resolution / g_WorkGroupSize,
 	//	m_resolution / g_WorkGroupSize,
@@ -83,7 +90,8 @@ void nxRayMarcher::Calculate() {
 	//std::cout << "Dims : " << m_DimX << ", " << m_DimY << ", " << m_DimZ << std::endl;
 
     //glDispatchComputeGroupSizeARB(l_GroupSize.x, l_GroupSize.y, l_GroupSize.z, g_WorkGroupSize, g_WorkGroupSize, g_WorkGroupSize);
-    glDispatchComputeGroupSizeARB(l_GroupSize.x, l_GroupSize.y, l_GroupSize.z, g_WorkGroupSize, g_WorkGroupSize, g_WorkGroupSize);
+    //glDispatchComputeGroupSizeARB(l_GroupSize.x, l_GroupSize.y, l_GroupSize.z, g_WorkGroupSize, g_WorkGroupSize, g_WorkGroupSize);
+    glDispatchComputeGroupSizeARB(l_GroupSizeCubes.x, l_GroupSizeCubes.y, l_GroupSizeCubes.z, g_WorkGroupSize, g_WorkGroupSize, g_WorkGroupSize);
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 }
 

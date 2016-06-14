@@ -42,6 +42,7 @@ void main()
 		pos = MVP * gl_in[i].gl_Position;
         VertexOut.shadow_coords = lightMVP * VertexIn[i].shadow_coords;
         VertexOut.ecPos = ModelViewMatrix * VertexIn[i].ecPos;
+        //VertexOut.ecPos = VertexIn[i].ecPos;
 		//VertexOut.shadow_coords = depthMVP * gl_in[i].gl_Position;
 		VertexOut.normal = VertexIn[i].normal;
 		//VertexOut.NdotL = VertexIn[i].NdotL;

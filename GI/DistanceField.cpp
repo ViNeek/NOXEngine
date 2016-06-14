@@ -19,12 +19,13 @@ nxDistanceField::nxDistanceField () {
 }
 
 static const int g_WorkGroupSize = 8;
+static const glm::uvec3 g_WorkGroupSizeVec(8, 8, 8);
 void nxDistanceField::Calculate(nxStorageBufferObject input) {
 	int l_InvocationCount = m_DimX * m_DimY * m_DimZ;
 	glm::uvec3 l_GroupSize(
-		(m_DimX - 1) / g_WorkGroupSize + 1,
-		(m_DimY - 1) / g_WorkGroupSize + 1,
-		(m_DimZ - 1) / g_WorkGroupSize + 1
+        (m_DimX - 1) / g_WorkGroupSizeVec.x + 1,
+        (m_DimY - 1) / g_WorkGroupSizeVec.y + 1,
+        (m_DimZ - 1) / g_WorkGroupSizeVec.z + 1
 	);
 	//glm::uvec3 l_OldGroupSize(
 	//	m_resolution / g_WorkGroupSize,

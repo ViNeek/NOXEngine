@@ -3,6 +3,8 @@
 
 uniform uvec3 u_Dim;
 uniform ivec2 u_VPort;
+uniform uvec3 u_DimCubes;
+uniform vec3 u_VoxelSizeCubes;
 uniform vec3 u_GridSize;
 uniform vec3 u_VoxelSize;
 uniform vec3 u_GridMin;
@@ -15,9 +17,14 @@ layout (binding = 0) uniform sampler2D u_FluxTexture;
 
 layout (binding = 1, offset = 0) uniform atomic_uint VoxelCount;
 layout (binding = 1, offset = 4) uniform atomic_uint BufferIndex;
+layout (binding = 1, offset = 8) uniform atomic_uint VoxelCountCubes;
 
 layout(std430, binding=2) readonly buffer VoxelData {
     uint voxel_data[];
+};
+
+layout(std430, binding=7) readonly buffer VoxelDataCubes {
+    uint voxel_data_cubes[];
 };
 
 layout(std430, binding=3) readonly buffer DistanceField {
@@ -93,6 +100,10 @@ float getBinaryVoxelAt( int x, int y, int z ) {
 	return voxel_data[x * u_Dim.x * u_Dim.y + u_Dim.x * y + z];
 }
 
+float getBinaryVoxelAtCubes( int x, int y, int z ) {
+	return voxel_data_cubes[x * u_DimCubes.x * u_DimCubes.y + u_DimCubes.x * y + z];
+}
+
 float getVoxelAt( int x, int y, int z ) {
 	//return field_data[x + u_Dim.x * y + u_Dim.x * u_Dim.y * z];
 	return field_data[x * u_Dim.x * u_Dim.y + u_Dim.x * y + z];
@@ -103,7 +114,8 @@ void setVoxelAt( float value, uint x, uint y, uint z ) {
 }
 
 void setIndexAt( int value, uint x, uint y, uint z ) {
-	index_data[x * u_Dim.x * u_Dim.y + u_Dim.x * y + z] = value;
+	//index_data[x * u_Dim.x * u_Dim.y + u_Dim.x * y + z] = value;
+	index_data[x * u_DimCubes.x * u_DimCubes.y + u_DimCubes.x * y + z] = value;
 }
 
 vec4 SampleAt(vec2 coords, int offset) {
@@ -124,13 +136,16 @@ vec4 SampleAt(vec2 coords, int offset) {
 void main() {
 
     bvec3 l_OutOfBounds = greaterThanEqual(gl_GlobalInvocationID, u_Dim);
+    bvec3 l_OutOfBoundsCubes = greaterThanEqual(gl_GlobalInvocationID, u_DimCubes);
 
-    if ( any(l_OutOfBounds) ) {
+    //if ( any(l_OutOfBounds) ) {
+    if ( any(l_OutOfBoundsCubes) ) {
 		return;
 	}
 
-    if ( getBinaryVoxelAt(int(gl_GlobalInvocationID.x), int(gl_GlobalInvocationID.y), int(gl_GlobalInvocationID.z)) == 0 ) {
-        setIndexAt(1, gl_GlobalInvocationID.x, gl_GlobalInvocationID.y, gl_GlobalInvocationID.z);
+    //if ( getBinaryVoxelAt(int(gl_GlobalInvocationID.x), int(gl_GlobalInvocationID.y), int(gl_GlobalInvocationID.z)) == 0 ) {
+    if ( getBinaryVoxelAtCubes(int(gl_GlobalInvocationID.x), int(gl_GlobalInvocationID.y), int(gl_GlobalInvocationID.z)) == 0 ) {
+        setIndexAt(-1, gl_GlobalInvocationID.x, gl_GlobalInvocationID.y, gl_GlobalInvocationID.z);
         return;
     }
 
@@ -144,7 +159,8 @@ void main() {
 
     uvec3 l_VoxelCoords = uvec3(gl_GlobalInvocationID.x, gl_GlobalInvocationID.y, gl_GlobalInvocationID.z);
 	ivec3 l_iVoxelCoords = ivec3(int(gl_GlobalInvocationID.x), int(gl_GlobalInvocationID.y), int(gl_GlobalInvocationID.z));
-	vec3 l_VoxelCenter = vec3(l_iVoxelCoords) * u_VoxelSize + u_VoxelSize * 0.5;
+	//vec3 l_VoxelCenter = vec3(l_iVoxelCoords) * u_VoxelSize + u_VoxelSize * 0.5;
+	vec3 l_VoxelCenter = vec3(l_iVoxelCoords) * u_VoxelSizeCubes + u_VoxelSizeCubes * 0.5;
 
 	vec3 l_GlobalTestPosition = vec3(0, 3.5, 0);
 	float l_SingleStep = length(u_VoxelSize) * (1 + 0.8);
@@ -210,9 +226,9 @@ void main() {
 					//l_Distance = clamp(l_Distance, 0, l_DistanceBound);
 				}
 
-				//march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].x = l_VoxelCoord.x;
-				//march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].y = l_VoxelCoord.y;
-				//march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].z = l_VoxelCoord.z;
+				march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].x = l_VoxelCoord.x;
+				march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].y = l_VoxelCoord.y;
+				march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].z = l_VoxelCoord.z;
                 //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].xyz = l_VoxelCoord.z;
 
                 //vec4 shadow_coords = u_LightMVP * vec4(l_VoxelCoord,1);
@@ -242,12 +258,13 @@ void main() {
                     //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = random(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f) );
                     //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = 1;
                     //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = SampleAt(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f));
-                    march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = vec4(0,0,0,1);
+                    //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = vec4(0,0,0,1);
                 } else {
                     //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = random(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f) );
                     //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = int((UVCoords_up.y - UVCoords.y) * 2048.0f);
                     //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = vec4(0,0,0,1);
-                    march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = SampleAt(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f)) * sign(LtoT);
+                    //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = SampleAt(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f)) * sign(LtoT);
+                    //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = SampleAt(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f));
                 }
 				//}
 			}

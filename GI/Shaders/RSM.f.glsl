@@ -69,7 +69,7 @@ void main()
 	//simplified:
 
 	float A = (A_texel * l_Distance * l_Distance) / (d_ij * d_ij );
-	vec3 radiosity = 10 * ( d_ij * d_ij * lightColor.rgb ) / (l_Distance * l_Distance * 3.14159 * 3.14159 * 2 );   
+	vec3 radiosity = ( d_ij * d_ij * lightColor.rgb ) / (l_Distance * l_Distance * 3.14159 * 3.14159 * 2 );   
 
     float sa = 0;
     if ( NdotL > 0 ) 
@@ -79,6 +79,7 @@ void main()
 	//out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb,0.0f);
 	//out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb * 0.7 + lightColor * 0.3,0.0f);
 	//out_color2 = vec4((A*100) * lightColor * 0.999 + texture( DiffuseTexture, VertexIn.uv ).rgb * 0.001, 0.0f);
+	//out_color2 = vec4(A * radiosity * texture( DiffuseTexture, VertexIn.uv ).rgb, 1.0f);
 	out_color2 = vec4(radiosity * texture( DiffuseTexture, VertexIn.uv ).rgb, 1.0f);
 	//out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb * 0.7 + lightColor * 0.3,0.0f);
 	out_color = vec4(VertexIn.normal, 1.0f);

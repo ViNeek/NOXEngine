@@ -5,7 +5,6 @@ layout (location = 1) in vec2 VertexTexCoord;
 layout (location = 2) in vec3 VertexNormal;
 
 out VertexData {
-    vec3 normal;
     vec3 worldcoord;
     //vec2 uv;
 } VertexOut;

@@ -22,6 +22,17 @@ nxVoxelizer::nxVoxelizer(nxEngine* eng, nxUInt32 dim) : nxVoxelizerBase("dumyy")
 	m_DummyLayeredBuffer = -1;
 }
 
+nxVoxelizer::nxVoxelizer(nxEngine* eng, nxUInt32 dimX, nxUInt32 dimY, nxUInt32 dimZ, nxUInt32 dimXCubes, nxUInt32 dimYCubes, nxUInt32 dimZCubes) : nxVoxelizerBase("dumyy") {
+    m_pEngine = eng;
+    m_dimensions = glm::uvec3(dimX, dimY, dimZ);
+    m_dimensions_cubes = glm::ivec3(dimXCubes, dimYCubes, dimZCubes);
+    m_initialized = false;
+    m_CaptureGrid = false;
+    m_resolution = dimX;
+    m_ssbo = -1;
+    m_DummyLayeredBuffer = -1;
+}
+
 nxVoxelizer::nxVoxelizer(nxEngine* eng, nxUInt32 dimX, nxUInt32 dimY, nxUInt32 dimZ) : nxVoxelizerBase("dumyy") {
 	m_pEngine = eng;
 	m_dimensions = glm::uvec3(dimX, dimY, dimZ);
@@ -69,7 +80,7 @@ bool nxVoxelizer::Init() {
     glGenBuffers(1, &m_VoxelCount);
     // bind the buffer and define its initial storage capacity
     glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, m_VoxelCount);
-    glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * 2, NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * 3, NULL, GL_DYNAMIC_DRAW);
 
     glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 1, m_VoxelCount);
 
@@ -82,6 +93,12 @@ bool nxVoxelizer::Init() {
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, m_resolution * m_resolution * m_resolution * 4, NULL, GL_DYNAMIC_COPY);
 	//glBufferData(GL_SHADER_STORAGE_BUFFER, m_resolution * m_resolution * m_resolution / 8, NULL, GL_DYNAMIC_COPY);
+
+    glGenBuffers(1, &m_ssbo_cubes);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo_cubes);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, m_dimensions_cubes.x * m_dimensions_cubes.y * m_dimensions_cubes.z * 4, NULL, GL_DYNAMIC_COPY);
+    //glBufferData(GL_SHADER_STORAGE_BUFFER, m_resolution * m_resolution * m_resolution / 8, NULL, GL_DYNAMIC_COPY);
+
 
 	int l_InvocationCount = m_resolution * m_resolution * m_resolution;
 	glm::uvec3 l_GroupSize(

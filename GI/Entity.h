@@ -11,7 +11,9 @@
 
 #include "Texture.h"
 
+
 class nxVoxelizer;
+class nxDistanceField;
 
 class nxEntity {
 public:
@@ -21,6 +23,7 @@ public:
 	void					InitFromFile(const std::string& filename);
     void					InitFromBuffer(glm::vec3* buffer, nxInt32 size, GLuint adHocTexture = -1);
     void					InitFromVoxelizer(nxVoxelizer* voxel);
+    void                    InitFromDF(nxDistanceField *df, nxVoxelizer* voxel);
     void					UpdateFromVoxelizer(nxVoxelizer* voxel);
     void                    InitPreviewFromBuffer(glm::vec3* buffer, nxInt32 size, GLuint adHocTexture = -1);
 

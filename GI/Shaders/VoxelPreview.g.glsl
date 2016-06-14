@@ -5,6 +5,10 @@ layout(std430, binding=2) readonly buffer VoxelData{
     uint voxel_data[];
 };
 
+layout(std430, binding=3) readonly buffer DistanceFieldFront {
+    float front_field_data[];
+};
+
 layout(points) in;
 
 layout(triangle_strip, max_vertices = 1048) out;
@@ -26,27 +30,40 @@ uniform mat4 MVP;
 //uniform mat4 depthMVP;
 
 in VertexData {
-    vec3 normal;
 	vec3 worldcoord;
     //vec2 uv;
 } VertexIn[];
  
 out VertexData {
-    vec3 normal;
+    float color;
 } VertexOut;
 
 uint getVoxelAt( uint x, uint y, uint z ) {
 	return voxel_data[x * u_Dim.x * u_Dim.y + y * u_Dim.x + z];
 }
 
+float getDistanceAt( uint x, uint y, uint z ) {
+	return front_field_data[x * u_Dim.x * u_Dim.y + y * u_Dim.x + z];
+}
+
 // Generate a sphere at the specified position
 void sphere(int longitude_steps, int latitude_steps, vec4 position) {
     const float PI = 3.141592f;
 
+    vec3 VoxelWorldCoord = ( position.xyz - GridMin ) / VoxelSize;
+	ivec3 VoxelGridCoord = ivec3(VoxelWorldCoord);
+
 	if (longitude_steps < 2) longitude_steps = 2;
 	if (latitude_steps < 4) latitude_steps = 4;
 
-	float sphere_radius = length(VoxelSize * 0.4);
+    float dist = getDistanceAt(VoxelGridCoord.x, VoxelGridCoord.y, VoxelGridCoord.z);
+
+
+    VertexOut.color = dist / (4 * length(VoxelSize));
+    //if (dist > 0)
+    //    return;
+
+	float sphere_radius = dist * 0.2;
 	float phi_step = 2 * PI / float(latitude_steps);
 	float theta_step = PI / float(longitude_steps);
 	float phi = 0;
@@ -96,25 +113,25 @@ void sphere(int longitude_steps, int latitude_steps, vec4 position) {
             // Emit Vertex
 
             gl_Position = MVP *  (bottom_left_vertex + position);
-		    VertexOut.normal = vec3(normalize(bottom_left_vertex));
+		    //VertexOut.normal = vec3(normalize(bottom_left_vertex));
 		    EmitVertex();
             gl_Position = MVP *  ( bottom_right_vertex + position);
-            VertexOut.normal = vec3(normalize(bottom_right_vertex));
+            //VertexOut.normal = vec3(normalize(bottom_right_vertex));
 		    EmitVertex();
             gl_Position = MVP *  (top_right_vertex + position);
-            VertexOut.normal = vec3(normalize(top_right_vertex));
+            //VertexOut.normal = vec3(normalize(top_right_vertex));
 		    EmitVertex();
 
             EndPrimitive();
 
             gl_Position = MVP *  (top_right_vertex + position);
-            VertexOut.normal = vec3(normalize(top_right_vertex));
+            //VertexOut.normal = vec3(normalize(top_right_vertex));
 		    EmitVertex();
             gl_Position = MVP *  (top_left_vertex + position);
-            VertexOut.normal = vec3(normalize(top_left_vertex));
+            //VertexOut.normal = vec3(normalize(top_left_vertex));
 		    EmitVertex();
             gl_Position =  MVP *  (bottom_left_vertex + position);
-            VertexOut.normal = vec3(normalize(bottom_left_vertex));
+            //VertexOut.normal = vec3(normalize(bottom_left_vertex));
 		    EmitVertex();
 
             EndPrimitive();
@@ -178,7 +195,7 @@ void main()
 		pos = MVP * gl_in[i].gl_Position;
 
         uint l_Occupied = getVoxelAt(VoxelGridCoord.x, VoxelGridCoord.y, VoxelGridCoord.z);
-
+        
 
         //if ( l_Occupied == 0 ) {
             sphere(4, 6, vec4(VertexIn[i].worldcoord, 0));

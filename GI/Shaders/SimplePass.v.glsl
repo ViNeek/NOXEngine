@@ -20,6 +20,7 @@ uniform mat3 NormalMatrix;
 uniform mat4 ModelViewMatrix;
 uniform vec4 LightPosition;
 uniform vec3 CameraPosition;
+uniform mat3 RotationMatrix;
 
 void main()
 {

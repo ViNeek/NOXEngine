@@ -4,12 +4,15 @@ layout(location = 0) out vec4 out_color;
 
 uniform sampler2D DiffuseTexture;
 uniform sampler2D ShadowTexture;
+uniform sampler2D RandomTexture;
 uniform bool ApplyShadows;
 uniform uvec3 u_Dim;
 uniform ivec2 u_VPort;
 uniform vec3 u_GridSize;
 uniform vec3 u_VoxelSize;
 uniform vec3 u_GridMin;
+uniform uvec3 u_DimCubes;
+uniform vec3 u_VoxelSizeCubes;
 
 in VertexData {
     vec3 world_pos;
@@ -78,16 +81,20 @@ const vec3 lightColor = vec3(150, 150, 150);
 
 int getIndexAt( int x, int y, int z ) {
 	//return field_data[x + u_Dim.x * y + u_Dim.x * u_Dim.y * z];
-	return index_data[x * u_Dim.x * u_Dim.y + u_Dim.x * y + z];
+	//return index_data[x * u_Dim.x * u_Dim.y + u_Dim.x * y + z];
+	return index_data[x * u_DimCubes.x * u_DimCubes.y + u_DimCubes.x * y + z];
 }
 
 int getIndexAt( ivec3 vec ) {
 	//return field_data[x + u_Dim.x * y + u_Dim.x * u_Dim.y * z];
-	return index_data[vec.x * u_Dim.x * u_Dim.y + u_Dim.x * vec.y + vec.z];
+	//return index_data[vec.x * u_Dim.x * u_Dim.y + u_Dim.x * vec.y + vec.z];
+	return index_data[vec.x * u_DimCubes.x * u_DimCubes.y + u_DimCubes.x * vec.y + vec.z];
 }
 
 vec2 random( vec2 seed )
 {
+  return texture( RandomTexture, seed ).xy;
+  /*
   // We need irrationals for pseudo randomness.
   // Most (all?) known transcendental numbers will (generally) work.
   const vec2 r = vec2(
@@ -97,7 +104,7 @@ vec2 random( vec2 seed )
   float rndNumX = fract( cos( mod( 123456789., 1e-7 + 256. * dot(seed.xy,r) ) ) );
   float rndNumY = fract( cos( mod( 123456789., 1e-7 + 256. * dot(seed.yx,r) ) ) );
   
-  return vec2(rndNumX, rndNumY);
+  return vec2(rndNumX, rndNumY); */
 }
 
 ivec3 cubeMapSelection(vec3 direction, ivec2 resolution)
@@ -165,28 +172,31 @@ vec4 mc_integrate(int p_Index, vec3 norm) {
 
 	const float M_PI = 3.14;
 	const int probe_size = uniform_cubemap_resolution.x * uniform_cubemap_resolution.y * 6;
-	
 	/*
+	
         vec3 final_gi = vec3(0);
 
-        const int NUMBER_OF_SAMPLES = 200;
-        const float normalization_factor = 1.0 / NUMBER_OF_SAMPLES;
-
+        const int NUMBER_OF_SAMPLES = 30;
+        const float normalization_factor = 1.0 / (2 * NUMBER_OF_SAMPLES);
+        
         vec3 w = norm;
         vec3 u = normalize(cross(abs(w.x) > 0.9 ? vec3(0, 1, 0) : vec3(1, 0, 0), w));
         vec3 v = cross(w, u);
-
+        
         for(int i=0; i<NUMBER_OF_SAMPLES; i++)
         {
-                vec3 uv_rand = vec3(0.1 + i*0.1, 0.2 + i*0.2, 0);
+                vec2 uv_rand = vec2(0.1 + i*0.1, 0.1 + i*0.1);
                 //uv_rand = vec3(0.1 + 0.1, 0.1 + 0.1, 0);
-                //vec2 random = texture(random_texture, uv_rand).xy;
-                vec2 random = random(uv_rand.xy);
+                vec2 random = texture(RandomTexture, uv_rand).xy;
+                //vec2 random = random(VertexIn.uv);
+                //random = uv_rand.xy;
                 //random = vec2(1);
-                float r1 = 2 * M_PI * random.x; // angle around
+                float r1 = random.x; // angle around
                 float r2 = random.y;
 
                 vec3 sample_dir = (u * cos(r1) * sqrt(1 - r2) + v * sin(r1) * sqrt(1 - r2) + w * sqrt(r2));
+                //sample_dir = (u * r1 * sqrt(1 - r2) + v * (r1) * sqrt(1 - r2) + w * sqrt(r2));
+                float NdotL = max(dot(norm,normalize(sample_dir)),0.0);
                 //sample_dir = normal;
                 //sample_dir = norm;
 				
@@ -196,13 +206,14 @@ vec4 mc_integrate(int p_Index, vec3 norm) {
                 //int index = probe_index * probe_size + uniform_cubemap_resolution.x * uniform_cubemap_resolution.y * coord.z + coord.y * uniform_cubemap_resolution.x + coord.x;
 				int index = l_BufferOffset + coord.z*wi*he + coord.y * wi + coord.x;
 
-                final_gi += march_data[index].rgb;
+                final_gi += normalization_factor * march_data[index].rgb;
         }
 
-        return vec4(normalization_factor * final_gi, 1);
+        return vec4(final_gi, 1);
+	
 	
 	*/
-	
+    
     for ( int f = 0; f < 6; f++ ) {
 		for ( int i = 0; i < wi; i++ ) {
 			for ( int j = 0; j < he; j++ ) {
@@ -211,8 +222,11 @@ vec4 mc_integrate(int p_Index, vec3 norm) {
 
 				accepted += NdotL > 0 ? 1 : 0;
 
+                if ( accepted == 0 )
+                    result += 0;
 	            //setVoxelAt(VoxelGridCoord.x + f, VoxelGridCoord.y + i, VoxelGridCoord.z + j);
-                result += march_data[l_BufferOffset + f*wi*he + i * wi + j] * NdotL;
+                else
+                    result += march_data[l_BufferOffset + f*wi*he + i * wi + j] * NdotL;
 	        }
         }
     } 
@@ -226,9 +240,9 @@ vec4 calculate_gi( vec3 position_grid, vec3 norm ) {
 	//ivec3 VoxelGridCoord = ivec3(VoxelWorldCoord);
 
 	//return mc_integrate(getIndexAt( VoxelGridCoord + ivec3(0,0,0) ), norm);
-	vec3 gi_grid_size = vec3(u_Dim);
+	vec3 gi_grid_size = vec3(u_DimCubes);
 
-	vec3 VoxelWorldCoord = ( VertexIn.world_pos - u_GridMin ) / u_VoxelSize;
+	vec3 VoxelWorldCoord = ( VertexIn.world_pos - u_GridMin ) / u_VoxelSizeCubes;
 	ivec3 VoxelGridCoord = ivec3(VoxelWorldCoord);
 
     vec3 str = position_grid * gi_grid_size - vec3(0.5);
@@ -277,9 +291,11 @@ void main()
     
 	//out_color = vec4(VertexIn.normal,0.0f);
 
-    vec3 VoxelWorldCoord = ( VertexIn.world_pos - u_GridMin ) / u_VoxelSize;
+    //vec3 VoxelWorldCoord = ( VertexIn.world_pos - u_GridMin ) / u_VoxelSize;
+    vec3 VoxelWorldCoord = ( VertexIn.world_pos - u_GridMin ) / u_VoxelSizeCubes;
 	ivec3 VoxelGridCoord = ivec3(VoxelWorldCoord);
 
+    vec3 Norm = normalize(VertexIn.tangent);
     vec3 n = normalize(VertexIn.normal);
 	vec4 lightP = LightPosition;
     vec3 lightDir = vec3(lightP - VertexIn.ecPos);
@@ -306,8 +322,8 @@ void main()
         float NdotHV = 0;
         float spotEffect = 0;
         if (NdotL > 0.0) {
-            //vec3 lightPosition = NormalMatrix * vec3(LightPosition - vec4(100000, -50000.0f, -100000.0f, 0));
-            spotEffect = dot(normalize( vec4(-NormalMatrix * u_LightDirection,0) ),normalize(vec4(lightDir, 0)));
+            vec3 lightPosition = NormalMatrix * vec3(LightPosition - vec4(100000, -50000.0f, -100000.0f, 0));
+            spotEffect = dot(normalize( vec4(lightPosition,0) ),normalize(vec4(lightDir, 0)));
             if (spotEffect > cos(30 * 3.14159265359 / 180) && visibility > 0) {
                 spotEffect = pow(spotEffect, 1);
                 float att = spotEffect / (1 +
@@ -328,7 +344,7 @@ void main()
 				//simplified:
 
 				float A = (A_texel * dist * dist) / (d_ij * d_ij );
-				vec3 radiosity = ( d_ij * d_ij * lightColor.rgb ) / (dist * dist * 3.14159 * 3.14159 * 2 );   
+				vec3 radiosity = ( d_ij * d_ij * lightColor.rgb ) / (A * dist * dist * 3.14159 * 3.14159 * 2 );   
 				/*
 				float solidA = 4 * asin(fW_Inv * fW_Inv / (d_ij * d_ij));
 				radiosity = (lightColor.rgb / solidA)  ;
@@ -361,7 +377,7 @@ void main()
 	vec3 position_grid = ( VertexIn.world_pos - u_GridMin ) / ( u_GridSize );
     if ( aIdx > 0 )
         //out_color = mc_integrate(aIdx, n);
-        out_color += calculate_gi(position_grid, n);
+        out_color += calculate_gi(position_grid, Norm) ;
 		//out_color = vec4(float(aIdx) / 128.0, float(aIdx) / 128.0, float(aIdx) / 128.0, 1);
 	out_color = pow(out_color, vec4(1 / 2.2));
 }

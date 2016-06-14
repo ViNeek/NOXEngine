@@ -12,6 +12,7 @@ out VertexData {
 
 uniform mat3 NormalMatrix;
 uniform mat4 ModelMatrix;
+uniform mat4 MVP;
 
 void main()
 {

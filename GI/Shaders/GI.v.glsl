@@ -18,7 +18,7 @@ out VertexData {
 
 uniform mat3 NormalMatrix;
 uniform mat4 ModelViewMatrix;
-uniform mat4 RotationMatrix;
+uniform mat3 RotationMatrix;
 uniform mat4 ModelMatrix;
 uniform vec4 LightPosition;
 uniform vec3 CameraPosition;
@@ -26,8 +26,8 @@ uniform vec3 CameraPosition;
 void main()
 {
     VertexOut.normal = normalize(NormalMatrix * VertexNormal);
-    VertexOut.tangent = normalize(NormalMatrix * VertexTangent);
-    VertexOut.bitangent = normalize(NormalMatrix * VertexBitangent);
+    VertexOut.tangent = normalize(VertexNormal);
+    VertexOut.bitangent = normalize(NormalMatrix * VertexNormal);
     //VertexOut.NdotL = max(dot(VertexOut.normal, normalize( LightPosition - vec3(100, -50.0f, -100.0f) )), 0.0);
     VertexOut.uv = VertexTexCoord;
     VertexOut.shadow_coords = VertexPosition;

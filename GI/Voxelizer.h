@@ -21,8 +21,9 @@ public:
 
 										nxVoxelizer(nxEngine* eng, nxUInt32 dim);
 										nxVoxelizer(nxEngine* eng, nxUInt32 dimX, nxUInt32 dimY, nxUInt32 dimZ);
-		
-										void*						operator new(size_t i)
+                                        nxVoxelizer(nxEngine* eng, nxUInt32 dimX, nxUInt32 dimY, nxUInt32 dimZ, nxUInt32 dimXCubes, nxUInt32 dimYCubes, nxUInt32 dimZCubes);
+                                            
+                                        void*						operator new(size_t i)
 										{
 											//void *p = _mm_malloc(i, 16);
 											void *p = boost::alignment::aligned_alloc(16, i);
@@ -41,11 +42,13 @@ public:
 	bool								CaptureGrid() { return m_CaptureGrid; };
 	void								SetCaptureGrid(bool capture) { m_CaptureGrid = capture; };
 
-	glm::uvec3							Dimesions() { return m_dimensions; }
-	void								SetMatrices();
+    glm::uvec3							Dimesions() { return m_dimensions; }
+    glm::uvec3							DimesionsCubes() { return m_dimensions_cubes; }
+    void								SetMatrices();
 
-	GLuint								VoxelBuffer() { return m_ssbo; }
-	GLuint								DistanceFieldBuffer() { return m_DistanceFieldBuffer; }
+    GLuint								VoxelBuffer() { return m_ssbo; }
+    GLuint								VoxelBufferCubes() { return m_ssbo_cubes; }
+    GLuint								DistanceFieldBuffer() { return m_DistanceFieldBuffer; }
 
 	glm::mat4*							Views() { return m_view_axis; };
 	glm::vec4*							Viewports() { return m_viewport; };
@@ -62,6 +65,7 @@ public:
 
     GLuint								VoxelizerFramebuffer() { return m_fbo_3_axis; };
     GLuint								VoxelCountBuffer() { return m_VoxelCount; };
+    GLuint								VoxelCountBufferCubes() { return m_VoxelCountCubes; };
 
 	void								PrintGrid();
 	void								PrintGridMesh(GLuint ssbo);
@@ -73,12 +77,15 @@ private:
 
 	GLuint								m_texture_3_axis_id;
 	GLuint								m_fbo_3_axis;
-	GLuint								m_ssbo;
-	GLuint								m_DistanceFieldBuffer;
+    GLuint								m_ssbo;
+    GLuint								m_ssbo_cubes;
+    GLuint								m_DistanceFieldBuffer;
     GLuint								m_DummyLayeredBuffer;
     GLuint								m_VoxelCount;
+    GLuint								m_VoxelCountCubes;
 
-	glm::vec4							m_viewport[3];
+    glm::ivec3							m_dimensions_cubes;
+    glm::vec4							m_viewport[3];
 	glm::mat4							m_view_proj_axis[3];
 	glm::mat4							m_view_axis[3];
 	glm::mat4							m_proj_axis[3];
