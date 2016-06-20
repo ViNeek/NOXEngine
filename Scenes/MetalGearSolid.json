@@ -9,16 +9,16 @@
             "PositionZ": 0
         },
         "Voxelizer": {
-            "DimX": 128,
-            "DimY": 128,
-            "DimZ": 128,
+            "DimX": 96,
+            "DimY": 96,
+            "DimZ": 96,
             "DimXCubes": 32,
             "DimYCubes": 32,
             "DimZCubes": 32
         },
 		"RayMarcher": {
-            "VDimX": 8,
-            "VDimY": 8
+            "VDimX": 16,
+            "VDimY": 16
         },
 		"RSM": {
             "DimX": 2048,
@@ -35,22 +35,14 @@
             }
         ],
         "Entities": [
-			{
-                "ModelName": "Models/sponza/sponza_corrected",
+            {
+                "ModelName": "Models/table/table",
                 "ModelType": ".obj",
                 "CenterX": 0,
                 "CenterY": 0,
                 "CenterZ": 0,
                 "Scale": 1
-            },
-            {
-                "ModelName": "Models/table/table",
-                "ModelType": ".obj",
-                "CenterX": 1.4,
-                "CenterY": 1,
-                "CenterZ": 0,
-                "Scale": 14
-            }
+}
         ],
         "Programs": [
             {

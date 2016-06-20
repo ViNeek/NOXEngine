@@ -102,7 +102,7 @@ void main()
         //out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb , 0.0f);
         out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb , 0.0f);
     }
-    //out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb , 0.0f);
+    out_color = vec4(texture( DiffuseTexture, VertexIn.uv ).rgb * NdotL, 0.0f);
     //out_color += texture( ShadowTexture, VertexIn.shadow_coords.xy );
     //out_color = vec4(texture( DiffuseTexture, texture( RandomTexture, VertexIn.uv ).xy ).rgb , 0.0f);
 }

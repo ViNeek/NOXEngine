@@ -162,7 +162,7 @@ ivec3 cubeMapSelection(vec3 direction, ivec2 resolution)
 vec4 mc_integrate(int p_Index, vec3 norm) {
     vec4 result = vec4(0,0,0,0);
     //uint l_BufferOffset = u_VPort.x * u_VPort.y * 6 * l_Index;
-	ivec2 uniform_cubemap_resolution = ivec2(8,8);
+	ivec2 uniform_cubemap_resolution = ivec2(16,16);
     int l_BufferOffset = uniform_cubemap_resolution.x * uniform_cubemap_resolution.y * 6 * p_Index;
 
 	int wi = uniform_cubemap_resolution.x;
@@ -177,11 +177,11 @@ vec4 mc_integrate(int p_Index, vec3 norm) {
         vec3 final_gi = vec3(0);
 
         const int NUMBER_OF_SAMPLES = 30;
-        const float normalization_factor = 1.0 / (2 * NUMBER_OF_SAMPLES);
+        const float normalization_factor = 1.0 / (NUMBER_OF_SAMPLES);
         
         vec3 w = norm;
         vec3 u = normalize(cross(abs(w.x) > 0.9 ? vec3(0, 1, 0) : vec3(1, 0, 0), w));
-        vec3 v = cross(w, u);
+        vec3 v = normalize(cross(w, u));
         
         for(int i=0; i<NUMBER_OF_SAMPLES; i++)
         {
@@ -191,7 +191,7 @@ vec4 mc_integrate(int p_Index, vec3 norm) {
                 //vec2 random = random(VertexIn.uv);
                 //random = uv_rand.xy;
                 //random = vec2(1);
-                float r1 = random.x; // angle around
+                float r1 = 2 * M_PI * random.x; // angle around
                 float r2 = random.y;
 
                 vec3 sample_dir = (u * cos(r1) * sqrt(1 - r2) + v * sin(r1) * sqrt(1 - r2) + w * sqrt(r2));

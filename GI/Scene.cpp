@@ -838,7 +838,7 @@ void nxScene::DrawVoxelized() {
 
         
 
-        //print_dists = false;
+        print_dists = false;
         if (print_dists) {
             //std::cout << "Pass " << l_Voxel.x << ", " << l_Voxel.y << ", " << l_Voxel.z << std::endl;
             glm::ivec2 l_VPort = m_pEngine->Renderer()->RayMarcher()->VPort();
@@ -1100,8 +1100,9 @@ void nxScene::DrawVoxelized() {
             m_MState.m_MMatrix = glm::translate(glm::mat4(), -m_Camera->Position()) * m_MState.m_RMatrix * glm::translate(glm::mat4(), m_Entities[i]->ModelTransform());
             //l_ProgGI->SetUniform("RotationMatrix", Normal(glm::translate(glm::mat4(), -m_Camera->Position()) * m_MState.m_RMatrix));
             //l_ProgGI->SetUniform("RotationMatrix", Normal(m_MState.m_MMatrix));
-			l_ProgGI->SetUniform("LightPosition", m_MState.m_VMatrix * glm::vec4(m_Lights[0]->Center(), 1));
-			//l_ProgGI->SetUniform("LightPosition", glm::translate(glm::mat4(), -m_Camera->Position()) * m_MState.m_RMatrix * glm::vec4(m_Lights[0]->Center(), 1));
+			//l_ProgGI->SetUniform("LightPosition", m_MState.m_VMatrix * glm::vec4(m_Lights[0]->Center(), 1));
+            l_ProgGI->SetUniform("LightPosition", glm::translate(-m_Camera->Position()) * m_MState.m_RMatrix * glm::vec4(m_Lights[0]->Center(), 1));
+            //l_ProgGI->SetUniform("LightPosition", glm::translate(glm::mat4(), -m_Camera->Position()) * m_MState.m_RMatrix * glm::vec4(m_Lights[0]->Center(), 1));
             l_ProgGI->SetUniform("u_Dim", m_pEngine->Renderer()->Voxelizer()->Dimesions());
             l_ProgGI->SetUniform("u_VoxelSize", l_Voxel);
 			l_ProgGI->SetUniform("u_GridMin", m_pEngine->Renderer()->Voxelizer()->GridMin());

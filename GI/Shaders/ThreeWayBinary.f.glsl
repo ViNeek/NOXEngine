@@ -7,6 +7,7 @@ uniform vec3 GridMin;
 uniform vec3 VoxelSize;
 uniform uvec3 GridSizeCubes;
 uniform vec3 VoxelSizeCubes;
+uniform mat3 NormalMatrix;
 uniform mat4 MVP;
 
 in VertexData {
@@ -65,7 +66,7 @@ void setVoxelAtCubes(int i,int j,int w) {
 }
 
 bool in_frustum(mat4 M, vec3 p) {
-return true;
+//return true;
         vec4 Pclip = M * vec4(p, 1);
         return abs(Pclip.x) < Pclip.w+0.5 && 
                abs(Pclip.y) < Pclip.w+0.5 && 

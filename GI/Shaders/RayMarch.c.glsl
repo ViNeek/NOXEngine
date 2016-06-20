@@ -226,9 +226,9 @@ void main() {
 					//l_Distance = clamp(l_Distance, 0, l_DistanceBound);
 				}
 
-				march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].x = l_VoxelCoord.x;
-				march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].y = l_VoxelCoord.y;
-				march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].z = l_VoxelCoord.z;
+				//march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].x = l_VoxelCoord.x;
+				//march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].y = l_VoxelCoord.y;
+				//march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].z = l_VoxelCoord.z;
                 //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].xyz = l_VoxelCoord.z;
 
                 //vec4 shadow_coords = u_LightMVP * vec4(l_VoxelCoord,1);
@@ -258,13 +258,13 @@ void main() {
                     //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = random(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f) );
                     //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = 1;
                     //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = SampleAt(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f));
-                    //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = vec4(0,0,0,1);
+                    march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = vec4(0,0,0,1);
                 } else {
                     //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = random(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f) );
                     //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j].w = int((UVCoords_up.y - UVCoords.y) * 2048.0f);
                     //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = vec4(0,0,0,1);
                     //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = SampleAt(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f)) * sign(LtoT);
-                    //march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = SampleAt(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f));
+                    march_data[l_BufferOffset + f*u_VPort.x*u_VPort.y + i * u_VPort.y + j] = SampleAt(UVCoords, int((UVCoords_up.y - UVCoords.y) * 2048.0f));
                 }
 				//}
 			}

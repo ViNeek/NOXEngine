@@ -49,7 +49,6 @@ float getDistanceAt( uint x, uint y, uint z ) {
 // Generate a sphere at the specified position
 void sphere(int longitude_steps, int latitude_steps, vec4 position) {
     const float PI = 3.141592f;
-
     vec3 VoxelWorldCoord = ( position.xyz - GridMin ) / VoxelSize;
 	ivec3 VoxelGridCoord = ivec3(VoxelWorldCoord);
 
@@ -59,11 +58,11 @@ void sphere(int longitude_steps, int latitude_steps, vec4 position) {
     float dist = getDistanceAt(VoxelGridCoord.x, VoxelGridCoord.y, VoxelGridCoord.z);
 
 
-    VertexOut.color = dist / (4 * length(VoxelSize));
-    //if (dist > 0)
-    //    return;
+    VertexOut.color = 0.5;
+    if (! (dist > 2 * length(VoxelSize) && dist < 5 * length(VoxelSize) ) )
+        return;
 
-	float sphere_radius = dist * 0.2;
+	float sphere_radius = 0.08;
 	float phi_step = 2 * PI / float(latitude_steps);
 	float theta_step = PI / float(longitude_steps);
 	float phi = 0;
