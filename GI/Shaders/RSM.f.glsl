@@ -16,7 +16,7 @@ uniform sampler2D DiffuseTexture;
 
 const float pi = 3.1415926535897932384626433832795;
 
-const vec3 lightColor = vec3(150, 150, 150);
+const vec3 lightColor = vec3(1500, 1500, 1500);
 
 in VertexData {
     vec3 normal;

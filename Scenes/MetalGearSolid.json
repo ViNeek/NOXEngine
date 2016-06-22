@@ -9,16 +9,16 @@
             "PositionZ": 0
         },
         "Voxelizer": {
-            "DimX": 96,
-            "DimY": 96,
-            "DimZ": 96,
-            "DimXCubes": 32,
-            "DimYCubes": 32,
-            "DimZCubes": 32
+            "DimX": 128,
+            "DimY": 128,
+            "DimZ": 128,
+            "DimXCubes": 64,
+            "DimYCubes": 64,
+            "DimZCubes": 64
         },
 		"RayMarcher": {
-            "VDimX": 16,
-            "VDimY": 16
+            "VDimX": 8,
+            "VDimY": 8
         },
 		"RSM": {
             "DimX": 2048,
@@ -35,14 +35,14 @@
             }
         ],
         "Entities": [
-            {
-                "ModelName": "Models/table/table",
+			{
+                "ModelName": "Models/cellar/cellar",
                 "ModelType": ".obj",
                 "CenterX": 0,
                 "CenterY": 0,
                 "CenterZ": 0,
                 "Scale": 1
-}
+            }
         ],
         "Programs": [
             {

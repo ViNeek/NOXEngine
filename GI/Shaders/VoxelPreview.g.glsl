@@ -59,7 +59,8 @@ void sphere(int longitude_steps, int latitude_steps, vec4 position) {
 
 
     VertexOut.color = 0.5;
-    if (! (dist > 2 * length(VoxelSize) && dist < 5 * length(VoxelSize) ) )
+    //if (! (dist > 2 * length(VoxelSize) && dist < 5 * length(VoxelSize) ) )
+    if (! (dist == 0 ) )
         return;
 
 	float sphere_radius = 0.08;

@@ -597,7 +597,7 @@ void nxScene::Draw() {
 			//m_pEngine->Renderer()->Program()->SetUniform("MVP", View());
 			//if (errorGL) Utils::GL::CheckGLState("Set MVP");
 
-			entity->LineDraw();
+			//entity->LineDraw();
 		}
 	}
 	

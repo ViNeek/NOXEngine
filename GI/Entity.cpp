@@ -365,10 +365,15 @@ void nxEntity::InitFromFile(const std::string& path) {
 			//textureIdMap[path.data] = 0;
 			// more textures?
 
-            std::string l_PathEnd = Utils::GetParentDirectory(l_DiffTexturePath.data);
-            std::string l_PathStart = Utils::GetParentDirectory(path);
-            std::string l_Filename = Utils::GetFilename(l_DiffTexturePath.data);
-            std::string l_FullRelativePath = l_PathStart + "/" + l_PathEnd + "/" + l_Filename;
+			std::string l_PathEnd = Utils::GetParentDirectory(l_DiffTexturePath.data);
+			std::string l_PathStart = Utils::GetParentDirectory(path);
+
+			std::string l_Filename = Utils::GetFilename(l_DiffTexturePath.data);
+			std::string l_FullRelativePath;
+			if (l_Filename == l_PathEnd)
+				l_FullRelativePath = l_PathStart + "/" + l_Filename;
+			else
+				l_FullRelativePath = l_PathStart + "/" + l_PathEnd + "/" + l_Filename;
 
             std::cout << "Full path: " << l_FullRelativePath << '\n';
             

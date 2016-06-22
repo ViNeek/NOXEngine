@@ -163,8 +163,8 @@ void main() {
 	vec3 l_VoxelCenter = vec3(l_iVoxelCoords) * u_VoxelSizeCubes + u_VoxelSizeCubes * 0.5;
 
 	vec3 l_GlobalTestPosition = vec3(0, 3.5, 0);
-	float l_SingleStep = length(u_VoxelSize) * (1 + 0.8);
-	float l_DistanceBound = length(u_VoxelSize) * (3 + 0.8);
+	float l_SingleStep = length(u_VoxelSize) * (1);
+	float l_DistanceBound = length(u_VoxelSize) * (2);
 	//float l_DistanceBound = length(vec3(1, 1, 1)) * 1;
 	//float l_DistanceBound = 1;
 	vec2 l_PixelNDC;

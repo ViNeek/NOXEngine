@@ -162,7 +162,8 @@ ivec3 cubeMapSelection(vec3 direction, ivec2 resolution)
 vec4 mc_integrate(int p_Index, vec3 norm) {
     vec4 result = vec4(0,0,0,0);
     //uint l_BufferOffset = u_VPort.x * u_VPort.y * 6 * l_Index;
-	ivec2 uniform_cubemap_resolution = ivec2(16,16);
+	//ivec2 uniform_cubemap_resolution = ivec2(16,16);
+	ivec2 uniform_cubemap_resolution = ivec2(8,8);
     int l_BufferOffset = uniform_cubemap_resolution.x * uniform_cubemap_resolution.y * 6 * p_Index;
 
 	int wi = uniform_cubemap_resolution.x;
@@ -377,7 +378,7 @@ void main()
 	vec3 position_grid = ( VertexIn.world_pos - u_GridMin ) / ( u_GridSize );
     if ( aIdx > 0 )
         //out_color = mc_integrate(aIdx, n);
-        out_color += calculate_gi(position_grid, Norm) ;
+        out_color += calculate_gi(position_grid, Norm) * vec4(texture( DiffuseTexture, VertexIn.uv ).rgb , 0.0f) ;
 		//out_color = vec4(float(aIdx) / 128.0, float(aIdx) / 128.0, float(aIdx) / 128.0, 1);
 	out_color = pow(out_color, vec4(1 / 2.2));
 }

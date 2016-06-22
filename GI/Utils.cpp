@@ -56,6 +56,29 @@ nxInt32 Utils::RandomInRange(nxInt32 min, nxInt32 max) {
 }
 
 std::string Utils::GetFilename(const std::string& p_Path) {
+	std::size_t l_FoundPos = p_Path.find_last_of("/\\");
+
+	if (l_FoundPos == std::string::npos)
+		return p_Path;
+
+	std::string l_Filename = p_Path.substr(l_FoundPos + 1);
+
+	return l_Filename;
+}
+
+std::string Utils::GetParentDirectory(const std::string& p_File) {
+	std::size_t l_FoundPos = p_File.find_last_of("/\\");
+
+	if (l_FoundPos == std::string::npos)
+		return p_File;
+
+	std::string l_Path = p_File.substr(0, l_FoundPos);
+
+	return l_Path;
+}
+
+/*
+std::string Utils::GetFilename(const std::string& p_Path) {
     std::size_t l_FoundPos = p_Path.find_last_of("/\\");
     std::string l_Filename = p_Path.substr(l_FoundPos + 1);
 
@@ -68,3 +91,4 @@ std::string Utils::GetParentDirectory(const std::string& p_File) {
 
     return l_Path;
 }
+*/
